@@ -55,14 +55,38 @@ impl Round {
     }
 }
 
-fn main() {
+pub fn solve_first_part() -> i32 {
     let mut content = fs::read_to_string("inputs/2022_02.txt")
         .expect("Should have been able to read the file");
     if content.chars().last().unwrap() == "\n".chars().next().unwrap() {
         content.pop();
     }
-    let result: i32 = content.split("\n").map(|round| {
-        let choices: Vec<&str> = round.split(" ").collect();
+    content.split("\n").map(|row| {
+        let choices: Vec<&str> = row.split(" ").collect();
+        let opponent = match choices[0] {
+            "A" => Choice::Rock,
+            "B" => Choice::Paper,
+            "C" => Choice::Scissors,
+            other => panic!("Illegal argument: {}", other)
+        };
+        let player = match choices[1] {
+            "X" => Choice::Rock,
+            "Y" => Choice::Paper,
+            "Z" => Choice::Scissors,
+            other => panic!("Illegal argument: {}", other)
+        };
+        Round::new(player, opponent).get_score()
+    }).sum()
+}
+
+pub fn solve_second_part() -> i32 {
+    let mut content = fs::read_to_string("inputs/2022_02.txt")
+        .expect("Should have been able to read the file");
+    if content.chars().last().unwrap() == "\n".chars().next().unwrap() {
+        content.pop();
+    }
+    content.split("\n").map(|row| {
+        let choices: Vec<&str> = row.split(" ").collect();
         let opponent = match choices[0] {
             "A" => Choice::Rock,
             "B" => Choice::Paper,
@@ -82,6 +106,5 @@ fn main() {
             (_, other) => panic!("Illegal argument: {}", other)
         };
         Round::new(player, opponent).get_score()
-    }).sum();
-    dbg!(result);
+    }).sum()
 }
