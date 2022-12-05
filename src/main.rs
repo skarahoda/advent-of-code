@@ -5,6 +5,7 @@ mod solver;
 use solver::{
     solver_2015_01,
     solver_2015_02,
+    solver_2015_03,
     solver_2022_01,
     solver_2022_02,
     solver_2022_03,
@@ -51,6 +52,8 @@ fn main() {
         (Year::Year2015, Day::Day1, true) => println!("{}", solver_2015_01::solve_second_part()),
         (Year::Year2015, Day::Day2, false) => println!("{}", solver_2015_02::solve_first_part()),
         (Year::Year2015, Day::Day2, true) => println!("{}", solver_2015_02::solve_second_part()),
+        (Year::Year2015, Day::Day3, false) => println!("{}", solver_2015_03::solve_first_part()),
+        (Year::Year2015, Day::Day3, true) => println!("{}", solver_2015_03::solve_second_part()),
         (Year::Year2022, Day::Day1, false) => println!("{}", solver_2022_01::solve_first_part()),
         (Year::Year2022, Day::Day1, true) => println!("{}", solver_2022_01::solve_second_part()),
         (Year::Year2022, Day::Day2, false) => println!("{}", solver_2022_02::solve_first_part()),
