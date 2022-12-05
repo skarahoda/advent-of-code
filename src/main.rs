@@ -3,6 +3,7 @@ extern crate core;
 use clap::{Parser, ValueEnum};
 mod solver;
 use solver::{
+    solver_2015_01,
     solver_2022_01,
     solver_2022_02,
     solver_2022_03,
@@ -11,6 +12,8 @@ use solver::{
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 enum Year {
+    #[value(name="2015")]
+    Year2015,
     #[value(name="2022")]
     Year2022,
 }
@@ -43,6 +46,8 @@ struct Cli {
 fn main() {
     let args = Cli::parse();
     match (args.year, args.day, args.second_part) {
+        (Year::Year2015, Day::Day1, false) => println!("{}", solver_2015_01::solve_first_part()),
+        (Year::Year2015, Day::Day1, true) => println!("{}", solver_2015_01::solve_second_part()),
         (Year::Year2022, Day::Day1, false) => println!("{}", solver_2022_01::solve_first_part()),
         (Year::Year2022, Day::Day1, true) => println!("{}", solver_2022_01::solve_second_part()),
         (Year::Year2022, Day::Day2, false) => println!("{}", solver_2022_02::solve_first_part()),
@@ -51,5 +56,6 @@ fn main() {
         (Year::Year2022, Day::Day3, true) => println!("{}", solver_2022_03::solve_second_part()),
         (Year::Year2022, Day::Day4, false) => println!("{}", solver_2022_04::solve_first_part()),
         (Year::Year2022, Day::Day4, true) => println!("{}", solver_2022_04::solve_second_part()),
+        _ => panic!("Puzzle is not solved yet!")
     }
 }
