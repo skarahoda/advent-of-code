@@ -35,3 +35,37 @@ pub fn solve() -> (i32, usize) {
         solve_second_part(&input[..])
     )
 }
+
+#[cfg(test)]
+mod first_part {
+    use super::*;
+    #[test]
+    fn same_number_of_closing_and_opening_parenthesis() {
+        assert_eq!(solve_first_part("()()"), 0);
+    }
+    #[test]
+    fn has_more_closing_parenthesis() {
+        assert_eq!(solve_first_part("()()))"), -2);
+    }
+    #[test]
+    fn has_more_opening_parenthesis() {
+        assert_eq!(solve_first_part("()()(("), 2);
+    }
+}
+
+#[cfg(test)]
+mod second_part {
+    use super::*;
+    #[test]
+    fn enter_basement_with_first_character() {
+        assert_eq!(solve_second_part(")"), 1);
+    }
+    #[test]
+    fn enter_basement_with_last_character() {
+        assert_eq!(solve_second_part("(()))"), 5);
+    }
+    #[test]
+    fn enter_basement_in_the_middle() {
+        assert_eq!(solve_second_part("()))()())()())"), 3);
+    }
+}

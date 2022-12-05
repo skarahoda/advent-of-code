@@ -95,3 +95,40 @@ pub fn solve() -> (usize, usize) {
         solve_second_part(&directions[..])
     )
 }
+
+#[cfg(test)]
+mod first_part {
+    use super::*;
+
+    #[test]
+    fn first_example() {
+        assert_eq!(solve_first_part(">"), 2);
+    }
+    #[test]
+    fn second_example() {
+        assert_eq!(solve_first_part("^>v<"), 4);
+    }
+    #[test]
+    fn third_example() {
+        assert_eq!(solve_first_part("^v^v^v^v^v"), 2);
+    }
+}
+
+#[cfg(test)]
+mod second_part {
+    use super::*;
+
+    #[test]
+    fn first_example() {
+        assert_eq!(solve_second_part("^v"), 3);
+    }
+    #[test]
+    fn second_example() {
+        assert_eq!(solve_second_part("^>v<"), 3);
+    }
+    #[test]
+    fn third_example() {
+        assert_eq!(solve_second_part("^v^v^v^v^v"), 11);
+    }
+}
+

@@ -106,3 +106,15 @@ pub fn solve() -> (i32, i32) {
         solve_second_part(&input[..]),
     )
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn solve_first_part() {
+        assert_eq!(super::solve_first_part("A Y\nB X\nC Z"), 15);
+    }
+    #[test]
+    fn solve_second_part() {
+        assert_eq!(super::solve_second_part("A Y\nB X\nC Z"), 12);
+    }
+}

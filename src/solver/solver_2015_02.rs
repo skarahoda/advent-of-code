@@ -73,3 +73,31 @@ pub fn solve() -> (i32, i32) {
         solve_second_part(&rectangle_prisms)
     )
 }
+
+#[cfg(test)]
+mod first_part {
+    use super::*;
+
+    #[test]
+    fn first_example() {
+        assert_eq!(solve_first_part(&vec![RectangularPrism::new(2,3,4)]), 58);
+    }
+    #[test]
+    fn second_example() {
+        assert_eq!(solve_first_part(&vec![RectangularPrism::new(1,1,10)]), 43);
+    }
+}
+
+#[cfg(test)]
+mod second_part {
+    use super::*;
+
+    #[test]
+    fn first_example() {
+        assert_eq!(solve_second_part(&vec![RectangularPrism::new(2,3,4)]), 34);
+    }
+    #[test]
+    fn second_example() {
+        assert_eq!(solve_second_part(&vec![RectangularPrism::new(1,1,10)]), 14);
+    }
+}

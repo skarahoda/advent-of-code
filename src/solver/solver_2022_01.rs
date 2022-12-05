@@ -49,3 +49,16 @@ pub fn solve() -> (i32, i32) {
         solve_second_part(&carried_foods)
     )
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn solve_first_part() {
+        assert_eq!(super::solve_first_part(&vec![6000, 11000, 24000, 10000]), 24000);
+    }
+    #[test]
+    fn solve_second_part() {
+        assert_eq!(super::solve_second_part(&vec![6000, 11000, 24000, 10000]), 45000);
+    }
+}
+

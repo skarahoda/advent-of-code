@@ -50,7 +50,6 @@ fn solve_first_part(mut stacks: Vec<Vec<char>>, procedures: &Vec<(usize, usize, 
         popped_items.reverse();
         stacks[*to].extend(popped_items);
     }
-
     stacks.iter_mut().map(|stack| stack.pop().unwrap()).collect()
 }
 
@@ -70,4 +69,32 @@ pub fn solve() -> (String, String) {
         solve_first_part(stacks.clone(), &procedures),
         solve_second_part(stacks.clone(), &procedures)
     )
+}
+
+#[cfg(test)]
+mod tests {
+    static EXAMPLE_PROCEDURES: [(usize, usize, usize); 4] = [
+        (1, 1, 0),
+        (3, 0, 2),
+        (2, 1, 0),
+        (1, 0, 1),
+    ];
+    #[test]
+    fn solve_first_part() {
+        let stacks = vec![
+            vec!['Z', 'N'],
+            vec!['M', 'C', 'D'],
+            vec!['P']
+        ];
+        assert_eq!(super::solve_first_part(stacks, &Vec::from(EXAMPLE_PROCEDURES)), "CMZ");
+    }
+    #[test]
+    fn solve_second_part() {
+        let stacks = vec![
+            vec!['Z', 'N'],
+            vec!['M', 'C', 'D'],
+            vec!['P']
+        ];
+        assert_eq!(super::solve_second_part(stacks, &Vec::from(EXAMPLE_PROCEDURES)), "MCD");
+    }
 }

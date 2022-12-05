@@ -77,3 +77,16 @@ pub fn solve() -> (u32, u32) {
         solve_second_part(&input[..])
     )
 }
+
+#[cfg(test)]
+mod tests {
+    const EXAMPLE: &str = "vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nPmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw";
+    #[test]
+    fn solve_first_part() {
+        assert_eq!(super::solve_first_part(EXAMPLE), 157);
+    }
+    #[test]
+    fn solve_second_part() {
+        assert_eq!(super::solve_second_part(EXAMPLE), 70);
+    }
+}
