@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use std::fs;
+use super::utils;
 
 fn find_common_character(a: &str, b: &str) -> char {
     let mut map: HashSet<char> = HashSet::new();
@@ -44,13 +44,9 @@ fn character_to_score(c: char) -> u32 {
 }
 
 pub fn solve_first_part() -> u32 {
-    let mut content = fs::read_to_string("inputs/2022_03.txt")
-        .expect("Should have been able to read the file");
-    if content.chars().last().unwrap() == "\n".chars().next().unwrap() {
-        content.pop();
-    }
+    let input = utils::get_input("inputs/2022_03.txt");
 
-    content.split("\n").map(
+    input.split("\n").map(
         |row: &str| {
             let (first, second) = row.split_at(row.len()/2);
             let common = find_common_character(first, second);
@@ -60,12 +56,9 @@ pub fn solve_first_part() -> u32 {
 }
 
 pub fn solve_second_part() -> u32 {
-    let mut content = fs::read_to_string("inputs/2022_03.txt")
-        .expect("Should have been able to read the file");
-    if content.chars().last().unwrap() == "\n".chars().next().unwrap() {
-        content.pop();
-    }
-    let rows:Vec<&str> = content.split("\n").collect();
+    let input = utils::get_input("inputs/2022_03.txt");
+
+    let rows:Vec<&str> = input.split("\n").collect();
 
 
     let mut result: u32 = 0;

@@ -1,4 +1,4 @@
-use std::fs;
+use super::utils;
 
 fn does_contain(bounds: &(i32,i32), other: &(i32,i32)) -> bool {
     bounds.0 <= other.0 && bounds.1 >= other.1
@@ -10,13 +10,9 @@ fn does_overlap(a: &(i32,i32), b: &(i32,i32)) -> bool {
 }
 
 fn get_assignments() -> Vec<((i32, i32), (i32, i32))> {
-    let mut content = fs::read_to_string("inputs/2022_04.txt")
-        .expect("Should have been able to read the file");
-    if content.chars().last().unwrap() == '\n' {
-        content.pop();
-    }
+    let input = utils::get_input("inputs/2022_04.txt");
 
-    content.split("\n").map(
+    input.split("\n").map(
         |row| {
             let assignments: Vec<(i32, i32)> = row.split(",")
                 .map(|assignment| {

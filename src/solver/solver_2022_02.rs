@@ -1,4 +1,4 @@
-use std::fs;
+use super::utils;
 
 enum Result {
     Win,
@@ -56,12 +56,9 @@ impl Round {
 }
 
 pub fn solve_first_part() -> i32 {
-    let mut content = fs::read_to_string("inputs/2022_02.txt")
-        .expect("Should have been able to read the file");
-    if content.chars().last().unwrap() == "\n".chars().next().unwrap() {
-        content.pop();
-    }
-    content.split("\n").map(|row| {
+    let input = utils::get_input("inputs/2022_02.txt");
+
+    input.split("\n").map(|row| {
         let choices: Vec<&str> = row.split(" ").collect();
         let opponent = match choices[0] {
             "A" => Choice::Rock,
@@ -80,12 +77,9 @@ pub fn solve_first_part() -> i32 {
 }
 
 pub fn solve_second_part() -> i32 {
-    let mut content = fs::read_to_string("inputs/2022_02.txt")
-        .expect("Should have been able to read the file");
-    if content.chars().last().unwrap() == "\n".chars().next().unwrap() {
-        content.pop();
-    }
-    content.split("\n").map(|row| {
+    let input = utils::get_input("inputs/2022_02.txt");
+
+    input.split("\n").map(|row| {
         let choices: Vec<&str> = row.split(" ").collect();
         let opponent = match choices[0] {
             "A" => Choice::Rock,

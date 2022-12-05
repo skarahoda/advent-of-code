@@ -1,16 +1,8 @@
-use std::fs;
-
-pub fn get_input() -> String {
-    let mut content = fs::read_to_string("inputs/2015_01.txt")
-        .expect("Should have been able to read the file");
-    if content.chars().last().unwrap() == "\n".chars().next().unwrap() {
-        content.pop();
-    }
-    content
-}
+use super::utils;
 
 pub fn solve_first_part() -> i32 {
-    let input = get_input();
+    let input = utils::get_input("inputs/2015_01.txt");
+
     input.chars().fold(
         0,
         |score, c| {
@@ -23,8 +15,9 @@ pub fn solve_first_part() -> i32 {
     )
 }
 pub fn solve_second_part() -> usize {
-    let input = get_input();
+    let input = utils::get_input("inputs/2015_01.txt");
     let mut score = 0;
+
     for (i, char) in input.chars().enumerate() {
         match char {
             '(' => score+=1,

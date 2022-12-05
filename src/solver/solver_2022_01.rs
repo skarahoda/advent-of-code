@@ -1,12 +1,9 @@
-use std::fs;
+use super::utils;
 
 fn get_carried_foods() -> Vec<i32> {
-    let mut content = fs::read_to_string("inputs/2022_01.txt")
-        .expect("Should have been able to read the file");
-    if content.chars().last().unwrap() == "\n".chars().next().unwrap() {
-        content.pop();
-    }
-    let carried_foods: Vec<Vec<i32>> = content.split("\n\n").map(
+    let input = utils::get_input("inputs/2022_01.txt");
+
+    let carried_foods: Vec<Vec<i32>> = input.split("\n\n").map(
         |e| e.split("\n")
             .map(|i| i.parse().unwrap())
             .collect()
