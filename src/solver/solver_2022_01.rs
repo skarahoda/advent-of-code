@@ -14,12 +14,19 @@ fn get_carried_foods() -> Vec<i32> {
     ).collect()
 }
 
-fn sum_top_three(numbers: Vec<i32>) -> i32 {
-    if numbers.len() <= 3 {
-        numbers.iter().sum()
+fn solve_first_part(carried_foods: &Vec<i32>) -> i32 {
+    match carried_foods.iter().max() {
+        Some(value) => *value,
+        None => 0
+    }
+}
+fn solve_second_part(carried_foods: &Vec<i32>) -> i32 {
+    if carried_foods.len() <= 3 {
+        carried_foods.iter().sum()
     } else {
         let mut result = vec![0; 3];
-        for number in numbers {
+        for number in carried_foods {
+            let number = *number;
             if  number > result[0] {
                 result[2] = result[1];
                 result[1] = result[0];
@@ -35,15 +42,10 @@ fn sum_top_three(numbers: Vec<i32>) -> i32 {
     }
 }
 
-pub fn solve_first_part() -> i32 {
+pub fn solve() -> (i32, i32) {
     let carried_foods = get_carried_foods();
-    match carried_foods.iter().max() {
-        Some(value) => *value,
-        None => 0
-    }
-}
-pub fn solve_second_part() -> i32 {
-
-    let carried_foods = get_carried_foods();
-    sum_top_three(carried_foods)
+    (
+        solve_first_part(&carried_foods),
+        solve_second_part(&carried_foods)
+    )
 }

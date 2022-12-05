@@ -43,9 +43,7 @@ fn character_to_score(c: char) -> u32 {
     }
 }
 
-pub fn solve_first_part() -> u32 {
-    let input = utils::get_input("inputs/2022_03.txt");
-
+fn solve_first_part(input: &str) -> u32 {
     input.split("\n").map(
         |row: &str| {
             let (first, second) = row.split_at(row.len()/2);
@@ -55,9 +53,7 @@ pub fn solve_first_part() -> u32 {
     ).sum::<u32>()
 }
 
-pub fn solve_second_part() -> u32 {
-    let input = utils::get_input("inputs/2022_03.txt");
-
+fn solve_second_part(input: &str) -> u32 {
     let rows:Vec<&str> = input.split("\n").collect();
 
 
@@ -72,4 +68,12 @@ pub fn solve_second_part() -> u32 {
     }
 
     result
+}
+
+pub fn solve() -> (u32, u32) {
+    let input = utils::get_input("inputs/2022_03.txt");
+    (
+        solve_first_part(&input[..]),
+        solve_second_part(&input[..])
+    )
 }

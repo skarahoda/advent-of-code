@@ -1,8 +1,6 @@
 use super::utils;
 
-pub fn solve_first_part() -> i32 {
-    let input = utils::get_input("inputs/2015_01.txt");
-
+fn solve_first_part(input: &str) -> i32 {
     input.chars().fold(
         0,
         |score, c| {
@@ -14,8 +12,7 @@ pub fn solve_first_part() -> i32 {
         }
     )
 }
-pub fn solve_second_part() -> usize {
-    let input = utils::get_input("inputs/2015_01.txt");
+fn solve_second_part(input: &str) -> usize {
     let mut score = 0;
 
     for (i, char) in input.chars().enumerate() {
@@ -29,4 +26,12 @@ pub fn solve_second_part() -> usize {
         }
     }
     panic!("Solution not found");
+}
+
+pub fn solve() -> (i32, usize) {
+    let input = utils::get_input("inputs/2015_01.txt");
+    (
+        solve_first_part(&input[..]),
+        solve_second_part(&input[..])
+    )
 }

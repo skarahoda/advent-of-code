@@ -43,30 +43,19 @@ struct Cli {
 
     #[arg(value_enum)]
     day: Day,
-
-    #[arg(short, long)]
-    second_part: bool,
 }
 
 fn main() {
     let args = Cli::parse();
-    match (args.year, args.day, args.second_part) {
-        (Year::Year2015, Day::Day1, false) => println!("{}", solver_2015_01::solve_first_part()),
-        (Year::Year2015, Day::Day1, true) => println!("{}", solver_2015_01::solve_second_part()),
-        (Year::Year2015, Day::Day2, false) => println!("{}", solver_2015_02::solve_first_part()),
-        (Year::Year2015, Day::Day2, true) => println!("{}", solver_2015_02::solve_second_part()),
-        (Year::Year2015, Day::Day3, false) => println!("{}", solver_2015_03::solve_first_part()),
-        (Year::Year2015, Day::Day3, true) => println!("{}", solver_2015_03::solve_second_part()),
-        (Year::Year2022, Day::Day1, false) => println!("{}", solver_2022_01::solve_first_part()),
-        (Year::Year2022, Day::Day1, true) => println!("{}", solver_2022_01::solve_second_part()),
-        (Year::Year2022, Day::Day2, false) => println!("{}", solver_2022_02::solve_first_part()),
-        (Year::Year2022, Day::Day2, true) => println!("{}", solver_2022_02::solve_second_part()),
-        (Year::Year2022, Day::Day3, false) => println!("{}", solver_2022_03::solve_first_part()),
-        (Year::Year2022, Day::Day3, true) => println!("{}", solver_2022_03::solve_second_part()),
-        (Year::Year2022, Day::Day4, false) => println!("{}", solver_2022_04::solve_first_part()),
-        (Year::Year2022, Day::Day4, true) => println!("{}", solver_2022_04::solve_second_part()),
-        (Year::Year2022, Day::Day5, false) => println!("{}", solver_2022_05::solve_first_part()),
-        (Year::Year2022, Day::Day5, true) => println!("{}", solver_2022_05::solve_second_part()),
+    match (args.year, args.day) {
+        (Year::Year2015, Day::Day1) => println!("{:?}", solver_2015_01::solve()),
+        (Year::Year2015, Day::Day2) => println!("{:?}", solver_2015_02::solve()),
+        (Year::Year2015, Day::Day3) => println!("{:?}", solver_2015_03::solve()),
+        (Year::Year2022, Day::Day1) => println!("{:?}", solver_2022_01::solve()),
+        (Year::Year2022, Day::Day2) => println!("{:?}", solver_2022_02::solve()),
+        (Year::Year2022, Day::Day3) => println!("{:?}", solver_2022_03::solve()),
+        (Year::Year2022, Day::Day4) => println!("{:?}", solver_2022_04::solve()),
+        (Year::Year2022, Day::Day5) => println!("{:?}", solver_2022_05::solve()),
         _ => panic!("Puzzle is not solved yet!")
     }
 }

@@ -43,9 +43,7 @@ fn get_procedures(lines: &str) -> Vec<(usize, usize, usize)> {
     }).collect()
 }
 
-pub fn solve_first_part() -> String {
-    let (mut stacks, procedures) = get_setup();
-
+fn solve_first_part(mut stacks: Vec<Vec<char>>, procedures: &Vec<(usize, usize, usize)>) -> String {
     for (count, from, to) in procedures.iter() {
         let new_length = stacks[*from].len() - *count;
         let mut popped_items = stacks[*from].split_off(new_length);
@@ -56,9 +54,7 @@ pub fn solve_first_part() -> String {
     stacks.iter_mut().map(|stack| stack.pop().unwrap()).collect()
 }
 
-pub fn solve_second_part() -> String {
-    let (mut stacks, procedures) = get_setup();
-
+fn solve_second_part(mut stacks: Vec<Vec<char>>, procedures: &Vec<(usize, usize, usize)>) -> String {
     for (count, from, to) in procedures.iter() {
         let new_length = stacks[*from].len() - *count;
         let popped_items = stacks[*from].split_off(new_length);
@@ -66,4 +62,12 @@ pub fn solve_second_part() -> String {
     }
 
     stacks.iter_mut().map(|stack| stack.pop().unwrap()).collect()
+}
+
+pub fn solve() -> (String, String) {
+    let (stacks, procedures) = get_setup();
+    (
+        solve_first_part(stacks.clone(), &procedures),
+        solve_second_part(stacks.clone(), &procedures)
+    )
 }

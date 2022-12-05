@@ -55,9 +55,7 @@ impl Location {
 }
 
 
-pub fn solve_first_part() -> usize {
-    let directions = utils::get_input("inputs/2015_03.txt");
-
+fn solve_first_part(directions: &str) -> usize {
     let mut locations: HashSet<Location> = HashSet::new();
     let mut location = Location::new();
 
@@ -70,9 +68,7 @@ pub fn solve_first_part() -> usize {
     locations.len()
 }
 
-pub fn solve_second_part() -> usize {
-    let directions = utils::get_input("inputs/2015_03.txt");
-
+fn solve_second_part(directions: &str) -> usize {
     let mut locations: HashSet<Location> = HashSet::new();
 
     let mut santa_location = Location::new();
@@ -90,4 +86,12 @@ pub fn solve_second_part() -> usize {
         santa_turn = !santa_turn;
     }
     locations.len()
+}
+
+pub fn solve() -> (usize, usize) {
+    let directions = utils::get_input("inputs/2015_03.txt");
+    (
+        solve_first_part(&directions[..]),
+        solve_second_part(&directions[..])
+    )
 }

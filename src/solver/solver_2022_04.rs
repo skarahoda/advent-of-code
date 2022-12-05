@@ -27,14 +27,22 @@ fn get_assignments() -> Vec<((i32, i32), (i32, i32))> {
     ).collect()
 }
 
-pub fn solve_first_part() -> usize {
-    get_assignments().iter()
+fn solve_first_part(assignments: &Vec<((i32, i32), (i32, i32))>) -> usize {
+    assignments.iter()
         .filter(|(first_bound, second_bound)| does_contain(first_bound, second_bound) || does_contain(second_bound, first_bound))
         .count()
 }
 
-pub fn solve_second_part() -> usize {
-    get_assignments().iter()
+fn solve_second_part(assignments: &Vec<((i32, i32), (i32, i32))>) -> usize {
+    assignments.iter()
         .filter(|(a, b)| does_overlap(a,b))
         .count()
+}
+
+pub fn solve() -> (usize, usize) {
+    let assignments = get_assignments();
+    (
+        solve_first_part(&assignments),
+        solve_second_part(&assignments)
+    )
 }

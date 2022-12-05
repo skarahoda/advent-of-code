@@ -49,9 +49,7 @@ fn get_rectangular_prisms() -> Vec<RectangularPrism> {
         .collect()
 }
 
-pub fn solve_first_part() -> i32 {
-    let rectangle_prisms = get_rectangular_prisms();
-
+fn solve_first_part(rectangle_prisms: &Vec<RectangularPrism>) -> i32 {
     rectangle_prisms.iter().fold(
         0,
         |score, rectangle_prism| {
@@ -59,13 +57,19 @@ pub fn solve_first_part() -> i32 {
         }
     )
 }
-pub fn solve_second_part() -> i32 {
-    let rectangle_prisms = get_rectangular_prisms();
-
+fn solve_second_part(rectangle_prisms: &Vec<RectangularPrism>) -> i32 {
     rectangle_prisms.iter().fold(
         0,
         |score, rectangle_prism| {
             score + rectangle_prism.get_volume() + rectangle_prism.get_smallest_perimeter_of_sides()
         }
+    )
+}
+
+pub fn solve() -> (i32, i32) {
+    let rectangle_prisms = get_rectangular_prisms();
+    (
+        solve_first_part(&rectangle_prisms),
+        solve_second_part(&rectangle_prisms)
     )
 }

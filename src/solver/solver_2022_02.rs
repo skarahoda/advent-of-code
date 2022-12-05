@@ -55,9 +55,7 @@ impl Round {
     }
 }
 
-pub fn solve_first_part() -> i32 {
-    let input = utils::get_input("inputs/2022_02.txt");
-
+fn solve_first_part(input: &str) -> i32 {
     input.split("\n").map(|row| {
         let choices: Vec<&str> = row.split(" ").collect();
         let opponent = match choices[0] {
@@ -76,9 +74,7 @@ pub fn solve_first_part() -> i32 {
     }).sum()
 }
 
-pub fn solve_second_part() -> i32 {
-    let input = utils::get_input("inputs/2022_02.txt");
-
+fn solve_second_part(input: &str) -> i32 {
     input.split("\n").map(|row| {
         let choices: Vec<&str> = row.split(" ").collect();
         let opponent = match choices[0] {
@@ -101,4 +97,12 @@ pub fn solve_second_part() -> i32 {
         };
         Round::new(player, opponent).get_score()
     }).sum()
+}
+
+pub fn solve() -> (i32, i32) {
+    let input = utils::get_input("inputs/2022_02.txt");
+    (
+        solve_first_part(&input[..]),
+        solve_second_part(&input[..]),
+    )
 }
