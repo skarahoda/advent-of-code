@@ -1,5 +1,5 @@
 use regex::Regex;
-use crate::solver::utils;
+use super::utils;
 
 fn does_not_contain_forbidden_words(input: &str) -> bool {
     !input.contains("ab")

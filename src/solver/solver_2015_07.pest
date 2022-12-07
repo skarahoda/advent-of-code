@@ -1,0 +1,17 @@
+Program = { Statement ~ (NewLine ~ Statement)* }
+Statement = { LHS ~ Whitespace ~ "->" ~ Whitespace ~ Expr }
+LHS = {
+    Expr ~ (Whitespace ~ ( And | Or | LShift | RShift )  ~ Whitespace ~ Expr)?
+    | Not ~ Whitespace ~ Expr
+}
+Expr = _{ Ident | Number }
+Ident = { 'a'..'z'+ }
+Number = { '0'..'9'+ }
+And = { "AND" }
+Or = { "OR" }
+LShift = { "LSHIFT" }
+RShift = { "RSHIFT" }
+Not = { "NOT" }
+Whitespace = _{ " "* }
+NewLine = _{ "\n" }
+
