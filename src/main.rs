@@ -1,4 +1,7 @@
 extern crate core;
+extern crate pest;
+#[macro_use]
+extern crate pest_derive;
 
 use clap::{Parser, ValueEnum};
 mod solver;
@@ -9,6 +12,7 @@ use solver::{
     solver_2015_04,
     solver_2015_05,
     solver_2015_06,
+    solver_2015_07,
     solver_2022_01,
     solver_2022_02,
     solver_2022_03,
@@ -39,6 +43,8 @@ enum Day {
     Day5,
     #[value(name="6")]
     Day6,
+    #[value(name="7")]
+    Day7,
 }
 
 /// Search for a pattern in a file and display the lines that contain it.
@@ -60,6 +66,7 @@ fn main() {
         (Year::Year2015, Day::Day4) => println!("{:?}", solver_2015_04::solve()),
         (Year::Year2015, Day::Day5) => println!("{:?}", solver_2015_05::solve()),
         (Year::Year2015, Day::Day6) => println!("{:?}", solver_2015_06::solve()),
+        (Year::Year2015, Day::Day7) => println!("{:?}", solver_2015_07::solve()),
         (Year::Year2022, Day::Day1) => println!("{:?}", solver_2022_01::solve()),
         (Year::Year2022, Day::Day2) => println!("{:?}", solver_2022_02::solve()),
         (Year::Year2022, Day::Day3) => println!("{:?}", solver_2022_03::solve()),

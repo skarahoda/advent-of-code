@@ -1,0 +1,17 @@
+program = { statement ~ (new_line ~ statement)* }
+statement = { lhs ~ whitespace ~ "->" ~ whitespace ~ expr }
+lhs = {
+    expr ~ (whitespace ~ ( and | or | lshift | rshift )  ~ whitespace ~ expr)?
+    | not ~ whitespace ~ expr
+}
+expr = { ident | number }
+ident = { 'a'..'z'+ }
+number = { '0'..'9'+ }
+and = { "AND" }
+or = { "OR" }
+lshift = { "LSHIFT" }
+rshift = { "RSHIFT" }
+not = { "NOT" }
+whitespace = _{ " "* }
+new_line = _{ "\n" }
+
