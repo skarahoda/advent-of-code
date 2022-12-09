@@ -19,6 +19,7 @@ use solver::{
     solver_2022_04,
     solver_2022_05,
     solver_2022_06,
+    solver_2022_07,
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -73,6 +74,7 @@ fn main() {
         (Year::Year2022, Day::Day4) => println!("{:?}", solver_2022_04::solve()),
         (Year::Year2022, Day::Day5) => println!("{:?}", solver_2022_05::solve()),
         (Year::Year2022, Day::Day6) => println!("{:?}", solver_2022_06::solve()),
+        (Year::Year2022, Day::Day7) => println!("{:?}", solver_2022_07::solve()),
         _ => panic!("Puzzle is not solved yet!")
     }
 }

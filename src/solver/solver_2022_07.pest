@@ -1,0 +1,14 @@
+Program = { Statement ~ (NewLine ~ Statement)* }
+Statement = _{ CDCommand | LSCommand }
+CDCommand = { "$ cd " ~ (RootFolder | ParentFolder | FolderName) }
+LSCommand = { "$ ls" ~ (NewLine ~ (DirectoryInfo | FileInfo))* }
+DirectoryInfo = { "dir " ~ FolderName }
+FileInfo = { FileSize ~ " " ~ FileName }
+FileName = { 'a'..'z'+ ~ ("." ~ 'a'..'z'+)* }
+RootFolder = { "/" }
+ParentFolder = { ".." }
+FolderName = { 'a'..'z'+ }
+FileSize = { '0'..'9'+ }
+Whitespace = _{ " "* }
+NewLine = _{ "\n" }
+
