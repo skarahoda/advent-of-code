@@ -21,6 +21,7 @@ use solver::{
     solver_2022_06,
     solver_2022_07,
     solver_2022_08,
+    solver_2022_09,
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -49,6 +50,8 @@ enum Day {
     Day7,
     #[value(name="8")]
     Day8,
+    #[value(name="9")]
+    Day9,
 }
 
 /// Search for a pattern in a file and display the lines that contain it.
@@ -79,6 +82,7 @@ fn main() {
         (Year::Year2022, Day::Day6) => println!("{:?}", solver_2022_06::solve()),
         (Year::Year2022, Day::Day7) => println!("{:?}", solver_2022_07::solve()),
         (Year::Year2022, Day::Day8) => println!("{:?}", solver_2022_08::solve()),
+        (Year::Year2022, Day::Day9) => println!("{:?}", solver_2022_09::solve()),
         _ => panic!("Puzzle is not solved yet!")
     }
 }
