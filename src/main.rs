@@ -3,6 +3,7 @@ extern crate pest;
 #[macro_use]
 extern crate pest_derive;
 
+use std::fmt::Display;
 use clap::{Parser, ValueEnum};
 mod solver;
 use solver::{
@@ -22,6 +23,7 @@ use solver::{
     solver_2022_07,
     solver_2022_08,
     solver_2022_09,
+    solver_2022_10,
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -52,6 +54,8 @@ enum Day {
     Day8,
     #[value(name="9")]
     Day9,
+    #[value(name="10")]
+    Day10,
 }
 
 /// Search for a pattern in a file and display the lines that contain it.
@@ -64,25 +68,36 @@ struct Cli {
     day: Day,
 }
 
+fn print_answers<T1: Display, T2: Display>((first_answer, second_answer): (T1, T2)) {
+    println!("Answer for the first part:");
+    println!("--------------------------");
+    println!("{}", first_answer);
+    println!("");
+    println!("Answer for the second part:");
+    println!("---------------------------");
+    println!("{}", second_answer);
+}
+
 fn main() {
     let args = Cli::parse();
     match (args.year, args.day) {
-        (Year::Year2015, Day::Day1) => println!("{:?}", solver_2015_01::solve()),
-        (Year::Year2015, Day::Day2) => println!("{:?}", solver_2015_02::solve()),
-        (Year::Year2015, Day::Day3) => println!("{:?}", solver_2015_03::solve()),
-        (Year::Year2015, Day::Day4) => println!("{:?}", solver_2015_04::solve()),
-        (Year::Year2015, Day::Day5) => println!("{:?}", solver_2015_05::solve()),
-        (Year::Year2015, Day::Day6) => println!("{:?}", solver_2015_06::solve()),
-        (Year::Year2015, Day::Day7) => println!("{:?}", solver_2015_07::solve()),
-        (Year::Year2022, Day::Day1) => println!("{:?}", solver_2022_01::solve()),
-        (Year::Year2022, Day::Day2) => println!("{:?}", solver_2022_02::solve()),
-        (Year::Year2022, Day::Day3) => println!("{:?}", solver_2022_03::solve()),
-        (Year::Year2022, Day::Day4) => println!("{:?}", solver_2022_04::solve()),
-        (Year::Year2022, Day::Day5) => println!("{:?}", solver_2022_05::solve()),
-        (Year::Year2022, Day::Day6) => println!("{:?}", solver_2022_06::solve()),
-        (Year::Year2022, Day::Day7) => println!("{:?}", solver_2022_07::solve()),
-        (Year::Year2022, Day::Day8) => println!("{:?}", solver_2022_08::solve()),
-        (Year::Year2022, Day::Day9) => println!("{:?}", solver_2022_09::solve()),
+        (Year::Year2015, Day::Day1) => print_answers(solver_2015_01::solve()),
+        (Year::Year2015, Day::Day2) => print_answers(solver_2015_02::solve()),
+        (Year::Year2015, Day::Day3) => print_answers(solver_2015_03::solve()),
+        (Year::Year2015, Day::Day4) => print_answers(solver_2015_04::solve()),
+        (Year::Year2015, Day::Day5) => print_answers(solver_2015_05::solve()),
+        (Year::Year2015, Day::Day6) => print_answers(solver_2015_06::solve()),
+        (Year::Year2015, Day::Day7) => print_answers(solver_2015_07::solve()),
+        (Year::Year2022, Day::Day1) => print_answers(solver_2022_01::solve()),
+        (Year::Year2022, Day::Day2) => print_answers(solver_2022_02::solve()),
+        (Year::Year2022, Day::Day3) => print_answers(solver_2022_03::solve()),
+        (Year::Year2022, Day::Day4) => print_answers(solver_2022_04::solve()),
+        (Year::Year2022, Day::Day5) => print_answers(solver_2022_05::solve()),
+        (Year::Year2022, Day::Day6) => print_answers(solver_2022_06::solve()),
+        (Year::Year2022, Day::Day7) => print_answers(solver_2022_07::solve()),
+        (Year::Year2022, Day::Day8) => print_answers(solver_2022_08::solve()),
+        (Year::Year2022, Day::Day9) => print_answers(solver_2022_09::solve()),
+        (Year::Year2022, Day::Day10) => print_answers(solver_2022_10::solve()),
         _ => panic!("Puzzle is not solved yet!")
     }
 }
