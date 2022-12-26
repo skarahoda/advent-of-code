@@ -1,0 +1,6 @@
+Pockets = { Pocket ~ ( NewLine ~ NewLine ~ Pocket )* }
+Pocket = { List ~ NewLine ~ List }
+List = { "[" ~ ( Item ~ ( "," ~ Item )* )? ~ "]" }
+Item = _{ Number | List }
+Number = { '0'..'9'+ }
+NewLine = _{ "\n" }
