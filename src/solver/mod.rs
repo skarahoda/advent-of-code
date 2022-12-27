@@ -19,4 +19,5 @@ pub mod solver_2022_11;
 pub mod solver_2022_12;
 pub mod solver_2022_13;
 pub mod solver_2022_14;
+pub mod solver_2022_15;
 pub(in self) mod utils;
