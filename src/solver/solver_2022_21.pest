@@ -1,0 +1,16 @@
+Program = { Statement ~ (NewLine ~ Statement)* }
+Statement = { Ident ~ ":" ~ Whitespace ~ RHS }
+RHS = {
+    Ident ~ Whitespace ~ ( Operator )  ~ Whitespace ~ Ident
+    | Number
+}
+Ident = { 'a'..'z'+ }
+Number = { '0'..'9'+ }
+Operator = _{ Add | Subtract | Multiply | Divide }
+Add = { "+" }
+Subtract = { "-" }
+Multiply = { "*" }
+Divide = { "/" }
+Whitespace = _{ " "* }
+NewLine = _{ "\n" }
+
