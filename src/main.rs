@@ -3,88 +3,66 @@ extern crate pest;
 #[macro_use]
 extern crate pest_derive;
 
-use std::fmt::Display;
 use clap::{Parser, ValueEnum};
+use std::fmt::Display;
 mod solver;
 use solver::{
-    solver_2015_01,
-    solver_2015_02,
-    solver_2015_03,
-    solver_2015_04,
-    solver_2015_05,
-    solver_2015_06,
-    solver_2015_07,
-    solver_2022_01,
-    solver_2022_02,
-    solver_2022_03,
-    solver_2022_04,
-    solver_2022_05,
-    solver_2022_06,
-    solver_2022_07,
-    solver_2022_08,
-    solver_2022_09,
-    solver_2022_10,
-    solver_2022_11,
-    solver_2022_12,
-    solver_2022_13,
-    solver_2022_14,
-    solver_2022_15,
-    solver_2022_16,
-    solver_2022_17,
-    solver_2022_18,
-    solver_2022_20,
-    solver_2022_21,
+    solver_2015_01, solver_2015_02, solver_2015_03, solver_2015_04, solver_2015_05, solver_2015_06,
+    solver_2015_07, solver_2022_01, solver_2022_02, solver_2022_03, solver_2022_04, solver_2022_05,
+    solver_2022_06, solver_2022_07, solver_2022_08, solver_2022_09, solver_2022_10, solver_2022_11,
+    solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17,
+    solver_2022_18, solver_2022_20, solver_2022_21,
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 enum Year {
-    #[value(name="2015")]
+    #[value(name = "2015")]
     Year2015,
-    #[value(name="2022")]
+    #[value(name = "2022")]
     Year2022,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 enum Day {
-    #[value(name="1")]
+    #[value(name = "1")]
     Day1,
-    #[value(name="2")]
+    #[value(name = "2")]
     Day2,
-    #[value(name="3")]
+    #[value(name = "3")]
     Day3,
-    #[value(name="4")]
+    #[value(name = "4")]
     Day4,
-    #[value(name="5")]
+    #[value(name = "5")]
     Day5,
-    #[value(name="6")]
+    #[value(name = "6")]
     Day6,
-    #[value(name="7")]
+    #[value(name = "7")]
     Day7,
-    #[value(name="8")]
+    #[value(name = "8")]
     Day8,
-    #[value(name="9")]
+    #[value(name = "9")]
     Day9,
-    #[value(name="10")]
+    #[value(name = "10")]
     Day10,
-    #[value(name="11")]
+    #[value(name = "11")]
     Day11,
-    #[value(name="12")]
+    #[value(name = "12")]
     Day12,
-    #[value(name="13")]
+    #[value(name = "13")]
     Day13,
-    #[value(name="14")]
+    #[value(name = "14")]
     Day14,
-    #[value(name="15")]
+    #[value(name = "15")]
     Day15,
-    #[value(name="16")]
+    #[value(name = "16")]
     Day16,
-    #[value(name="17")]
+    #[value(name = "17")]
     Day17,
-    #[value(name="18")]
+    #[value(name = "18")]
     Day18,
-    #[value(name="20")]
+    #[value(name = "20")]
     Day20,
-    #[value(name="21")]
+    #[value(name = "21")]
     Day21,
 }
 
@@ -138,6 +116,6 @@ fn main() {
         (Year::Year2022, Day::Day18) => print_answers(solver_2022_18::solve()),
         (Year::Year2022, Day::Day20) => print_answers(solver_2022_20::solve()),
         (Year::Year2022, Day::Day21) => print_answers(solver_2022_21::solve()),
-        _ => panic!("Puzzle is not solved yet!")
+        _ => panic!("Puzzle is not solved yet!"),
     }
 }

@@ -1,5 +1,5 @@
-use std::collections::{VecDeque};
 use super::utils;
+use std::collections::VecDeque;
 
 #[derive(PartialEq, Debug)]
 struct Maze {
@@ -9,52 +9,84 @@ struct Maze {
 }
 
 impl Maze {
-    fn new(x:usize, y:usize) -> Self {
+    fn new(x: usize, y: usize) -> Self {
         Self {
-            points: vec![vec![0;x];y],
+            points: vec![vec![0; x]; y],
             start_coordinates: (0, 0),
-            end_coordinates: (0, 0)
+            end_coordinates: (0, 0),
         }
     }
 
-    fn get_available_neighbours(&self, (x, y): (usize, usize), distance_map: &Vec<Vec<usize>>) -> Vec<(usize, usize)> {
+    fn get_available_neighbours(
+        &self,
+        (x, y): (usize, usize),
+        distance_map: &Vec<Vec<usize>>,
+    ) -> Vec<(usize, usize)> {
         let available_height = self.points[y][x] + 1;
         let mut result = Vec::new();
-        if y+1 < self.points.len() && self.points[y+1][x] <= available_height && distance_map[y+1][x] == usize::MAX {
-            result.push((x, y+1));
+        if y + 1 < self.points.len()
+            && self.points[y + 1][x] <= available_height
+            && distance_map[y + 1][x] == usize::MAX
+        {
+            result.push((x, y + 1));
         }
-        if y > 0 && self.points[y-1][x] <= available_height && distance_map[y-1][x] == usize::MAX {
-            result.push((x, y-1));
+        if y > 0
+            && self.points[y - 1][x] <= available_height
+            && distance_map[y - 1][x] == usize::MAX
+        {
+            result.push((x, y - 1));
         }
-        if x+1 < self.points[y].len() && self.points[y][x+1] <= available_height && distance_map[y][x+1] == usize::MAX {
-            result.push((x+1, y));
+        if x + 1 < self.points[y].len()
+            && self.points[y][x + 1] <= available_height
+            && distance_map[y][x + 1] == usize::MAX
+        {
+            result.push((x + 1, y));
         }
-        if x > 0 && self.points[y][x-1] <= available_height && distance_map[y][x-1] == usize::MAX {
-            result.push((x-1, y));
+        if x > 0
+            && self.points[y][x - 1] <= available_height
+            && distance_map[y][x - 1] == usize::MAX
+        {
+            result.push((x - 1, y));
         }
         result
     }
 
-    fn get_available_neighbours_reverse(&self, (x, y): (usize, usize), distance_map: &Vec<Vec<usize>>) -> Vec<(usize, usize)> {
+    fn get_available_neighbours_reverse(
+        &self,
+        (x, y): (usize, usize),
+        distance_map: &Vec<Vec<usize>>,
+    ) -> Vec<(usize, usize)> {
         let available_height = self.points[y][x] - 1;
         let mut result = Vec::new();
-        if y+1 < self.points.len() && self.points[y+1][x] >= available_height && distance_map[y+1][x] == usize::MAX {
-            result.push((x, y+1));
+        if y + 1 < self.points.len()
+            && self.points[y + 1][x] >= available_height
+            && distance_map[y + 1][x] == usize::MAX
+        {
+            result.push((x, y + 1));
         }
-        if y > 0 && self.points[y-1][x] >= available_height && distance_map[y-1][x] == usize::MAX {
-            result.push((x, y-1));
+        if y > 0
+            && self.points[y - 1][x] >= available_height
+            && distance_map[y - 1][x] == usize::MAX
+        {
+            result.push((x, y - 1));
         }
-        if x+1 < self.points[y].len() && self.points[y][x+1] >= available_height && distance_map[y][x+1] == usize::MAX {
-            result.push((x+1, y));
+        if x + 1 < self.points[y].len()
+            && self.points[y][x + 1] >= available_height
+            && distance_map[y][x + 1] == usize::MAX
+        {
+            result.push((x + 1, y));
         }
-        if x > 0 && self.points[y][x-1] >= available_height && distance_map[y][x-1] == usize::MAX {
-            result.push((x-1, y));
+        if x > 0
+            && self.points[y][x - 1] >= available_height
+            && distance_map[y][x - 1] == usize::MAX
+        {
+            result.push((x - 1, y));
         }
         result
     }
 
     fn find_shortest_path_from_start(&self) -> usize {
-        let mut distance_map = vec![vec![usize::MAX;self.points[0].len()];self.points.len()];
+        let mut distance_map = vec![vec![usize::MAX; self.points[0].len()]; self.points.len()];
         distance_map[self.start_coordinates.1][self.start_coordinates.0] = 0;
         let mut queue = VecDeque::from([self.start_coordinates]);
 
@@ -70,7 +102,7 @@ impl Maze {
     }
 
     fn find_shortest_path_from_anywhere(&self) -> usize {
-        let mut distance_map = vec![vec![usize::MAX;self.points[0].len()];self.points.len()];
+        let mut distance_map = vec![vec![usize::MAX; self.points[0].len()]; self.points.len()];
         distance_map[self.end_coordinates.1][self.end_coordinates.0] = 0;
         let mut queue = VecDeque::from([self.end_coordinates]);
 
@@ -108,7 +140,7 @@ fn get_maze(input: &str) -> Maze {
                 'a'..='z' => {
                     result.points[i][j] = (char as usize) - ('a' as usize);
                 }
-                other => panic!("Illegal argument: {}", other)
+                other => panic!("Illegal argument: {}", other),
             }
         }
     }
@@ -125,25 +157,19 @@ fn solve_second_part(maze: &Maze) -> usize {
 
 pub fn solve() -> (usize, usize) {
     let maze = get_maze(&utils::get_input("inputs/2022_12.txt"));
-    (
-        solve_first_part(&maze),
-        solve_second_part(&maze),
-    )
+    (solve_first_part(&maze), solve_second_part(&maze))
 }
-
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    static EXAMPLE: &str =
-        "\
+    static EXAMPLE: &str = "\
         Sabqponm\n\
         abcryxxl\n\
         accszExk\n\
         acctuvwj\n\
-        abdefghi"
-    ;
+        abdefghi";
 
     #[test]
     fn should_parse_input() {
@@ -165,19 +191,12 @@ mod tests {
 
     #[test]
     fn should_solve_first_part_example() {
-        let maze =  get_maze(EXAMPLE);
-        assert_eq!(
-            solve_first_part(&maze),
-            31
-        );
+        let maze = get_maze(EXAMPLE);
+        assert_eq!(solve_first_part(&maze), 31);
     }
     #[test]
     fn should_solve_second_part_example() {
-        let maze =  get_maze(EXAMPLE);
-        assert_eq!(
-            solve_second_part(&maze),
-            29
-        );
+        let maze = get_maze(EXAMPLE);
+        assert_eq!(solve_second_part(&maze), 29);
     }
 }
-

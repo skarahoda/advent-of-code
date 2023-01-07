@@ -1,6 +1,5 @@
 use md5;
 
-
 fn solve_first_part(input: &str) -> u32 {
     let mut number: u32 = 0;
     loop {
@@ -24,10 +23,7 @@ fn solve_second_part(input: &str) -> u32 {
 }
 
 pub fn solve() -> (u32, u32) {
-    (
-        solve_first_part("bgvyzdsv"),
-        solve_second_part("bgvyzdsv")
-    )
+    (solve_first_part("bgvyzdsv"), solve_second_part("bgvyzdsv"))
 }
 
 #[cfg(test)]

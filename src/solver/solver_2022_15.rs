@@ -1,25 +1,30 @@
-use std::collections::HashSet;
-use regex::Regex;
 use super::utils;
+use regex::Regex;
+use std::collections::HashSet;
 
 type Coordinates = (i64, i64);
 type SensorAndBeacons = Vec<(Coordinates, Coordinates)>;
 
 fn get_sensor_and_beacons(input: &str) -> SensorAndBeacons {
-    let re = Regex::new(r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)").unwrap();
-    input.split("\n").map(|row| {
-        let positions = re.captures(row).unwrap();
-        (
+    let re =
+        Regex::new(r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)")
+            .unwrap();
+    input
+        .split("\n")
+        .map(|row| {
+            let positions = re.captures(row).unwrap();
             (
-                positions.get(1).unwrap().as_str().parse().unwrap(),
-                positions.get(2).unwrap().as_str().parse().unwrap()
-            ),
-            (
-                positions.get(3).unwrap().as_str().parse().unwrap(),
-                positions.get(4).unwrap().as_str().parse().unwrap()
+                (
+                    positions.get(1).unwrap().as_str().parse().unwrap(),
+                    positions.get(2).unwrap().as_str().parse().unwrap(),
+                ),
+                (
+                    positions.get(3).unwrap().as_str().parse().unwrap(),
+                    positions.get(4).unwrap().as_str().parse().unwrap(),
+                ),
             )
-        )
-    }).collect()
+        })
+        .collect()
 }
 
 fn find_distance(a: &Coordinates, b: &Coordinates) -> i64 {
@@ -49,10 +54,10 @@ fn find_beacon_free_cells(sensor_and_beacons: &SensorAndBeacons, row: i64) -> us
 }
 
 fn find_distress_beacon(sensor_and_beacons: &SensorAndBeacons, max_coordinate: i64) -> Coordinates {
-    let coverage_areas: Vec<(Coordinates, i64)> = sensor_and_beacons.iter().map(
-        |&(sensor, beacon)| (sensor, find_distance(&sensor, &beacon))
-    ).collect();
-
+    let coverage_areas: Vec<(Coordinates, i64)> = sensor_and_beacons
+        .iter()
+        .map(|&(sensor, beacon)| (sensor, find_distance(&sensor, &beacon)))
+        .collect();
 
     for j in 0..=max_coordinate {
         let mut i = 0;
@@ -94,13 +99,11 @@ pub fn solve() -> (usize, i64) {
     )
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    static EXAMPLE: &str =
-        "\
+    static EXAMPLE: &str = "\
         Sensor at x=2, y=18: closest beacon is at x=-2, y=15\n\
         Sensor at x=9, y=16: closest beacon is at x=10, y=16\n\
         Sensor at x=13, y=2: closest beacon is at x=15, y=3\n\
@@ -114,8 +117,7 @@ mod tests {
         Sensor at x=17, y=20: closest beacon is at x=21, y=22\n\
         Sensor at x=16, y=7: closest beacon is at x=15, y=3\n\
         Sensor at x=14, y=3: closest beacon is at x=15, y=3\n\
-        Sensor at x=20, y=1: closest beacon is at x=15, y=3"
-    ;
+        Sensor at x=20, y=1: closest beacon is at x=15, y=3";
 
     #[test]
     fn should_get_sensor_and_beacons() {
@@ -143,19 +145,12 @@ mod tests {
     #[test]
     fn should_solve_first_part() {
         let sensors_and_beacons = get_sensor_and_beacons(EXAMPLE);
-        assert_eq!(
-            find_beacon_free_cells(&sensors_and_beacons, 10),
-            26
-        );
+        assert_eq!(find_beacon_free_cells(&sensors_and_beacons, 10), 26);
     }
 
     #[test]
     fn should_solve_second_part() {
         let sensors_and_beacons = get_sensor_and_beacons(EXAMPLE);
-        assert_eq!(
-            find_distress_beacon(&sensors_and_beacons, 20),
-            (14, 11)
-        );
+        assert_eq!(find_distress_beacon(&sensors_and_beacons, 20), (14, 11));
     }
 }
-

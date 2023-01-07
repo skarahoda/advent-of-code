@@ -1,8 +1,7 @@
-use std::cmp::Ordering;
-use pest::iterators::Pair;
 use super::utils;
+use pest::iterators::Pair;
 use pest::Parser;
-
+use std::cmp::Ordering;
 
 #[derive(Parser)]
 #[grammar = "solver/solver_2022_13.pest"]
@@ -27,7 +26,7 @@ fn cmp(left: &List, right: &List) -> Ordering {
 #[derive(Debug, Eq, PartialEq, Clone)]
 enum ListItem {
     Integer(u32),
-    List(List)
+    List(List),
 }
 
 impl Ord for ListItem {
@@ -37,7 +36,6 @@ impl Ord for ListItem {
             (ListItem::List(left), ListItem::List(right)) => cmp(&left, &right),
             (left, ListItem::List(right)) => cmp(&vec![Box::new(left)], &right),
             (ListItem::List(left), right) => cmp(&left, &vec![Box::new(right)]),
-
         }
     }
 }
@@ -57,30 +55,42 @@ fn parse_list_item(input: Pair<Rule>) -> ListItem {
 }
 
 fn parse_list(input: Pair<Rule>) -> List {
-    input.into_inner().map(|item | Box::new(parse_list_item(item))).collect()
+    input
+        .into_inner()
+        .map(|item| Box::new(parse_list_item(item)))
+        .collect()
 }
 
 fn parse_pair_of_packets(input: &str) -> Vec<(List, List)> {
     let pockets = SantaParser::parse(Rule::Pockets, input).unwrap_or_else(|e| panic!("{}", e));
-    pockets.peek().unwrap().into_inner().map(|pocket| {
-        let mut pair = pocket.into_inner();
-        (
-            parse_list(pair.next().unwrap()),
-            parse_list(pair.next().unwrap()),
-        )
-    }).collect()
+    pockets
+        .peek()
+        .unwrap()
+        .into_inner()
+        .map(|pocket| {
+            let mut pair = pocket.into_inner();
+            (
+                parse_list(pair.next().unwrap()),
+                parse_list(pair.next().unwrap()),
+            )
+        })
+        .collect()
 }
 
 fn solve_first_part(pair_of_pockets: &Vec<(List, List)>) -> usize {
     pair_of_pockets.iter().enumerate().fold(
         0,
-        |sum, (i, (left, right))| if left <= right { sum + i + 1} else { sum }
+        |sum, (i, (left, right))| if left <= right { sum + i + 1 } else { sum },
     )
 }
 
 fn solve_second_part(pair_of_pockets: &Vec<(List, List)>) -> usize {
-    let first: &List =  &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(2))]))];
-    let second: &List =  &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(6))]))];
+    let first: &List = &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(
+        2,
+    ))]))];
+    let second: &List = &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(
+        6,
+    ))]))];
 
     let mut pockets: Vec<List> = pair_of_pockets.iter().fold(
         vec![first.clone(), second.clone()],
@@ -88,11 +98,19 @@ fn solve_second_part(pair_of_pockets: &Vec<(List, List)>) -> usize {
             vector.push(left.clone());
             vector.push(right.clone());
             vector
-        }
+        },
     );
     pockets.sort();
-    let (first_index, _) = pockets.iter().enumerate().find(|&(_, list)| cmp(list, first) == Ordering::Equal).unwrap();
-    let (second_index, _) = pockets.iter().enumerate().find(|&(_, list)| cmp(list, second) == Ordering::Equal).unwrap();
+    let (first_index, _) = pockets
+        .iter()
+        .enumerate()
+        .find(|&(_, list)| cmp(list, first) == Ordering::Equal)
+        .unwrap();
+    let (second_index, _) = pockets
+        .iter()
+        .enumerate()
+        .find(|&(_, list)| cmp(list, second) == Ordering::Equal)
+        .unwrap();
     (first_index + 1) * (second_index + 1)
 }
 
@@ -104,13 +122,11 @@ pub fn solve() -> (usize, usize) {
     )
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    static EXAMPLE: &str =
-        "\
+    static EXAMPLE: &str = "\
         [1,1,3,1,1]\n\
         [1,1,5,1,1]\n\
         \n\
@@ -133,8 +149,7 @@ mod tests {
         [[]]\n\
         \n\
         [1,[2,[3,[4,[5,6,7]]]],8,9]\n\
-        [1,[2,[3,[4,[5,6,0]]]],8,9]"
-    ;
+        [1,[2,[3,[4,[5,6,0]]]],8,9]";
 
     #[test]
     fn should_parse_input() {
@@ -177,17 +192,10 @@ mod tests {
 
     #[test]
     fn should_solve_first_part_example() {
-        assert_eq!(
-            solve_first_part(&parse_pair_of_packets(EXAMPLE)),
-            13
-        );
+        assert_eq!(solve_first_part(&parse_pair_of_packets(EXAMPLE)), 13);
     }
     #[test]
     fn should_solve_second_part_example() {
-        assert_eq!(
-            solve_second_part(&parse_pair_of_packets(EXAMPLE)),
-            140
-        );
+        assert_eq!(solve_second_part(&parse_pair_of_packets(EXAMPLE)), 140);
     }
 }
-

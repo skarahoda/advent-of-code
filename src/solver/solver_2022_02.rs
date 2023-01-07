@@ -20,23 +20,20 @@ struct Round {
 
 impl Round {
     fn new(player: Choice, opponent: Choice) -> Self {
-        Round {
-            player,
-            opponent
-        }
+        Round { player, opponent }
     }
 
     fn get_result(&self) -> Result {
         match (&self.player, &self.opponent) {
-            (Choice::Rock, Choice::Scissors) |
-            (Choice::Paper, Choice::Rock) |
-            (Choice::Scissors, Choice::Paper) => Result::Win,
-            (Choice::Rock, Choice::Paper) |
-            (Choice::Paper, Choice::Scissors) |
-            (Choice::Scissors, Choice::Rock)  => Result::Lose,
-            (Choice::Rock, Choice::Rock) |
-            (Choice::Paper, Choice::Paper) |
-            (Choice::Scissors, Choice::Scissors) => Result::Draw,
+            (Choice::Rock, Choice::Scissors)
+            | (Choice::Paper, Choice::Rock)
+            | (Choice::Scissors, Choice::Paper) => Result::Win,
+            (Choice::Rock, Choice::Paper)
+            | (Choice::Paper, Choice::Scissors)
+            | (Choice::Scissors, Choice::Rock) => Result::Lose,
+            (Choice::Rock, Choice::Rock)
+            | (Choice::Paper, Choice::Paper)
+            | (Choice::Scissors, Choice::Scissors) => Result::Draw,
         }
     }
 
@@ -56,55 +53,58 @@ impl Round {
 }
 
 fn solve_first_part(input: &str) -> i32 {
-    input.split("\n").map(|row| {
-        let choices: Vec<&str> = row.split(" ").collect();
-        let opponent = match choices[0] {
-            "A" => Choice::Rock,
-            "B" => Choice::Paper,
-            "C" => Choice::Scissors,
-            other => panic!("Illegal argument: {}", other)
-        };
-        let player = match choices[1] {
-            "X" => Choice::Rock,
-            "Y" => Choice::Paper,
-            "Z" => Choice::Scissors,
-            other => panic!("Illegal argument: {}", other)
-        };
-        Round::new(player, opponent).get_score()
-    }).sum()
+    input
+        .split("\n")
+        .map(|row| {
+            let choices: Vec<&str> = row.split(" ").collect();
+            let opponent = match choices[0] {
+                "A" => Choice::Rock,
+                "B" => Choice::Paper,
+                "C" => Choice::Scissors,
+                other => panic!("Illegal argument: {}", other),
+            };
+            let player = match choices[1] {
+                "X" => Choice::Rock,
+                "Y" => Choice::Paper,
+                "Z" => Choice::Scissors,
+                other => panic!("Illegal argument: {}", other),
+            };
+            Round::new(player, opponent).get_score()
+        })
+        .sum()
 }
 
 fn solve_second_part(input: &str) -> i32 {
-    input.split("\n").map(|row| {
-        let choices: Vec<&str> = row.split(" ").collect();
-        let opponent = match choices[0] {
-            "A" => Choice::Rock,
-            "B" => Choice::Paper,
-            "C" => Choice::Scissors,
-            other => panic!("Illegal argument: {}", other)
-        };
-        let player = match (opponent, choices[1]) {
-            (Choice::Rock, "Y") |
-            (Choice::Paper, "X") |
-            (Choice::Scissors, "Z") => Choice::Rock,
-            (Choice::Rock, "Z") |
-            (Choice::Paper, "Y") |
-            (Choice::Scissors, "X") => Choice::Paper,
-            (Choice::Rock, "X") |
-            (Choice::Paper, "Z") |
-            (Choice::Scissors, "Y") => Choice::Scissors,
-            (_, other) => panic!("Illegal argument: {}", other)
-        };
-        Round::new(player, opponent).get_score()
-    }).sum()
+    input
+        .split("\n")
+        .map(|row| {
+            let choices: Vec<&str> = row.split(" ").collect();
+            let opponent = match choices[0] {
+                "A" => Choice::Rock,
+                "B" => Choice::Paper,
+                "C" => Choice::Scissors,
+                other => panic!("Illegal argument: {}", other),
+            };
+            let player = match (opponent, choices[1]) {
+                (Choice::Rock, "Y") | (Choice::Paper, "X") | (Choice::Scissors, "Z") => {
+                    Choice::Rock
+                }
+                (Choice::Rock, "Z") | (Choice::Paper, "Y") | (Choice::Scissors, "X") => {
+                    Choice::Paper
+                }
+                (Choice::Rock, "X") | (Choice::Paper, "Z") | (Choice::Scissors, "Y") => {
+                    Choice::Scissors
+                }
+                (_, other) => panic!("Illegal argument: {}", other),
+            };
+            Round::new(player, opponent).get_score()
+        })
+        .sum()
 }
 
 pub fn solve() -> (i32, i32) {
     let input = utils::get_input("inputs/2022_02.txt");
-    (
-        solve_first_part(&input[..]),
-        solve_second_part(&input[..]),
-    )
+    (solve_first_part(&input[..]), solve_second_part(&input[..]))
 }
 
 #[cfg(test)]

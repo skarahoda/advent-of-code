@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use pest::iterators::{Pair};
-use pest::Parser;
 use super::utils;
+use pest::iterators::Pair;
+use pest::Parser;
+use std::collections::HashMap;
 
 #[derive(Parser)]
 #[grammar = "solver/solver_2022_21.pest"]
@@ -11,7 +11,7 @@ type RuleMap<'a> = HashMap<&'a str, Vec<Pair<'a, Rule>>>;
 
 struct Analyzer<'a> {
     rule_map: RuleMap<'a>,
-    value_map: HashMap<&'a str, usize>
+    value_map: HashMap<&'a str, usize>,
 }
 
 impl<'a> Analyzer<'a> {
@@ -26,7 +26,7 @@ impl<'a> Analyzer<'a> {
         }
         Self {
             rule_map,
-            value_map: HashMap::new()
+            value_map: HashMap::new(),
         }
     }
 
@@ -45,22 +45,25 @@ impl<'a> Analyzer<'a> {
                         Rule::Subtract => Some(left - right),
                         Rule::Multiply => Some(left * right),
                         Rule::Divide => Some(left / right),
-                        other=> panic!("syntax error: operation cannot be {:?}", other)
+                        other => panic!("syntax error: operation cannot be {:?}", other),
                     }
                 } else {
-                    panic!("syntax error: lhs cannot have more than three tokens. Found: {:?}", pairs)
+                    panic!(
+                        "syntax error: lhs cannot have more than three tokens. Found: {:?}",
+                        pairs
+                    )
                 }
             }
         }
     }
 
-    pub fn get_value(& mut self, variable: &'a str) -> usize {
+    pub fn get_value(&mut self, variable: &'a str) -> usize {
         loop {
             for key in self.rule_map.keys() {
                 match self.evaluate_ident(key) {
                     Some(value) => {
                         self.value_map.insert(key, value);
-                    },
+                    }
                     None => {}
                 };
             }
@@ -85,7 +88,10 @@ impl<'a> Analyzer<'a> {
             let (left, right) = self.get_children(parent);
             self.is_parent(left, child) || self.is_parent(right, child)
         } else {
-            panic!("syntax error: lhs cannot have more than three tokens. Found: {:?}", pairs)
+            panic!(
+                "syntax error: lhs cannot have more than three tokens. Found: {:?}",
+                pairs
+            )
         }
     }
 
@@ -102,18 +108,38 @@ fn solve_first_part(input: &str) -> usize {
 fn solve_second_part(input: &str) -> usize {
     let mut analyzer = Analyzer::new(input);
     let (left, right) = analyzer.get_children("root");
-    let (mut human_parent, mut other_value) = if analyzer.is_parent(left, "humn") { (left, analyzer.get_value(right)) } else { (right, analyzer.get_value(left)) };
+    let (mut human_parent, mut other_value) = if analyzer.is_parent(left, "humn") {
+        (left, analyzer.get_value(right))
+    } else {
+        (right, analyzer.get_value(left))
+    };
     let mut result = other_value;
     while human_parent != "humn" {
         let (left, right) = analyzer.get_children(human_parent);
         let operator = analyzer.get_operator(human_parent);
-        (human_parent, other_value) = if analyzer.is_parent(left, "humn") { (left, analyzer.get_value(right)) } else { (right, analyzer.get_value(left)) };
+        (human_parent, other_value) = if analyzer.is_parent(left, "humn") {
+            (left, analyzer.get_value(right))
+        } else {
+            (right, analyzer.get_value(left))
+        };
         result = match operator {
             Rule::Add => result - other_value,
-            Rule::Subtract => if analyzer.is_parent(left, "humn") { result + other_value } else { other_value - result },
+            Rule::Subtract => {
+                if analyzer.is_parent(left, "humn") {
+                    result + other_value
+                } else {
+                    other_value - result
+                }
+            }
             Rule::Multiply => result / other_value,
-            Rule::Divide => if analyzer.is_parent(left, "humn") { result * other_value } else { other_value / result },
-            other=> panic!("syntax error: operation cannot be {:?}", other),
+            Rule::Divide => {
+                if analyzer.is_parent(left, "humn") {
+                    result * other_value
+                } else {
+                    other_value / result
+                }
+            }
+            other => panic!("syntax error: operation cannot be {:?}", other),
         };
     }
     result
@@ -121,12 +147,8 @@ fn solve_second_part(input: &str) -> usize {
 
 pub fn solve() -> (usize, usize) {
     let input = utils::get_input("inputs/2022_21.txt");
-    (
-        solve_first_part(&input[..]),
-        solve_second_part(&input[..])
-    )
+    (solve_first_part(&input[..]), solve_second_part(&input[..]))
 }
-
 
 #[cfg(test)]
 mod find_start_of_message_marker {
@@ -155,7 +177,6 @@ mod find_start_of_message_marker {
 
     #[test]
     fn should_solve_second_part() {
-            assert_eq!(super::solve_second_part(EXAMPLE), 301);
+        assert_eq!(super::solve_second_part(EXAMPLE), 301);
     }
 }
-

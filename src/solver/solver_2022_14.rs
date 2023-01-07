@@ -1,26 +1,29 @@
-use std::cmp::{max, min};
 use super::utils;
+use std::cmp::{max, min};
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 enum Material {
     Sand,
     Rock,
-    Air
+    Air,
 }
 
-type Grid = [[Material;700];200];
+type Grid = [[Material; 700]; 200];
 
 fn get_grid(input: &str) -> Grid {
-    let mut result = [[Material::Air;700];200];
+    let mut result = [[Material::Air; 700]; 200];
     let paths = input.split("\n");
     for path in paths {
-        let edges: Vec<(usize, usize)> = path.split(" -> ")
+        let edges: Vec<(usize, usize)> = path
+            .split(" -> ")
             .map(|edge| {
-                let coordinates: Vec<usize> = edge.split(",").map(|val| val.parse().unwrap()).collect();
+                let coordinates: Vec<usize> =
+                    edge.split(",").map(|val| val.parse().unwrap()).collect();
                 (coordinates[0], coordinates[1])
-            }).collect();
+            })
+            .collect();
         for i in 1..edges.len() {
-            let first_edge = edges[i-1];
+            let first_edge = edges[i - 1];
             let second_edge = edges[i];
             if first_edge.0 == second_edge.0 {
                 let x = first_edge.0;
@@ -40,12 +43,12 @@ fn get_grid(input: &str) -> Grid {
 
 #[derive(Debug)]
 enum DropSandError {
-    DestinationVoid
+    DestinationVoid,
 }
 
 fn drop_sand(grid: &Grid) -> Result<(usize, usize), DropSandError> {
     let mut current_location = (500usize, 0usize);
-    while current_location.0 > 0 && current_location.0 < 699 && current_location.1 < 199  {
+    while current_location.0 > 0 && current_location.0 < 699 && current_location.1 < 199 {
         if grid[current_location.1 + 1][current_location.0] == Material::Air {
             current_location.1 += 1;
         } else if grid[current_location.1 + 1][current_location.0 - 1] == Material::Air {
@@ -71,8 +74,12 @@ fn solve_first_part(grid: &mut Grid) -> u32 {
 }
 
 fn solve_second_part(grid: &mut Grid) -> u32 {
-    let (max_y, _) = grid.iter().enumerate().rfind(|(_, row)| row.contains(&Material::Rock)).unwrap();
-    grid[max_y+2] = [Material::Rock; 700];
+    let (max_y, _) = grid
+        .iter()
+        .enumerate()
+        .rfind(|(_, row)| row.contains(&Material::Rock))
+        .unwrap();
+    grid[max_y + 2] = [Material::Rock; 700];
 
     let mut result = 0;
     loop {
@@ -93,32 +100,22 @@ pub fn solve() -> (u32, u32) {
     )
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    static EXAMPLE: &str =
-        "\
+    static EXAMPLE: &str = "\
         498,4 -> 498,6 -> 496,6\n\
-        503,4 -> 502,4 -> 502,9 -> 494,9"
-    ;
+        503,4 -> 502,4 -> 502,9 -> 494,9";
 
     #[test]
     fn should_solve_first_part_example() {
         let mut grid = get_grid(EXAMPLE);
-        assert_eq!(
-            solve_first_part(&mut grid),
-            24
-        );
+        assert_eq!(solve_first_part(&mut grid), 24);
     }
     #[test]
     fn should_solve_second_part_example() {
         let mut grid = get_grid(EXAMPLE);
-        assert_eq!(
-            solve_second_part(&mut grid),
-            93
-        );
+        assert_eq!(solve_second_part(&mut grid), 93);
     }
 }
-

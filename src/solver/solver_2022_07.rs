@@ -1,7 +1,7 @@
-use std::collections::{HashMap, HashSet};
-use pest::iterators::{Pair};
-use pest::Parser;
 use super::utils;
+use pest::iterators::Pair;
+use pest::Parser;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Parser)]
 #[grammar = "solver/solver_2022_07.pest"]
@@ -10,7 +10,7 @@ struct SantaParser;
 struct Folder {
     path: String,
     file_size: u32,
-    sub_folders: HashSet<String>
+    sub_folders: HashSet<String>,
 }
 
 impl Folder {
@@ -22,13 +22,11 @@ impl Folder {
         match size_map.get(&self.path) {
             Some(size) => Some(*size),
             None => {
-                let sub_folder_size: Option<u32> = self.sub_folders.iter().fold(
-                    Some(0),
-                    |acc, subfolder| {
-                        Some( acc? + size_map.get(subfolder)? )
-                    }
-                );
-                Some(sub_folder_size?+self.file_size)
+                let sub_folder_size: Option<u32> =
+                    self.sub_folders.iter().fold(Some(0), |acc, subfolder| {
+                        Some(acc? + size_map.get(subfolder)?)
+                    });
+                Some(sub_folder_size? + self.file_size)
             }
         }
     }
@@ -39,7 +37,7 @@ impl From<String> for Folder {
         Self {
             path,
             file_size: 0,
-            sub_folders: HashSet::new()
+            sub_folders: HashSet::new(),
         }
     }
 }
@@ -60,29 +58,42 @@ fn get_size_map(input: &str) -> HashMap<String, u32> {
             Rule::CDCommand => {
                 let path = statement.into_inner().peek().unwrap();
                 match path.as_rule() {
-                    Rule::RootFolder => { current_directory = vec![]; }
-                    Rule::ParentFolder => { current_directory.pop(); }
-                    Rule::FolderName => { current_directory.push(path.as_str().to_string()); }
-                    other => panic!("syntax error: cd command cannot have {:?}", other)
+                    Rule::RootFolder => {
+                        current_directory = vec![];
+                    }
+                    Rule::ParentFolder => {
+                        current_directory.pop();
+                    }
+                    Rule::FolderName => {
+                        current_directory.push(path.as_str().to_string());
+                    }
+                    other => panic!("syntax error: cd command cannot have {:?}", other),
                 }
                 let folder = Folder::from(&current_directory);
                 folder_map.entry(folder.path.clone()).or_insert(folder);
-            },
+            }
             Rule::LSCommand => {
                 let pairs: Vec<Pair<Rule>> = statement.into_inner().collect();
-                let mut sub_folders = HashSet::<String> ::new();
+                let mut sub_folders = HashSet::<String>::new();
                 let mut file_size = 0;
                 for pair in pairs {
                     match pair.as_rule() {
                         Rule::DirectoryInfo => {
-                            current_directory.push(pair.into_inner().peek().unwrap().as_str().to_string());
+                            current_directory
+                                .push(pair.into_inner().peek().unwrap().as_str().to_string());
                             sub_folders.insert(Folder::generate_path(&current_directory));
                             current_directory.pop();
                         }
                         Rule::FileInfo => {
-                            file_size += pair.into_inner().peek().unwrap().as_str().parse::<u32>().unwrap();
+                            file_size += pair
+                                .into_inner()
+                                .peek()
+                                .unwrap()
+                                .as_str()
+                                .parse::<u32>()
+                                .unwrap();
                         }
-                        other => panic!("syntax error: ls command cannot have {:?}", other)
+                        other => panic!("syntax error: ls command cannot have {:?}", other),
                     }
                 }
                 let path = Folder::generate_path(&current_directory);
@@ -90,8 +101,8 @@ fn get_size_map(input: &str) -> HashMap<String, u32> {
                     f.sub_folders = sub_folders;
                     f.file_size = file_size;
                 });
-            },
-            other => panic!("syntax error: statement cannot be {:?}", other)
+            }
+            other => panic!("syntax error: statement cannot be {:?}", other),
         }
     }
     let mut size_map: HashMap<String, u32> = HashMap::new();
@@ -101,22 +112,21 @@ fn get_size_map(input: &str) -> HashMap<String, u32> {
                 continue;
             }
             match folder.get_total_size(&size_map) {
-                Some(value) => { size_map.insert(folder.path.clone(), value); },
-                None => {
+                Some(value) => {
+                    size_map.insert(folder.path.clone(), value);
                 }
+                None => {}
             }
         }
-
     }
     size_map
 }
 
 fn solve_first_part(input: &str) -> u32 {
     let size_map = get_size_map(input);
-    size_map.values().fold(
-        0,
-        |sum, size| if *size < 100000 { sum + size } else { sum }
-    )
+    size_map
+        .values()
+        .fold(0, |sum, size| if *size < 100000 { sum + size } else { sum })
 }
 
 fn solve_second_part(input: &str) -> u32 {
@@ -127,21 +137,19 @@ fn solve_second_part(input: &str) -> u32 {
     let free_space = available_size - used_space;
     let needed_space = required_size - free_space;
 
-    size_map.values().fold(
-        *used_space,
-        |candidate, size| if *size > needed_space && *size < candidate  { *size } else { candidate }
-    )
-
+    size_map.values().fold(*used_space, |candidate, size| {
+        if *size > needed_space && *size < candidate {
+            *size
+        } else {
+            candidate
+        }
+    })
 }
 
 pub fn solve() -> (u32, u32) {
     let input = utils::get_input("inputs/2022_07.txt");
-    (
-        solve_first_part(&input[..]),
-        solve_second_part(&input[..])
-    )
+    (solve_first_part(&input[..]), solve_second_part(&input[..]))
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -156,4 +164,3 @@ mod tests {
         assert_eq!(super::solve_second_part(EXAMPLE), 24933642);
     }
 }
-

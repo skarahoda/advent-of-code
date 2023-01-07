@@ -2,9 +2,10 @@ use super::utils;
 
 fn get_forest() -> Vec<Vec<u32>> {
     let input = utils::get_input("inputs/2022_08.txt");
-    input.split('\n').map(
-        |row| row.chars().map(|tree| tree.to_digit(10).unwrap()).collect()
-    ).collect()
+    input
+        .split('\n')
+        .map(|row| row.chars().map(|tree| tree.to_digit(10).unwrap()).collect())
+        .collect()
 }
 
 fn solve_first_part(forest: &Vec<Vec<u32>>) -> usize {
@@ -20,9 +21,9 @@ fn solve_first_part(forest: &Vec<Vec<u32>>) -> usize {
                 visible_map[i][j] = true;
             }
         }
-        let mut max_height = forest[i][column_length-1];
-        visible_map[i][column_length-1] = true;
-        for j in (0..column_length-1).rev() {
+        let mut max_height = forest[i][column_length - 1];
+        visible_map[i][column_length - 1] = true;
+        for j in (0..column_length - 1).rev() {
             if forest[i][j] > max_height {
                 max_height = forest[i][j];
                 visible_map[i][j] = true;
@@ -39,24 +40,21 @@ fn solve_first_part(forest: &Vec<Vec<u32>>) -> usize {
                 visible_map[i][j] = true;
             }
         }
-        let mut max_height = forest[row_length-1][j];
-        visible_map[row_length-1][j] = true;
-        for i in (0..row_length-1).rev() {
+        let mut max_height = forest[row_length - 1][j];
+        visible_map[row_length - 1][j] = true;
+        for i in (0..row_length - 1).rev() {
             if forest[i][j] > max_height {
                 max_height = forest[i][j];
                 visible_map[i][j] = true;
             }
         }
     }
-    visible_map.iter().fold(
-        0,
-        |count, row| {
-            row.iter().fold(
-                count,
-                |count, is_visible| if *is_visible { count + 1 } else { count }
-            )
-        }
-    )
+    visible_map.iter().fold(0, |count, row| {
+        row.iter().fold(
+            count,
+            |count, is_visible| if *is_visible { count + 1 } else { count },
+        )
+    })
 }
 
 fn solve_second_part(forest: &Vec<Vec<u32>>) -> usize {
@@ -76,7 +74,7 @@ fn solve_second_part(forest: &Vec<Vec<u32>>) -> usize {
         }
         for j in (0..column_length - 1).rev() {
             let current_height = forest[i][j];
-            for k in j+1..column_length {
+            for k in j + 1..column_length {
                 let neighbour_height = forest[i][k];
                 if neighbour_height >= current_height || k == column_length - 1 {
                     scene_map[i][j][1] = k - j;
@@ -99,7 +97,7 @@ fn solve_second_part(forest: &Vec<Vec<u32>>) -> usize {
         }
         for i in (0..row_length - 1).rev() {
             let current_height = forest[i][j];
-            for k in i+1..row_length {
+            for k in i + 1..row_length {
                 let neighbour_height = forest[k][j];
                 if neighbour_height >= current_height || k == column_length - 1 {
                     scene_map[i][j][3] = k - i;
@@ -109,45 +107,40 @@ fn solve_second_part(forest: &Vec<Vec<u32>>) -> usize {
         }
     }
 
-    scene_map.iter().fold(
-        0,
-        |highest_score, row| {
-            row.iter().fold(
-                highest_score,
-                    |highest_score, item| {
-                        std::cmp::max(item[0]*item[1]*item[2]*item[3], highest_score)
-                    }
-            )
-        }
-    )
+    scene_map.iter().fold(0, |highest_score, row| {
+        row.iter().fold(highest_score, |highest_score, item| {
+            std::cmp::max(item[0] * item[1] * item[2] * item[3], highest_score)
+        })
+    })
 }
 
 pub fn solve() -> (usize, usize) {
     let forest = get_forest();
-    (
-        solve_first_part(&forest),
-        solve_second_part(&forest)
-    )
+    (solve_first_part(&forest), solve_second_part(&forest))
 }
-
 
 #[cfg(test)]
 mod tests {
-    static EXAMPLE: [[u32;5];5] = [
-        [ 3, 0, 3, 7, 3 ],
-        [ 2, 5, 5, 1, 2 ],
-        [ 6, 5, 3, 3, 2 ],
-        [ 3, 3, 5, 4, 9 ],
-        [ 3, 5, 3, 9, 0 ],
+    static EXAMPLE: [[u32; 5]; 5] = [
+        [3, 0, 3, 7, 3],
+        [2, 5, 5, 1, 2],
+        [6, 5, 3, 3, 2],
+        [3, 3, 5, 4, 9],
+        [3, 5, 3, 9, 0],
     ];
     #[test]
     fn should_solve_first_part_example() {
-        assert_eq!(super::solve_first_part(&EXAMPLE.iter().map(|row| row.to_vec()).collect()), 21);
+        assert_eq!(
+            super::solve_first_part(&EXAMPLE.iter().map(|row| row.to_vec()).collect()),
+            21
+        );
     }
 
     #[test]
     fn should_solve_second_part_example() {
-        assert_eq!(super::solve_second_part(&EXAMPLE.iter().map(|row| row.to_vec()).collect()), 8);
+        assert_eq!(
+            super::solve_second_part(&EXAMPLE.iter().map(|row| row.to_vec()).collect()),
+            8
+        );
     }
 }
-

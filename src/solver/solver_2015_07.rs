@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use pest::iterators::{Pair};
-use pest::Parser;
 use super::utils;
+use pest::iterators::Pair;
+use pest::Parser;
+use std::collections::HashMap;
 
 #[derive(Parser)]
 #[grammar = "solver/solver_2015_07.pest"]
@@ -11,7 +11,7 @@ type RuleMap<'a> = HashMap<&'a str, Vec<Pair<'a, Rule>>>;
 
 struct Analyzer<'a> {
     rule_map: RuleMap<'a>,
-    value_map: HashMap<&'a str, u16>
+    value_map: HashMap<&'a str, u16>,
 }
 
 impl<'a> Analyzer<'a> {
@@ -26,17 +26,15 @@ impl<'a> Analyzer<'a> {
         }
         Self {
             rule_map,
-            value_map: HashMap::new()
+            value_map: HashMap::new(),
         }
     }
 
     fn evaluate_expr(&'a self, pair: &'a Pair<Rule>) -> Option<u16> {
         match pair.as_rule() {
-            Rule::Ident => {
-                self.value_map.get(pair.as_str()).map(|v| *v)
-            },
+            Rule::Ident => self.value_map.get(pair.as_str()).map(|v| *v),
             Rule::Number => Some(pair.as_str().parse().ok()?),
-            other => panic!("syntax error: expr cannot be {:?}", other)
+            other => panic!("syntax error: expr cannot be {:?}", other),
         }
     }
 
@@ -51,25 +49,38 @@ impl<'a> Analyzer<'a> {
                     Some(!self.evaluate_expr(&pairs[1])?)
                 } else if pairs.len() == 3 {
                     match pairs[1].as_rule() {
-                        Rule::And => Some(self.evaluate_expr(&pairs[0])? & self.evaluate_expr(&pairs[2])?),
-                        Rule::Or => Some(self.evaluate_expr(&pairs[0])? | self.evaluate_expr(&pairs[2])?),
-                        Rule::LShift => Some(self.evaluate_expr(&pairs[0])? << self.evaluate_expr(&pairs[2])?),
-                        Rule::RShift => Some(self.evaluate_expr(&pairs[0])? >> self.evaluate_expr(&pairs[2])?),
-                        other=> panic!("syntax error: operation cannot be {:?}", other)
+                        Rule::And => {
+                            Some(self.evaluate_expr(&pairs[0])? & self.evaluate_expr(&pairs[2])?)
+                        }
+                        Rule::Or => {
+                            Some(self.evaluate_expr(&pairs[0])? | self.evaluate_expr(&pairs[2])?)
+                        }
+                        Rule::LShift => {
+                            Some(self.evaluate_expr(&pairs[0])? << self.evaluate_expr(&pairs[2])?)
+                        }
+                        Rule::RShift => {
+                            Some(self.evaluate_expr(&pairs[0])? >> self.evaluate_expr(&pairs[2])?)
+                        }
+                        other => panic!("syntax error: operation cannot be {:?}", other),
                     }
                 } else {
-                    panic!("syntax error: lhs cannot have more than three tokens. Found: {:?}", pairs)
+                    panic!(
+                        "syntax error: lhs cannot have more than three tokens. Found: {:?}",
+                        pairs
+                    )
                 };
                 result
             }
         }
     }
 
-    pub fn get_value(& mut self, variable: &'a str) -> u16 {
+    pub fn get_value(&mut self, variable: &'a str) -> u16 {
         loop {
             for key in self.rule_map.keys() {
                 match self.evaluate_ident(key) {
-                    Some(value) => { self.value_map.insert(key, value); },
+                    Some(value) => {
+                        self.value_map.insert(key, value);
+                    }
                     None => {}
                 };
             }
@@ -79,7 +90,7 @@ impl<'a> Analyzer<'a> {
         }
     }
 
-    pub fn override_value(& mut self, variable: &'a str, value: u16) {
+    pub fn override_value(&mut self, variable: &'a str, value: u16) {
         self.value_map.clear();
         self.value_map.insert(variable, value);
     }
@@ -101,10 +112,9 @@ pub fn solve() -> (u16, u16) {
     let input = utils::get_input("inputs/2015_07.txt");
     (
         solve_first_part(&input[..], "a"),
-        solve_second_part(&input[..])
+        solve_second_part(&input[..]),
     )
 }
-
 
 #[cfg(test)]
 mod find_start_of_message_marker {
@@ -142,4 +152,3 @@ mod find_start_of_message_marker {
         assert_eq!(super::solve_first_part(EXAMPLE, "g"), 114);
     }
 }
-

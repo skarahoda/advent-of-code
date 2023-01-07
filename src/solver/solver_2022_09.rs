@@ -1,12 +1,12 @@
-use std::cmp::Ordering;
 use super::utils;
+use std::cmp::Ordering;
 const BOARD_SIZE: usize = 1000;
 #[derive(Copy, Clone)]
 enum Direction {
     Up,
     Down,
     Right,
-    Left
+    Left,
 }
 
 struct Rope {
@@ -15,9 +15,9 @@ struct Rope {
 
 impl Rope {
     fn new(length: usize) -> Self {
-        let middle = (BOARD_SIZE /2) - 1;
+        let middle = (BOARD_SIZE / 2) - 1;
         Self {
-            knots: vec![(middle, middle);length],
+            knots: vec![(middle, middle); length],
         }
     }
 
@@ -31,43 +31,43 @@ impl Rope {
     }
 
     fn step_follower(&mut self, i: usize) {
-        if self.distance(i, i-1) < 2 {
+        if self.distance(i, i - 1) < 2 {
             return;
         }
-        let leader = self.knots[i-1];
+        let leader = self.knots[i - 1];
         let follower = self.knots[i];
         match (leader.0.cmp(&follower.0), leader.1.cmp(&follower.1)) {
             (Ordering::Less, Ordering::Less) => {
                 self.knots[i].0 -= 1;
                 self.knots[i].1 -= 1;
-            },
+            }
             (Ordering::Less, Ordering::Equal) => {
                 self.knots[i].0 -= 1;
-            },
+            }
             (Ordering::Less, Ordering::Greater) => {
                 self.knots[i].0 -= 1;
                 self.knots[i].1 += 1;
-            },
+            }
             (Ordering::Equal, Ordering::Less) => {
                 self.knots[i].1 -= 1;
-            },
+            }
             (Ordering::Equal, Ordering::Equal) => {
                 panic!("Invalid case");
-            },
+            }
             (Ordering::Equal, Ordering::Greater) => {
                 self.knots[i].1 += 1;
-            },
+            }
             (Ordering::Greater, Ordering::Less) => {
                 self.knots[i].0 += 1;
                 self.knots[i].1 -= 1;
-            },
+            }
             (Ordering::Greater, Ordering::Equal) => {
                 self.knots[i].0 += 1;
-            },
+            }
             (Ordering::Greater, Ordering::Greater) => {
                 self.knots[i].0 += 1;
                 self.knots[i].1 += 1;
-            },
+            }
         }
     }
 
@@ -115,8 +115,9 @@ impl Rope {
 
 fn get_steps() -> Vec<(Direction, usize)> {
     let input = utils::get_input("inputs/2022_09.txt");
-    input.split("\n").map(
-        |step| -> (Direction, usize) {
+    input
+        .split("\n")
+        .map(|step| -> (Direction, usize) {
             let parts: Vec<&str> = step.split(" ").collect();
             (
                 match parts[0] {
@@ -124,16 +125,16 @@ fn get_steps() -> Vec<(Direction, usize)> {
                     "D" => Direction::Down,
                     "L" => Direction::Left,
                     "R" => Direction::Right,
-                    other => panic!("Illegal argument: {}", other)
+                    other => panic!("Illegal argument: {}", other),
                 },
-                parts[1].parse().unwrap()
+                parts[1].parse().unwrap(),
             )
-        }
-    ).collect()
+        })
+        .collect()
 }
 
 fn solve_part(steps: &Vec<(Direction, usize)>, rope_length: usize) -> usize {
-    let mut visit_map = [[false;BOARD_SIZE];BOARD_SIZE];
+    let mut visit_map = [[false; BOARD_SIZE]; BOARD_SIZE];
     let mut rope = Rope::new(rope_length);
     let tail = rope.tail();
     visit_map[tail.0][tail.1] = true;
@@ -144,25 +145,18 @@ fn solve_part(steps: &Vec<(Direction, usize)>, rope_length: usize) -> usize {
             visit_map[tail.1][tail.0] = true;
         }
     }
-    visit_map.iter().fold(
-        0,
-        |count, row| {
-            row.iter().fold(
-                count,
-                |count, is_visited| if *is_visited { count + 1 } else { count }
-            )
-        }
-    )
+    visit_map.iter().fold(0, |count, row| {
+        row.iter().fold(
+            count,
+            |count, is_visited| if *is_visited { count + 1 } else { count },
+        )
+    })
 }
 
 pub fn solve() -> (usize, usize) {
     let steps = get_steps();
-    (
-        solve_part(&steps, 2),
-        solve_part(&steps, 10),
-    )
+    (solve_part(&steps, 2), solve_part(&steps, 10))
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -208,4 +202,3 @@ mod tests {
         );
     }
 }
-

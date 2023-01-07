@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use super::utils;
+use std::collections::HashSet;
 
 #[derive(Eq, Hash, PartialEq, Copy, Clone)]
 struct Location {
@@ -9,37 +9,34 @@ struct Location {
 
 impl Location {
     fn new() -> Self {
-        Self {
-            x: 0,
-            y: 0,
-        }
+        Self { x: 0, y: 0 }
     }
 
     fn to_east(&self) -> Self {
         Self {
             x: self.x + 1,
-            y: self.y
+            y: self.y,
         }
     }
 
     fn to_west(&self) -> Self {
         Self {
             x: self.x - 1,
-            y: self.y
+            y: self.y,
         }
     }
 
     fn to_north(&self) -> Self {
         Self {
             x: self.x,
-            y: self.y + 1
+            y: self.y + 1,
         }
     }
 
     fn to_south(&self) -> Self {
         Self {
             x: self.x,
-            y: self.y - 1
+            y: self.y - 1,
         }
     }
 
@@ -49,11 +46,10 @@ impl Location {
             '<' => self.to_west(),
             '^' => self.to_north(),
             'v' => self.to_south(),
-            other => panic!("Illegal argument: {}", other)
+            other => panic!("Illegal argument: {}", other),
         }
     }
 }
-
 
 fn solve_first_part(directions: &str) -> usize {
     let mut locations: HashSet<Location> = HashSet::new();
@@ -92,7 +88,7 @@ pub fn solve() -> (usize, usize) {
     let directions = utils::get_input("inputs/2015_03.txt");
     (
         solve_first_part(&directions[..]),
-        solve_second_part(&directions[..])
+        solve_second_part(&directions[..]),
     )
 }
 
@@ -131,4 +127,3 @@ mod second_part {
         assert_eq!(solve_second_part("^v^v^v^v^v"), 11);
     }
 }
-

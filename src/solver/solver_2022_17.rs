@@ -1,10 +1,10 @@
-use std::collections::{HashMap, HashSet};
 use super::utils;
+use std::collections::{HashMap, HashSet};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 enum Cell {
     Rock,
-    Air
+    Air,
 }
 
 impl From<Cell> for char {
@@ -18,14 +18,14 @@ impl From<Cell> for char {
 
 struct Chamber {
     height: usize,
-    cells: Vec<[Cell;7]>,
+    cells: Vec<[Cell; 7]>,
 }
 
 impl Chamber {
     fn new() -> Self {
         Self {
             height: 0,
-            cells: Vec::new()
+            cells: Vec::new(),
         }
     }
 
@@ -34,14 +34,11 @@ impl Chamber {
     }
 
     fn is_blocked(&self, coordinates: &Vec<(Option<usize>, Option<usize>)>) -> bool {
-        coordinates.iter().any(|&(x, y)| {
-            match (x, y) {
-                (None, _) => true,
-                (_, None) => true,
-                (Some(x), Some(y)) => {
-                    y < self.height && self.cells[self.get_reduced_height(y)][x] == Cell::Rock
-                }
-
+        coordinates.iter().any(|&(x, y)| match (x, y) {
+            (None, _) => true,
+            (_, None) => true,
+            (Some(x), Some(y)) => {
+                y < self.height && self.cells[self.get_reduced_height(y)][x] == Cell::Rock
             }
         })
     }
@@ -50,7 +47,7 @@ impl Chamber {
         for &(x, y) in coordinates {
             while y >= self.height {
                 self.height += 1;
-                self.cells.push([Cell::Air;7]);
+                self.cells.push([Cell::Air; 7]);
             }
             let reduced_height = self.get_reduced_height(y);
             self.cells[reduced_height][x] = Cell::Rock;
@@ -60,7 +57,13 @@ impl Chamber {
     fn get_surface(&self) -> Self {
         let mut result = Self::new();
         let mut rows = self.cells.iter().rev();
-        while result.cells.last().unwrap_or(&[Cell::Air;7]).iter().any(|&c| c != Cell::Rock) {
+        while result
+            .cells
+            .last()
+            .unwrap_or(&[Cell::Air; 7])
+            .iter()
+            .any(|&c| c != Cell::Rock)
+        {
             let mut new_row = [Cell::Rock; 7];
             let previous_row = result.cells.last().unwrap_or(&[Cell::Air; 7]);
             if let Some(row) = rows.next() {
@@ -94,18 +97,12 @@ impl Chamber {
 
 impl ToString for Chamber {
     fn to_string(&self) -> String {
-        self.cells.iter().fold(
-            String::new(),
-            |rest, row| {
-                let row: String = row.map(|cell| char::from(cell)).iter().collect();
-                row + "\n" + rest.as_str()
-
-            }
-        )
+        self.cells.iter().fold(String::new(), |rest, row| {
+            let row: String = row.map(|cell| char::from(cell)).iter().collect();
+            row + "\n" + rest.as_str()
+        })
     }
 }
-
-
 
 struct Rock {
     shape: usize,
@@ -151,7 +148,7 @@ impl Rock {
                 (self.x + 1, self.y),
                 (self.x + 1, self.y + 1),
             ], //square shape
-            other => panic!("Illegal argument: {}", other)
+            other => panic!("Illegal argument: {}", other),
         }
     }
 
@@ -173,7 +170,6 @@ impl Rock {
             if entry.is_none() || (entry.unwrap().is_some() && entry.unwrap().unwrap() <= x) {
                 map.insert(y, if x == 6 { None } else { Some(x + 1) });
             }
-
         }
         map.iter().map(|(&y, &x)| (x, Some(y))).collect()
     }
@@ -185,7 +181,6 @@ impl Rock {
             if entry.is_none() || (entry.unwrap().is_some() && entry.unwrap().unwrap() >= x) {
                 map.insert(y, if x == 0 { None } else { Some(x - 1) });
             }
-
         }
         map.iter().map(|(&y, &x)| (x, Some(y))).collect()
     }
@@ -222,7 +217,7 @@ impl Rock {
 #[derive(Debug, PartialEq)]
 enum Move {
     Left,
-    Right
+    Right,
 }
 
 impl From<char> for Move {
@@ -250,7 +245,9 @@ fn solve_puzzle(moves: &Vec<Move>, number_of_rocks: usize) -> usize {
         if !found_cycle {
             let move_index = move_count % moves.len();
             let surface = chamber.get_surface();
-            if let Some((previous_height, previous_rock_count)) = cycle_finder.get(&(rock_index, move_index, surface.to_string())) {
+            if let Some((previous_height, previous_rock_count)) =
+                cycle_finder.get(&(rock_index, move_index, surface.to_string()))
+            {
                 let cycle_rock_count = i - previous_rock_count;
                 let rest_rocks = number_of_rocks - previous_rock_count;
                 let cycle_height = chamber.height - previous_height;
@@ -259,11 +256,14 @@ fn solve_puzzle(moves: &Vec<Move>, number_of_rocks: usize) -> usize {
                 i = previous_rock_count + (cycle_count * cycle_rock_count);
                 found_cycle = true;
             } else {
-                cycle_finder.insert((rock_index, move_index, surface.to_string()), (chamber.height, i));
+                cycle_finder.insert(
+                    (rock_index, move_index, surface.to_string()),
+                    (chamber.height, i),
+                );
             }
         }
 
-        let mut rock = Rock::new(rock_index, 2, chamber.height + 3 );
+        let mut rock = Rock::new(rock_index, 2, chamber.height + 3);
         loop {
             match moves[move_count % moves.len()] {
                 Move::Left => {
@@ -291,7 +291,6 @@ fn solve_puzzle(moves: &Vec<Move>, number_of_rocks: usize) -> usize {
     chamber.height
 }
 
-
 fn solve_first_part(moves: &Vec<Move>) -> usize {
     solve_puzzle(moves, 2022)
 }
@@ -302,12 +301,8 @@ fn solve_second_part(moves: &Vec<Move>) -> usize {
 
 pub fn solve() -> (usize, usize) {
     let moves = get_moves(&utils::get_input("inputs/2022_17.txt"));
-    (
-        solve_first_part(&moves),
-        solve_second_part(&moves),
-    )
+    (solve_first_part(&moves), solve_second_part(&moves))
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -366,18 +361,11 @@ mod tests {
 
     #[test]
     fn should_solve_first_part() {
-        assert_eq!(
-            solve_first_part(&get_moves(EXAMPLE)),
-            3068
-        );
+        assert_eq!(solve_first_part(&get_moves(EXAMPLE)), 3068);
     }
 
     #[test]
     fn should_solve_second_part() {
-        assert_eq!(
-            solve_second_part(&get_moves(EXAMPLE)),
-            1514285714288
-        );
+        assert_eq!(solve_second_part(&get_moves(EXAMPLE)), 1514285714288);
     }
 }
-

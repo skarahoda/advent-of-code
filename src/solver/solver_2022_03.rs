@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use super::utils;
+use std::collections::HashSet;
 
 fn find_common_character(a: &str, b: &str) -> char {
     let mut map: HashSet<char> = HashSet::new();
@@ -34,28 +34,28 @@ fn find_common_character_in_three_strings(a: &str, b: &str, c: &str) -> char {
 }
 
 fn character_to_score(c: char) -> u32 {
-    let mut buffer =  [0; 1];
+    let mut buffer = [0; 1];
     c.encode_utf8(&mut buffer);
     match buffer[0] {
         65..=91 => Into::<u32>::into(buffer[0] - 64 + 26),
         97..=122 => Into::<u32>::into(buffer[0] - 96),
-        other => panic!("unknown number {}", other)
+        other => panic!("unknown number {}", other),
     }
 }
 
 fn solve_first_part(input: &str) -> u32 {
-    input.split("\n").map(
-        |row: &str| {
-            let (first, second) = row.split_at(row.len()/2);
+    input
+        .split("\n")
+        .map(|row: &str| {
+            let (first, second) = row.split_at(row.len() / 2);
             let common = find_common_character(first, second);
             character_to_score(common)
-        }
-    ).sum::<u32>()
+        })
+        .sum::<u32>()
 }
 
 fn solve_second_part(input: &str) -> u32 {
-    let rows:Vec<&str> = input.split("\n").collect();
-
+    let rows: Vec<&str> = input.split("\n").collect();
 
     let mut result: u32 = 0;
 
@@ -72,10 +72,7 @@ fn solve_second_part(input: &str) -> u32 {
 
 pub fn solve() -> (u32, u32) {
     let input = utils::get_input("inputs/2022_03.txt");
-    (
-        solve_first_part(&input[..]),
-        solve_second_part(&input[..])
-    )
+    (solve_first_part(&input[..]), solve_second_part(&input[..]))
 }
 
 #[cfg(test)]

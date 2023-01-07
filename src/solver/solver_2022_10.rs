@@ -1,5 +1,5 @@
-use regex::Regex;
 use super::utils;
+use regex::Regex;
 
 #[derive(Clone)]
 enum Operation {
@@ -11,14 +11,13 @@ fn get_operations() -> Vec<Operation> {
     let input = utils::get_input("inputs/2022_10.txt");
     let re = Regex::new(r"addx (-?\d+)").unwrap();
 
-    input.split("\n").map(|operation| {
-        match operation {
+    input
+        .split("\n")
+        .map(|operation| match operation {
             "noop" => Operation::NoOp,
-            other => {
-                Operation::Add(re.captures(other).unwrap()[1].parse().unwrap())
-            }
-        }
-    }).collect()
+            other => Operation::Add(re.captures(other).unwrap()[1].parse().unwrap()),
+        })
+        .collect()
 }
 
 fn solve_first_part(operations: &Vec<Operation>) -> i32 {
@@ -32,10 +31,10 @@ fn solve_first_part(operations: &Vec<Operation>) -> i32 {
                 match cycle_count % 40 {
                     20 => {
                         result += cycle_count * register;
-                    },
+                    }
                     _ => {}
                 }
-            },
+            }
             Operation::Add(value) => {
                 cycle_count += 2;
                 match cycle_count % 40 {
@@ -52,11 +51,11 @@ fn solve_first_part(operations: &Vec<Operation>) -> i32 {
 
 fn get_pixel(cycle_count: i32, register: i32) -> String {
     let cycle_count = cycle_count % 40;
-    let suffix = if cycle_count == 39 { "\n" } else { ""};
+    let suffix = if cycle_count == 39 { "\n" } else { "" };
     if cycle_count >= register && cycle_count <= register + 2 {
         "#".to_owned() + suffix
     } else {
-         ".".to_owned() + suffix
+        ".".to_owned() + suffix
     }
 }
 
@@ -68,11 +67,11 @@ fn solve_second_part(operations: &Vec<Operation>) -> String {
         match operation {
             Operation::NoOp => {
                 result += get_pixel(cycle_count, register).as_str();
-                cycle_count +=1;
-            },
+                cycle_count += 1;
+            }
             Operation::Add(value) => {
                 result += get_pixel(cycle_count, register).as_str();
-                cycle_count +=1 ;
+                cycle_count += 1;
 
                 result += get_pixel(cycle_count, register).as_str();
                 cycle_count += 1;
@@ -92,12 +91,11 @@ pub fn solve() -> (i32, String) {
     )
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::Operation;
 
-    static EXAMPLE: [Operation;146] =  [
+    static EXAMPLE: [Operation; 146] = [
         Operation::Add(15),
         Operation::Add(-11),
         Operation::Add(6),
@@ -255,7 +253,7 @@ mod tests {
     fn should_solve_second_part_example() {
         assert_eq!(
             super::solve_second_part(&EXAMPLE.to_vec()),
-                   "##..##..##..##..##..##..##..##..##..##..\n\
+            "##..##..##..##..##..##..##..##..##..##..\n\
                     ###...###...###...###...###...###...###.\n\
                     ####....####....####....####....####....\n\
                     #####.....#####.....#####.....#####.....\n\
@@ -264,4 +262,3 @@ mod tests {
         );
     }
 }
-
