@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::solver::utils;
+use super::utils;
 
 fn get_lists() -> (Vec<i32>, Vec<i32>) {
     let input = utils::get_input("inputs/2024_01.txt");
