@@ -4,12 +4,13 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "build": "napi build --platform --release --cargo-cwd ../../"
+    "build": "napi build --platform --release --cargo-cwd ../../",
+    "prepublishOnly": "napi prepublish -t npm --skip-gh-release"
   },
   "napi": {
     "name": "advent-code-napi",
     "triples": {
-      "defaults": true,
+      "defaults": false,
       "additional": [
         "aarch64-apple-darwin"
       ]

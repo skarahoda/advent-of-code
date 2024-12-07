@@ -1,0 +1,17 @@
+{
+  "name": "advent-code-napi-darwin-arm64",
+  "version": "1.0.0",
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "advent-code-napi.darwin-arm64.node",
+  "files": [
+    "advent-code-napi.darwin-arm64.node"
+  ],
+  "engines": {
+    "node": ">= 10"
+  }
+}
