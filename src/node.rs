@@ -6,7 +6,7 @@ use super::solver::{
     solver_2022_06, solver_2022_07, solver_2022_08, solver_2022_09, solver_2022_10, solver_2022_11,
     solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17,
     solver_2022_18, solver_2022_20, solver_2022_21, solver_2022_22, solver_2024_01, solver_2024_02,
-    solver_2024_03, solver_2024_04, solver_2024_05, solver_2024_06,
+    solver_2024_03, solver_2024_04, solver_2024_05, solver_2024_06, solver_2024_07,
 };
 
 #[napi(object)]
@@ -60,6 +60,7 @@ pub fn solve(year: u32, day: u32) -> Answers {
         (2024, 4) => Answers::from(solver_2024_04::solve()),
         (2024, 5) => Answers::from(solver_2024_05::solve()),
         (2024, 6) => Answers::from(solver_2024_06::solve()),
+        (2024, 7) => Answers::from(solver_2024_07::solve()),
         _ => Answers {
             first: "hello".to_string(),
             second: "bar".to_string(),

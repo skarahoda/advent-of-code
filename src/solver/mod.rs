@@ -32,3 +32,4 @@ pub mod solver_2024_03;
 pub mod solver_2024_04;
 pub mod solver_2024_05;
 pub mod solver_2024_06;
+pub mod solver_2024_07;
