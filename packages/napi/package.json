@@ -1,14 +1,14 @@
 {
-  "name": "advent-code-napi",
+  "name": "@skarahoda/advent-of-code-napi",
   "version": "1.0.0",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "build": "napi build --platform --release --cargo-cwd ../../",
-    "prepublishOnly": "napi prepublish -t npm --skip-gh-release"
+    "prepublishOnly": ""
   },
   "napi": {
-    "name": "advent-code-napi",
+    "name": "advent-of-code-napi",
     "triples": {
       "defaults": false,
       "additional": [
@@ -18,5 +18,8 @@
   },
   "dependencies": {
     "@napi-rs/cli": "^2.18.4"
+  },
+  "optionalDependencies": {
+    "@skarahoda/advent-of-code-napi-darwin-arm64": "1.0.0"
   }
 }

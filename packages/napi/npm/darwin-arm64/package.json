@@ -1,5 +1,5 @@
 {
-  "name": "advent-code-napi-darwin-arm64",
+  "name": "@skarahoda/advent-of-code-napi-darwin-arm64",
   "version": "1.0.0",
   "os": [
     "darwin"
@@ -7,9 +7,9 @@
   "cpu": [
     "arm64"
   ],
-  "main": "advent-code-napi.darwin-arm64.node",
+  "main": "advent-of-code-napi.darwin-arm64.node",
   "files": [
-    "advent-code-napi.darwin-arm64.node"
+    "advent-of-code-napi.darwin-arm64.node"
   ],
   "engines": {
     "node": ">= 10"
