@@ -1,0 +1,21 @@
+{
+  "name": "advent-code-napi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "napi build --platform --release --cargo-cwd ../../"
+  },
+  "napi": {
+    "name": "advent-code-napi",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "aarch64-apple-darwin"
+      ]
+    }
+  },
+  "dependencies": {
+    "@napi-rs/cli": "^2.18.4"
+  }
+}

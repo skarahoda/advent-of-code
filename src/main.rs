@@ -1,8 +1,5 @@
-#![feature(is_some_and)]
 extern crate core;
 extern crate pest;
-#[macro_use]
-extern crate pest_derive;
 
 use clap::{Parser, ValueEnum};
 use std::fmt::Display;

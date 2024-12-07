@@ -1,0 +1,14 @@
+{
+  "author": {
+    "name": "Sertaç Karahoda",
+    "email": "sertackarahoda@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github:skarahoda/advent-code.git"
+  },
+  "license": "MIT",
+  "workspaces": [
+    "packages/napi"
+  ]
+}

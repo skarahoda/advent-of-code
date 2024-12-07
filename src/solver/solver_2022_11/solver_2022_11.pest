@@ -1,0 +1,15 @@
+Program = { MonkeyInstruction ~ (NewLine ~ NewLine ~ MonkeyInstruction)* }
+MonkeyInstruction = {
+    "Monkey " ~ Number ~ ":" ~ NewLine ~
+    "  Starting items: " ~ ItemList ~ NewLine ~
+    "  Operation: new = " ~ ( Number | Old ) ~ " " ~ ( Multiply | Add ) ~ " " ~  ( Number | Old ) ~ NewLine ~
+    "  Test: divisible by " ~ Number ~ NewLine ~
+    "    If true: throw to monkey " ~ Number ~ NewLine ~
+    "    If false: throw to monkey " ~ Number
+}
+ItemList = { Number ~ ( ", " ~ Number)* }
+Number = { '0'..'9'+ }
+Old = { "old" }
+Multiply = { "*" }
+Add = { "+" }
+NewLine = _{ "\n" }

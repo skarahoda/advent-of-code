@@ -3,11 +3,22 @@ name = "advent-code"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
-clap = { version = "4.0.29", features = [ "derive" ] }
+clap = { version = "4.0.29", features = ["derive"] }
 md5 = "0.7.0"
+napi = "2.16.13"
+napi-derive = "2.16.13"
 pest = "2.5.1"
 pest_derive = "2.5.1"
 regex = "1.7.0"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[build-dependencies]
+napi-build = "2"
+
+[profile.release]
+lto = true
