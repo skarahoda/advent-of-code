@@ -2,6 +2,8 @@ mod input;
 
 use super::Solver;
 use input::INPUT;
+// use std::fs::File;
+// use std::io::Write;
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 enum Space {
@@ -44,6 +46,22 @@ impl Default for Solver202409 {
 }
 
 impl Solver202409 {
+    // fn to_string(&self) -> String {
+    //     self.disk
+    //         .iter()
+    //         .map(|space| match space {
+    //             Space::Empty => ".".to_string(),
+    //             Space::File(file) => format!("[{file}]"),
+    //         })
+    //         .collect()
+    // }
+    //
+    // fn write_to_file(&self, path: &str) -> std::io::Result<()> {
+    //     let mut file = File::create(path)?;
+    //     file.write_all(self.to_string().as_bytes())?;
+    //     Ok(())
+    // }
+
     fn remove_empty_spaces_at_end(&mut self) {
         while self.disk.last().unwrap() == &Space::Empty {
             self.disk.pop();
@@ -85,7 +103,7 @@ impl Solver202409 {
             if found_space >= size {
                 return Some(i);
             }
-            empty_space_index = self.get_first_empty_space_index(i + size);
+            empty_space_index = self.get_first_empty_space_index(i + found_space);
         }
         None
     }
