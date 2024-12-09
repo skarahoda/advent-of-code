@@ -126,14 +126,8 @@ impl Solver202409 {
             self.remove_empty_spaces_at_end();
         }
     }
-}
-
-impl Solver<usize, usize> for Solver202409 {
-    fn solve_first_part(&self) -> usize {
-        let mut cloned_self = self.clone();
-        cloned_self.defragmentation();
-        cloned_self
-            .disk
+    fn checksum(&self) -> usize {
+        self.disk
             .iter()
             .enumerate()
             .fold(0, |acc, (i, space)| match space {
@@ -141,17 +135,18 @@ impl Solver<usize, usize> for Solver202409 {
                 Space::File(file) => acc + (i * file),
             })
     }
+}
+
+impl Solver<usize, usize> for Solver202409 {
+    fn solve_first_part(&self) -> usize {
+        let mut cloned_self = self.clone();
+        cloned_self.defragmentation();
+        cloned_self.checksum()
+    }
     fn solve_second_part(&self) -> usize {
         let mut cloned_self = self.clone();
         cloned_self.defragmentation_with_moving_whole_files();
-        cloned_self
-            .disk
-            .iter()
-            .enumerate()
-            .fold(0, |acc, (i, space)| match space {
-                Space::Empty => acc,
-                Space::File(file) => acc + (i * file),
-            })
+        cloned_self.checksum()
     }
 }
 
@@ -173,4 +168,3 @@ mod tests {
         assert_eq!(Solver202409::from(SECOND_EXAMPLE).solve_second_part(), 2910);
     }
 }
-// "00...111...2...333.44.5555.6666.777.888899"
