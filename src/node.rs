@@ -1,7 +1,14 @@
-use std::fmt::Display;
+use super::solver::{
+    solver_2015_01, solver_2015_02, solver_2015_03, solver_2015_04, solver_2015_05, solver_2015_06,
+    solver_2015_07, solver_2022_01, solver_2022_02, solver_2022_03, solver_2022_04, solver_2022_05,
+    solver_2022_06, solver_2022_07, solver_2022_08, solver_2022_09, solver_2022_10, solver_2022_11,
+    solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17,
+    solver_2022_18, solver_2022_20, solver_2022_21, solver_2022_22, solver_2024_01, solver_2024_02,
+    solver_2024_03, solver_2024_04, solver_2024_05, solver_2024_07, Solver, Solver202406,
+    Solver202408,
+};
 use napi_derive::napi;
-use crate::solver::solver_2024_06::Solver202406;
-use super::solver::{solver_2015_01, solver_2015_02, solver_2015_03, solver_2015_04, solver_2015_05, solver_2015_06, solver_2015_07, solver_2022_01, solver_2022_02, solver_2022_03, solver_2022_04, solver_2022_05, solver_2022_06, solver_2022_07, solver_2022_08, solver_2022_09, solver_2022_10, solver_2022_11, solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17, solver_2022_18, solver_2022_20, solver_2022_21, solver_2022_22, solver_2024_01, solver_2024_02, solver_2024_03, solver_2024_04, solver_2024_05, solver_2024_07, solver_2024_08, Solver};
+use std::fmt::Display;
 
 #[napi(object)]
 pub struct Answers {
@@ -9,7 +16,7 @@ pub struct Answers {
     pub second: String,
 }
 
-impl <T1: Display, T2: Display> From<(T1, T2)> for Answers {
+impl<T1: Display, T2: Display> From<(T1, T2)> for Answers {
     fn from((first, second): (T1, T2)) -> Self {
         Self {
             first: format!("{first}"),
@@ -18,14 +25,13 @@ impl <T1: Display, T2: Display> From<(T1, T2)> for Answers {
     }
 }
 
-impl <T1: Display, T2: Display>From<Box<dyn Solver<T1, T2>>> for Answers {
+impl<T1: Display, T2: Display> From<Box<dyn Solver<T1, T2>>> for Answers {
     fn from(solver: Box<dyn Solver<T1, T2>>) -> Self {
         Self {
             first: format!("{}", solver.solve_first_part()),
             second: format!("{}", solver.solve_second_part()),
         }
     }
-
 }
 #[napi]
 pub fn solve(year: u32, day: u32) -> Answers {
@@ -65,7 +71,7 @@ pub fn solve(year: u32, day: u32) -> Answers {
         (2024, 5) => Answers::from(solver_2024_05::solve()),
         (2024, 6) => Answers::from(Box::new(Solver202406::default()) as Box<dyn Solver<_, _>>),
         (2024, 7) => Answers::from(solver_2024_07::solve()),
-        (2024, 8) => Answers::from(solver_2024_08::solve()),
+        (2024, 8) => Answers::from(Box::new(Solver202408::default()) as Box<dyn Solver<_, _>>),
         _ => Answers {
             first: "hello".to_string(),
             second: "bar".to_string(),
