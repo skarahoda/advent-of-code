@@ -93,13 +93,15 @@ fn print_answers<T1: Display, T2: Display>((first_answer, second_answer): (T1, T
 }
 
 fn solve(solver: Box<dyn Solver<usize, usize>>) {
-    let mut sp = Spinner::new(Spinners::Material, "Solving the first part...".to_string());
+    let mut sp = Spinner::new(Spinners::Dots, "Solving the first part...".to_string());
     let first_answer = solver.solve_first_part();
     sp.stop_with_symbol("✅");
+    println!("");
     println!("Answer for the first part:");
     println!("--------------------------");
     println!("{}", first_answer);
-    let mut sp = Spinner::new(Spinners::Material, "Solving the second part...".to_string());
+    println!("");
+    let mut sp = Spinner::new(Spinners::Dots, "Solving the second part...".to_string());
     let second_answer = solver.solve_second_part();
     sp.stop_with_symbol("✅");
     println!("");
