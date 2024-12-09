@@ -37,5 +37,7 @@ mod solver_2024_07;
 pub use solver_2024_07::Solver202407;
 mod solver_2024_08;
 pub use solver_2024_08::Solver202408;
+mod solver_2024_09;
+pub use solver_2024_09::Solver202409;
 mod solver;
 pub use solver::Solver;
