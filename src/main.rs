@@ -12,7 +12,7 @@ use solver::{
     solver_2022_06, solver_2022_07, solver_2022_08, solver_2022_09, solver_2022_10, solver_2022_11,
     solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17,
     solver_2022_18, solver_2022_20, solver_2022_21, solver_2022_22, solver_2024_01, solver_2024_02,
-    solver_2024_03, solver_2024_04, solver_2024_05, solver_2024_07, Solver, Solver202406,
+    solver_2024_03, solver_2024_04, solver_2024_05, Solver, Solver202406, Solver202407,
     Solver202408,
 };
 
@@ -92,7 +92,7 @@ fn print_answers<T1: Display, T2: Display>((first_answer, second_answer): (T1, T
     println!("{}", second_answer);
 }
 
-fn solve(solver: Box<dyn Solver<usize, usize>>) {
+fn solve<T1: Display, T2: Display>(solver: Box<dyn Solver<T1, T2>>) {
     let mut sp = Spinner::new(Spinners::Dots, "Solving the first part...".to_string());
     let first_answer = solver.solve_first_part();
     sp.stop_with_symbol("✅");
@@ -147,7 +147,7 @@ fn main() {
         (Year::Year2024, Day::Day4) => print_answers(solver_2024_04::solve()),
         (Year::Year2024, Day::Day5) => print_answers(solver_2024_05::solve()),
         (Year::Year2024, Day::Day6) => solve(Box::new(Solver202406::default())),
-        (Year::Year2024, Day::Day7) => print_answers(solver_2024_07::solve()),
+        (Year::Year2024, Day::Day7) => solve(Box::new(Solver202407::default())),
         (Year::Year2024, Day::Day8) => solve(Box::new(Solver202408::default())),
         _ => panic!("Puzzle is not solved yet!"),
     }

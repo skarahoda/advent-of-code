@@ -1,16 +1,23 @@
 mod input;
 
-use regex::Regex;
+use crate::solver::Solver;
 use input::INPUT;
+use regex::Regex;
 
 fn parse_inputs(input: &str) -> Vec<(u64, Vec<u64>)> {
-    input.lines().map(|line| {
-        let splits = line.split(": ").collect::<Vec<&str>>();
-        (
-            splits[0].parse().unwrap(),
-            splits[1].split_whitespace().map(|s| s.parse().unwrap()).collect()
+    input
+        .lines()
+        .map(|line| {
+            let splits = line.split(": ").collect::<Vec<&str>>();
+            (
+                splits[0].parse().unwrap(),
+                splits[1]
+                    .split_whitespace()
+                    .map(|s| s.parse().unwrap())
+                    .collect(),
             )
-    }).collect()
+        })
+        .collect()
 }
 
 fn is_valid_equation(left: u64, right: &Vec<u64>, concat_operator: bool) -> bool {
@@ -19,7 +26,7 @@ fn is_valid_equation(left: u64, right: &Vec<u64>, concat_operator: bool) -> bool
     if right.len() == 0 {
         return left == last;
     }
-    let is_sum =  left > last && is_valid_equation(left - last, &right, concat_operator);
+    let is_sum = left > last && is_valid_equation(left - last, &right, concat_operator);
     if is_sum {
         return true;
     }
@@ -35,35 +42,52 @@ fn is_valid_equation(left: u64, right: &Vec<u64>, concat_operator: bool) -> bool
     let left = left.to_string();
     let captures = re.captures(&left);
     captures.is_some_and(|captures| {
-        is_valid_equation(captures.get(1).unwrap().as_str().parse().unwrap(), &right, concat_operator)
+        is_valid_equation(
+            captures.get(1).unwrap().as_str().parse().unwrap(),
+            &right,
+            concat_operator,
+        )
     })
 }
 
-
-fn solve_first_part(equations: &Vec<(u64, Vec<u64>)>) -> u64 {
-    equations.iter().filter(|(left, right)| is_valid_equation(*left, right, false)).fold(0, |acc, equation| {
-        acc + equation.0
-    })
+pub struct Solver202407 {
+    equations: Vec<(u64, Vec<u64>)>,
 }
 
-
-fn solve_second_part(equations: &Vec<(u64, Vec<u64>)>) -> u64 {
-
-    equations.iter().filter(|(left, right)| is_valid_equation(*left, right, true)).fold(0, |acc, equation| {
-        acc + equation.0
-    })
+impl From<&str> for Solver202407 {
+    fn from(value: &str) -> Self {
+        Self {
+            equations: parse_inputs(value),
+        }
+    }
 }
 
-pub fn solve() -> (u64, u64) {
-    let equations = parse_inputs(INPUT);
-    (
-        solve_first_part(&equations),
-        solve_second_part(&equations),
-    )
+impl Default for Solver202407 {
+    fn default() -> Self {
+        INPUT.into()
+    }
+}
+
+impl Solver<u64, u64> for Solver202407 {
+    fn solve_first_part(&self) -> u64 {
+        self.equations
+            .iter()
+            .filter(|(left, right)| is_valid_equation(*left, right, false))
+            .fold(0, |acc, equation| acc + equation.0)
+    }
+
+    fn solve_second_part(&self) -> u64 {
+        self.equations
+            .iter()
+            .filter(|(left, right)| is_valid_equation(*left, right, true))
+            .fold(0, |acc, equation| acc + equation.0)
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     static EXAMPLE: &str = r"190: 10 19
 3267: 81 40 27
 83: 17 5
@@ -116,19 +140,11 @@ mod tests {
     }
     #[test]
     fn solve_first_part() {
-        let equations = super::parse_inputs(EXAMPLE);
-        assert_eq!(
-            super::solve_first_part(&equations),
-            3749
-        );
+        assert_eq!(Solver202407::from(EXAMPLE).solve_first_part(), 3749);
     }
 
     #[test]
     fn solve_second_part() {
-        let equations = super::parse_inputs(EXAMPLE);
-        assert_eq!(
-            super::solve_second_part(&equations),
-            11387
-        );
+        assert_eq!(Solver202407::from(EXAMPLE).solve_second_part(), 11387);
     }
 }
