@@ -2,7 +2,9 @@ extern crate core;
 extern crate pest;
 
 use clap::{Parser, ValueEnum};
+use spinners::{Spinner, Spinners};
 use std::fmt::Display;
+
 mod solver;
 use solver::{
     solver_2015_01, solver_2015_02, solver_2015_03, solver_2015_04, solver_2015_05, solver_2015_06,
@@ -10,7 +12,8 @@ use solver::{
     solver_2022_06, solver_2022_07, solver_2022_08, solver_2022_09, solver_2022_10, solver_2022_11,
     solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17,
     solver_2022_18, solver_2022_20, solver_2022_21, solver_2022_22, solver_2024_01, solver_2024_02,
-    solver_2024_03, solver_2024_04, solver_2024_05, solver_2024_06, solver_2024_07, solver_2024_08,
+    solver_2024_03, solver_2024_04, solver_2024_05, solver_2024_07, solver_2024_08, Solver,
+    Solver202406,
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -89,6 +92,22 @@ fn print_answers<T1: Display, T2: Display>((first_answer, second_answer): (T1, T
     println!("{}", second_answer);
 }
 
+fn solve(solver: Box<dyn Solver<usize, usize>>) {
+    let mut sp = Spinner::new(Spinners::Material, "Solving the first part...".to_string());
+    let first_answer = solver.solve_first_part();
+    sp.stop_with_symbol("✅");
+    println!("Answer for the first part:");
+    println!("--------------------------");
+    println!("{}", first_answer);
+    let mut sp = Spinner::new(Spinners::Material, "Solving the second part...".to_string());
+    let second_answer = solver.solve_second_part();
+    sp.stop_with_symbol("✅");
+    println!("");
+    println!("Answer for the second part:");
+    println!("---------------------------");
+    println!("{}", second_answer);
+}
+
 fn main() {
     let args = Cli::parse();
     match (args.year, args.day) {
@@ -125,7 +144,7 @@ fn main() {
         (Year::Year2024, Day::Day3) => print_answers(solver_2024_03::solve()),
         (Year::Year2024, Day::Day4) => print_answers(solver_2024_04::solve()),
         (Year::Year2024, Day::Day5) => print_answers(solver_2024_05::solve()),
-        (Year::Year2024, Day::Day6) => print_answers(solver_2024_06::solve()),
+        (Year::Year2024, Day::Day6) => solve(Box::new(Solver202406::default())),
         (Year::Year2024, Day::Day7) => print_answers(solver_2024_07::solve()),
         (Year::Year2024, Day::Day8) => print_answers(solver_2024_08::solve()),
         _ => panic!("Puzzle is not solved yet!"),
