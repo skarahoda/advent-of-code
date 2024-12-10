@@ -30,6 +30,7 @@ pub mod solver_2024_01;
 pub mod solver_2024_02;
 pub mod solver_2024_03;
 pub mod solver_2024_04;
+pub use solver_2024_04::Solver202404;
 mod solver_2024_05;
 pub use solver_2024_05::Solver202405;
 mod solver_2024_06;
