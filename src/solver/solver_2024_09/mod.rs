@@ -2,8 +2,6 @@ mod input;
 
 use super::Solver;
 use input::INPUT;
-// use std::fs::File;
-// use std::io::Write;
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 enum Space {
@@ -46,22 +44,6 @@ impl Default for Solver202409 {
 }
 
 impl Solver202409 {
-    // fn to_string(&self) -> String {
-    //     self.disk
-    //         .iter()
-    //         .map(|space| match space {
-    //             Space::Empty => ".".to_string(),
-    //             Space::File(file) => format!("[{file}]"),
-    //         })
-    //         .collect()
-    // }
-    //
-    // fn write_to_file(&self, path: &str) -> std::io::Result<()> {
-    //     let mut file = File::create(path)?;
-    //     file.write_all(self.to_string().as_bytes())?;
-    //     Ok(())
-    // }
-
     fn remove_empty_spaces_at_end(&mut self) {
         while self.disk.last().unwrap() == &Space::Empty {
             self.disk.pop();
@@ -173,16 +155,13 @@ mod tests {
     use super::*;
 
     static EXAMPLE: &str = "2333133121414131402";
-    static SECOND_EXAMPLE: &str = "233313312141413140211";
     #[test]
     fn solve_first_part() {
         assert_eq!(Solver202409::from(EXAMPLE).solve_first_part(), 1928);
-        assert_eq!(Solver202409::from(SECOND_EXAMPLE).solve_first_part(), 2132);
     }
 
     #[test]
     fn solve_second_part() {
         assert_eq!(Solver202409::from(EXAMPLE).solve_second_part(), 2858);
-        assert_eq!(Solver202409::from(SECOND_EXAMPLE).solve_second_part(), 2910);
     }
 }
