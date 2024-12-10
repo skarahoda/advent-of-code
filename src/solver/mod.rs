@@ -40,4 +40,7 @@ pub use solver_2024_08::Solver202408;
 mod solver_2024_09;
 pub use solver_2024_09::Solver202409;
 mod solver;
+mod solver_2024_10;
+pub use solver_2024_10::Solver202410;
+
 pub use solver::Solver;
