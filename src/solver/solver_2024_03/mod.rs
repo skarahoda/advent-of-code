@@ -1,28 +1,33 @@
 use super::Solver;
+use std::borrow::Cow;
 mod input;
 use input::INPUT;
 use regex::Regex;
 
 pub struct Solver202403<'a> {
-    input: &'a str,
+    input: Cow<'a, str>,
 }
 
 impl Default for Solver202403<'static> {
     fn default() -> Self {
-        Self { input: INPUT }
+        Self {
+            input: Cow::Borrowed(INPUT)
+        }
     }
 }
 
 impl<'a> From<&'a str> for Solver202403<'a> {
     fn from(input: &'a str) -> Self {
-        Self { input }
+        Self {
+            input: Cow::Borrowed(input)
+        }
     }
 }
 
 impl<'a> Solver<i32, i32> for Solver202403<'a> {
     fn solve_first_part(&self) -> i32 {
         let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
-        re.captures_iter(self.input)
+        re.captures_iter(&self.input)
             .map(|captures| {
                 let a: i32 = captures[1].parse().unwrap();
                 let b: i32 = captures[2].parse().unwrap();
