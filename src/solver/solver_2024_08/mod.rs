@@ -3,24 +3,24 @@ mod input;
 use super::Solver;
 use input::INPUT;
 
-pub struct Solver202408 {
+pub struct Solver2024_08 {
     map: Vec<Vec<char>>,
 }
 
-impl From<&str> for Solver202408 {
+impl From<&str> for Solver2024_08 {
     fn from(value: &str) -> Self {
         Self {
             map: value.lines().map(|line| line.chars().collect()).collect(),
         }
     }
 }
-impl Default for Solver202408 {
+impl Default for Solver2024_08 {
     fn default() -> Self {
         INPUT.into()
     }
 }
 
-impl Solver202408 {
+impl Solver2024_08 {
     fn get_antennas(&self) -> HashMap<char, HashSet<(usize, usize)>> {
         let mut result = HashMap::new();
         for (y, line) in self.map.iter().enumerate() {
@@ -59,7 +59,7 @@ impl Solver202408 {
     }
 }
 
-impl Solver<usize, usize> for Solver202408 {
+impl Solver<usize, usize> for Solver2024_08 {
     fn solve_first_part(&self) -> usize {
         let antennas = self.get_antennas();
         let mut anti_nodes = HashSet::new();
@@ -127,11 +127,11 @@ mod tests {
 ............";
     #[test]
     fn solve_first_part() {
-        assert_eq!(Solver202408::from(EXAMPLE).solve_first_part(), 14);
+        assert_eq!(Solver2024_08::from(EXAMPLE).solve_first_part(), 14);
     }
 
     #[test]
     fn solve_second_part() {
-        assert_eq!(Solver202408::from(EXAMPLE).solve_second_part(), 34);
+        assert_eq!(Solver2024_08::from(EXAMPLE).solve_second_part(), 34);
     }
 }

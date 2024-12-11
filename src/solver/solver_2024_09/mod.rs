@@ -57,13 +57,13 @@ fn get_files_and_empty_spaces(input: &str) -> (Vec<File>, HashMap<usize, Vec<usi
 }
 
 #[derive(Clone)]
-pub struct Solver202409 {
+pub struct Solver2024_09 {
     disk: Vec<Space>,
     empty_spaces: HashMap<usize, Vec<usize>>,
     files: Vec<File>,
 }
 
-impl From<&str> for Solver202409 {
+impl From<&str> for Solver2024_09 {
     fn from(value: &str) -> Self {
         let (files, empty_spaces) = get_files_and_empty_spaces(value);
         Self {
@@ -73,13 +73,13 @@ impl From<&str> for Solver202409 {
         }
     }
 }
-impl Default for Solver202409 {
+impl Default for Solver2024_09 {
     fn default() -> Self {
         INPUT.into()
     }
 }
 
-impl Solver202409 {
+impl Solver2024_09 {
     fn remove_empty_spaces_at_end(&mut self) {
         while self.disk.last().unwrap() == &Space::Empty {
             self.disk.pop();
@@ -163,7 +163,7 @@ impl Solver202409 {
     }
 }
 
-impl Solver<usize, usize> for Solver202409 {
+impl Solver<usize, usize> for Solver2024_09 {
     fn solve_first_part(&self) -> usize {
         let mut cloned_self = self.clone();
         cloned_self.defragmentation();
@@ -183,11 +183,11 @@ mod tests {
     static EXAMPLE: &str = "2333133121414131402";
     #[test]
     fn solve_first_part() {
-        assert_eq!(Solver202409::from(EXAMPLE).solve_first_part(), 1928);
+        assert_eq!(Solver2024_09::from(EXAMPLE).solve_first_part(), 1928);
     }
 
     #[test]
     fn solve_second_part() {
-        assert_eq!(Solver202409::from(EXAMPLE).solve_second_part(), 2858);
+        assert_eq!(Solver2024_09::from(EXAMPLE).solve_second_part(), 2858);
     }
 }

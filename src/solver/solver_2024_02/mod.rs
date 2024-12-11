@@ -50,17 +50,17 @@ fn is_safe_list_with_a_removed_level(list: &[i32]) -> bool {
     true
 }
 
-pub struct Solver202402 {
+pub struct Solver2024_02 {
     lists: Vec<Vec<i32>>,
 }
 
-impl Default for Solver202402 {
+impl Default for Solver2024_02 {
     fn default() -> Self {
         Self::from(INPUT)
     }
 }
 
-impl From<&str> for Solver202402 {
+impl From<&str> for Solver2024_02 {
     fn from(input: &str) -> Self {
         let lists = input
             .lines()
@@ -74,7 +74,7 @@ impl From<&str> for Solver202402 {
     }
 }
 
-impl Solver<i32, i32> for Solver202402 {
+impl Solver<i32, i32> for Solver2024_02 {
     fn solve_first_part(&self) -> i32 {
         self.lists.iter().filter(|list| is_safe_list(list)).count() as i32
     }
@@ -125,13 +125,13 @@ mod tests {
 
     #[test]
     fn solve_first_part() {
-        let solver = Solver202402::from(EXAMPLE);
+        let solver = Solver2024_02::from(EXAMPLE);
         assert_eq!(solver.solve_first_part(), 2);
     }
 
     #[test]
     fn solve_second_part() {
-        let solver = Solver202402::from(EXAMPLE);
+        let solver = Solver2024_02::from(EXAMPLE);
         assert_eq!(solver.solve_second_part(), 4);
     }
 }

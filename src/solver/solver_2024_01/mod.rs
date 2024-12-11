@@ -3,18 +3,18 @@ use std::collections::HashMap;
 mod input;
 use input::INPUT;
 
-pub struct Solver202401 {
+pub struct Solver2024_01 {
     left_list: Vec<i32>,
     right_list: Vec<i32>,
 }
 
-impl Default for Solver202401 {
+impl Default for Solver2024_01 {
     fn default() -> Self {
         Self::from(INPUT)
     }
 }
 
-impl From<&str> for Solver202401 {
+impl From<&str> for Solver2024_01 {
     fn from(input: &str) -> Self {
         let mut left_list = Vec::new();
         let mut right_list = Vec::new();
@@ -34,7 +34,7 @@ impl From<&str> for Solver202401 {
     }
 }
 
-impl Solver<i32, i32> for Solver202401 {
+impl Solver<i32, i32> for Solver2024_01 {
     fn solve_first_part(&self) -> i32 {
         let mut left_list = self.left_list.clone();
         left_list.sort();
@@ -73,13 +73,13 @@ mod tests {
 
     #[test]
     fn solve_first_part() {
-        let solver = Solver202401::from(EXAMPLE);
+        let solver = Solver2024_01::from(EXAMPLE);
         assert_eq!(solver.solve_first_part(), 11);
     }
 
     #[test]
     fn solve_second_part() {
-        let solver = Solver202401::from(EXAMPLE);
+        let solver = Solver2024_01::from(EXAMPLE);
         assert_eq!(solver.solve_second_part(), 31);
     }
 }

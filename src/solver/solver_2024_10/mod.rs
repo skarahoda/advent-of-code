@@ -3,11 +3,11 @@ mod input;
 use super::Solver;
 use input::INPUT;
 
-pub struct Solver202410 {
+pub struct Solver2024_10 {
     map: Vec<Vec<u8>>,
 }
 
-impl From<&str> for Solver202410 {
+impl From<&str> for Solver2024_10 {
     fn from(value: &str) -> Self {
         Self {
             map: value
@@ -21,13 +21,13 @@ impl From<&str> for Solver202410 {
         }
     }
 }
-impl Default for Solver202410 {
+impl Default for Solver2024_10 {
     fn default() -> Self {
         INPUT.into()
     }
 }
 
-impl Solver202410 {
+impl Solver2024_10 {
     fn find_trail_destinations(
         &self,
         (x, y): (usize, usize),
@@ -80,7 +80,7 @@ impl Solver202410 {
     }
 }
 
-impl Solver<usize, usize> for Solver202410 {
+impl Solver<usize, usize> for Solver2024_10 {
     fn solve_first_part(&self) -> usize {
         let mut result = 0;
         for y in 0..self.map.len() {
@@ -118,11 +118,11 @@ mod tests {
 10456732";
     #[test]
     fn solve_first_part() {
-        assert_eq!(Solver202410::from(EXAMPLE).solve_first_part(), 36);
+        assert_eq!(Solver2024_10::from(EXAMPLE).solve_first_part(), 36);
     }
 
     #[test]
     fn solve_second_part() {
-        assert_eq!(Solver202410::from(EXAMPLE).solve_second_part(), 81);
+        assert_eq!(Solver2024_10::from(EXAMPLE).solve_second_part(), 81);
     }
 }

@@ -50,11 +50,11 @@ fn is_valid_equation(left: u64, right: &Vec<u64>, concat_operator: bool) -> bool
     })
 }
 
-pub struct Solver202407 {
+pub struct Solver2024_07 {
     equations: Vec<(u64, Vec<u64>)>,
 }
 
-impl From<&str> for Solver202407 {
+impl From<&str> for Solver2024_07 {
     fn from(value: &str) -> Self {
         Self {
             equations: parse_inputs(value),
@@ -62,13 +62,13 @@ impl From<&str> for Solver202407 {
     }
 }
 
-impl Default for Solver202407 {
+impl Default for Solver2024_07 {
     fn default() -> Self {
         INPUT.into()
     }
 }
 
-impl Solver<u64, u64> for Solver202407 {
+impl Solver<u64, u64> for Solver2024_07 {
     fn solve_first_part(&self) -> u64 {
         self.equations
             .iter()
@@ -142,11 +142,11 @@ mod tests {
     }
     #[test]
     fn solve_first_part() {
-        assert_eq!(Solver202407::from(EXAMPLE).solve_first_part(), 3749);
+        assert_eq!(Solver2024_07::from(EXAMPLE).solve_first_part(), 3749);
     }
 
     #[test]
     fn solve_second_part() {
-        assert_eq!(Solver202407::from(EXAMPLE).solve_second_part(), 11387);
+        assert_eq!(Solver2024_07::from(EXAMPLE).solve_second_part(), 11387);
     }
 }

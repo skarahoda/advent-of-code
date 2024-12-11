@@ -2,11 +2,11 @@ use super::Solver;
 mod input;
 use input::INPUT;
 
-pub struct Solver202404 {
+pub struct Solver2024_04 {
     matrix: Vec<Vec<char>>,
 }
 
-impl From<&str> for Solver202404 {
+impl From<&str> for Solver2024_04 {
     fn from(input: &str) -> Self {
         Self {
             matrix: input
@@ -17,7 +17,7 @@ impl From<&str> for Solver202404 {
     }
 }
 
-impl Default for Solver202404 {
+impl Default for Solver2024_04 {
     fn default() -> Self {
         INPUT.into()
     }
@@ -63,7 +63,7 @@ impl Direction {
     }
 }
 
-impl Solver202404 {
+impl Solver2024_04 {
     fn get_char(
         &self,
         x: usize,
@@ -103,7 +103,7 @@ impl Solver202404 {
     }
 }
 
-impl Solver<i32, i32> for Solver202404 {
+impl Solver<i32, i32> for Solver2024_04 {
     fn solve_first_part(&self) -> i32 {
         let height = self.matrix.len();
         let width = self.matrix[0].len();
@@ -184,11 +184,11 @@ MXMXAXMASX";
 
     #[test]
     fn solve_first_part() {
-        assert_eq!(Solver202404::from(EXAMPLE).solve_first_part(), 18);
+        assert_eq!(Solver2024_04::from(EXAMPLE).solve_first_part(), 18);
     }
 
     #[test]
     fn solve_second_part() {
-        assert_eq!(Solver202404::from(EXAMPLE).solve_second_part(), 9);
+        assert_eq!(Solver2024_04::from(EXAMPLE).solve_second_part(), 9);
     }
 }

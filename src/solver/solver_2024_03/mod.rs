@@ -4,27 +4,27 @@ mod input;
 use input::INPUT;
 use regex::Regex;
 
-pub struct Solver202403<'a> {
+pub struct Solver2024_03<'a> {
     input: Cow<'a, str>,
 }
 
-impl Default for Solver202403<'static> {
+impl Default for Solver2024_03<'static> {
     fn default() -> Self {
         Self {
-            input: Cow::Borrowed(INPUT)
+            input: Cow::Borrowed(INPUT),
         }
     }
 }
 
-impl<'a> From<&'a str> for Solver202403<'a> {
+impl<'a> From<&'a str> for Solver2024_03<'a> {
     fn from(input: &'a str) -> Self {
         Self {
-            input: Cow::Borrowed(input)
+            input: Cow::Borrowed(input),
         }
     }
 }
 
-impl<'a> Solver<i32, i32> for Solver202403<'a> {
+impl<'a> Solver<i32, i32> for Solver2024_03<'a> {
     fn solve_first_part(&self) -> i32 {
         let re = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
         re.captures_iter(&self.input)
@@ -58,7 +58,7 @@ mod tests {
 
     #[test]
     fn solve_first_part() {
-        let solver = Solver202403::from(
+        let solver = Solver2024_03::from(
             "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))",
         );
         assert_eq!(solver.solve_first_part(), 161);
@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn solve_second_part() {
-        let solver = Solver202403::from(
+        let solver = Solver2024_03::from(
             "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))",
         );
         assert_eq!(solver.solve_second_part(), 48);

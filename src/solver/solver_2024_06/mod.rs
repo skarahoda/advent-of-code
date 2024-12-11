@@ -21,11 +21,11 @@ fn rotate_right(direction: &Direction) -> Direction {
 }
 
 #[derive(Clone)]
-pub struct Solver202406 {
+pub struct Solver2024_06 {
     map: Vec<Vec<char>>,
 }
 
-impl Solver202406 {
+impl Solver2024_06 {
     fn get_next_position(
         &self,
         position: (usize, usize),
@@ -92,7 +92,7 @@ impl Solver202406 {
     }
 }
 
-impl From<&str> for Solver202406 {
+impl From<&str> for Solver2024_06 {
     fn from(value: &str) -> Self {
         Self {
             map: value.lines().map(|line| line.chars().collect()).collect(),
@@ -100,13 +100,13 @@ impl From<&str> for Solver202406 {
     }
 }
 
-impl Default for Solver202406 {
+impl Default for Solver2024_06 {
     fn default() -> Self {
         INPUT.into()
     }
 }
 
-impl Solver<usize, usize> for Solver202406 {
+impl Solver<usize, usize> for Solver2024_06 {
     fn solve_first_part(&self) -> usize {
         self.get_path(self.find_initial_position()).unwrap().len()
     }
@@ -147,11 +147,11 @@ mod tests {
 ......#...:";
     #[test]
     fn solve_first_part() {
-        assert_eq!(Solver202406::from(EXAMPLE).solve_first_part(), 41);
+        assert_eq!(Solver2024_06::from(EXAMPLE).solve_first_part(), 41);
     }
 
     #[test]
     fn solve_second_part() {
-        assert_eq!(Solver202406::from(EXAMPLE).solve_second_part(), 6);
+        assert_eq!(Solver2024_06::from(EXAMPLE).solve_second_part(), 6);
     }
 }

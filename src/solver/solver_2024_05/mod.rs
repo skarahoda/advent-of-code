@@ -4,7 +4,7 @@ mod input;
 use super::Solver;
 use input::INPUT;
 
-pub struct Solver202405 {
+pub struct Solver2024_05 {
     precedence_map: HashMap<i32, HashSet<i32>>,
     prints: Vec<Vec<i32>>,
 }
@@ -12,7 +12,7 @@ pub struct Solver202405 {
 fn get_middle<T>(array: &Vec<T>) -> Option<&T> {
     array.get((array.len() - 1) / 2)
 }
-impl Solver202405 {
+impl Solver2024_05 {
     fn is_valid_print(&self, print: &Vec<i32>) -> bool {
         let mut visited = HashSet::new();
         for &x in print {
@@ -44,7 +44,7 @@ impl Solver202405 {
     }
 }
 
-impl From<&str> for Solver202405 {
+impl From<&str> for Solver2024_05 {
     fn from(value: &str) -> Self {
         let parts: Vec<&str> = value.split("\n\n").collect();
         let precedence_map = parts[0].lines().fold(HashMap::new(), |mut map, line| {
@@ -65,13 +65,13 @@ impl From<&str> for Solver202405 {
     }
 }
 
-impl Default for Solver202405 {
+impl Default for Solver2024_05 {
     fn default() -> Self {
         INPUT.into()
     }
 }
 
-impl Solver<i32, i32> for Solver202405 {
+impl Solver<i32, i32> for Solver2024_05 {
     fn solve_first_part(&self) -> i32 {
         self.prints
             .iter()
@@ -128,11 +128,11 @@ mod tests {
 
     #[test]
     fn solve_first_part() {
-        assert_eq!(Solver202405::from(EXAMPLE).solve_first_part(), 143);
+        assert_eq!(Solver2024_05::from(EXAMPLE).solve_first_part(), 143);
     }
 
     #[test]
     fn solve_second_part() {
-        assert_eq!(Solver202405::from(EXAMPLE).solve_second_part(), 123);
+        assert_eq!(Solver2024_05::from(EXAMPLE).solve_second_part(), 123);
     }
 }
