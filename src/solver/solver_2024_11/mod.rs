@@ -30,22 +30,13 @@ impl Solver2024_11 {
     fn blink(&mut self) {
         let mut cursor = self.rocks.cursor_front_mut();
         while let Some(node) = cursor.current() {
-            let node_str = node.to_string();
+            let num_of_digits = if *node == 0 { 1 } else { node.ilog10() + 1 };
             if node == &0 {
                 *node = 1;
-            } else if node_str.len() % 2 == 0 {
-                let left = node_str
-                    .chars()
-                    .take(node_str.len() / 2)
-                    .collect::<String>()
-                    .parse()
-                    .unwrap();
-                let right = node_str
-                    .chars()
-                    .skip(node_str.len() / 2)
-                    .collect::<String>()
-                    .parse()
-                    .unwrap();
+            } else if num_of_digits % 2 == 0 {
+                let divisor = 10_usize.pow(num_of_digits / 2);
+                let left = *node / divisor;
+                let right = *node % divisor;
                 *node = right;
                 cursor.insert_before(left);
             } else {
