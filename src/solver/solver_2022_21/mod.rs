@@ -1,7 +1,9 @@
 mod input;
+use super::Solver;
 use input::INPUT;
 use pest::iterators::Pair;
 use pest::Parser;
+use std::borrow::Cow;
 use std::collections::HashMap;
 
 #[derive(pest_derive::Parser)]
@@ -10,6 +12,7 @@ struct SantaParser;
 
 type RuleMap<'a> = HashMap<&'a str, Vec<Pair<'a, Rule>>>;
 
+#[derive(Clone)]
 struct Analyzer<'a> {
     rule_map: RuleMap<'a>,
     value_map: HashMap<&'a str, usize>,
@@ -101,57 +104,74 @@ impl<'a> Analyzer<'a> {
     }
 }
 
-fn solve_first_part(input: &str) -> usize {
-    let mut analyzer = Analyzer::new(input);
-    analyzer.get_value("root")
+pub struct Solver2022_21<'a> {
+    analyzer: Cow<'a, Analyzer<'a>>,
 }
 
-fn solve_second_part(input: &str) -> usize {
-    let mut analyzer = Analyzer::new(input);
-    let (left, right) = analyzer.get_children("root");
-    let (mut human_parent, mut other_value) = if analyzer.is_parent(left, "humn") {
-        (left, analyzer.get_value(right))
-    } else {
-        (right, analyzer.get_value(left))
-    };
-    let mut result = other_value;
-    while human_parent != "humn" {
-        let (left, right) = analyzer.get_children(human_parent);
-        let operator = analyzer.get_operator(human_parent);
-        (human_parent, other_value) = if analyzer.is_parent(left, "humn") {
+impl<'a> Default for Solver2022_21<'a> {
+    fn default() -> Self {
+        Self::from(INPUT)
+    }
+}
+
+impl<'a> From<&'a str> for Solver2022_21<'a> {
+    fn from(input: &'a str) -> Self {
+        Self {
+            analyzer: Cow::Owned(Analyzer::new(input)),
+        }
+    }
+}
+
+impl<'a> Solver<usize, usize> for Solver2022_21<'a> {
+    fn solve_first_part(&self) -> usize {
+        let mut analyzer = self.analyzer.to_owned().into_owned();
+        analyzer.get_value("root")
+    }
+
+    fn solve_second_part(&self) -> usize {
+        let mut analyzer = self.analyzer.to_owned().into_owned();
+        let (left, right) = analyzer.get_children("root");
+        let (mut human_parent, mut other_value) = if analyzer.is_parent(left, "humn") {
             (left, analyzer.get_value(right))
         } else {
             (right, analyzer.get_value(left))
         };
-        result = match operator {
-            Rule::Add => result - other_value,
-            Rule::Subtract => {
-                if analyzer.is_parent(left, "humn") {
-                    result + other_value
-                } else {
-                    other_value - result
+        let mut result = other_value;
+        while human_parent != "humn" {
+            let (left, right) = analyzer.get_children(human_parent);
+            let operator = analyzer.get_operator(human_parent);
+            (human_parent, other_value) = if analyzer.is_parent(left, "humn") {
+                (left, analyzer.get_value(right))
+            } else {
+                (right, analyzer.get_value(left))
+            };
+            result = match operator {
+                Rule::Add => result - other_value,
+                Rule::Subtract => {
+                    if analyzer.is_parent(left, "humn") {
+                        result + other_value
+                    } else {
+                        other_value - result
+                    }
                 }
-            }
-            Rule::Multiply => result / other_value,
-            Rule::Divide => {
-                if analyzer.is_parent(left, "humn") {
-                    result * other_value
-                } else {
-                    other_value / result
+                Rule::Multiply => result / other_value,
+                Rule::Divide => {
+                    if analyzer.is_parent(left, "humn") {
+                        result * other_value
+                    } else {
+                        other_value / result
+                    }
                 }
-            }
-            other => panic!("syntax error: operation cannot be {:?}", other),
-        };
+                other => panic!("syntax error: operation cannot be {:?}", other),
+            };
+        }
+        result
     }
-    result
-}
-
-pub fn solve() -> (usize, usize) {
-    (solve_first_part(INPUT), solve_second_part(INPUT))
 }
 
 #[cfg(test)]
 mod find_start_of_message_marker {
+    use super::*;
     static EXAMPLE: &str = "\
         root: pppw + sjmn\n\
         dbpl: 5\n\
@@ -172,11 +192,11 @@ mod find_start_of_message_marker {
 
     #[test]
     fn should_solve_first_part() {
-        assert_eq!(super::solve_first_part(EXAMPLE), 152);
+        assert_eq!(Solver2022_21::from(EXAMPLE).solve_first_part(), 152);
     }
 
     #[test]
     fn should_solve_second_part() {
-        assert_eq!(super::solve_second_part(EXAMPLE), 301);
+        assert_eq!(Solver2022_21::from(EXAMPLE).solve_second_part(), 301);
     }
 }
