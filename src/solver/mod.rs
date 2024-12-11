@@ -1,3 +1,6 @@
+mod solver;
+pub use solver::Solver;
+
 pub mod solver_2015_01;
 pub mod solver_2015_02;
 pub mod solver_2015_03;
@@ -26,7 +29,8 @@ pub mod solver_2022_18;
 pub mod solver_2022_20;
 pub mod solver_2022_21;
 pub mod solver_2022_22;
-pub mod solver_2024_01;
+mod solver_2024_01;
+pub use solver_2024_01::Solver202401;
 mod solver_2024_02;
 pub use solver_2024_02::Solver202402;
 mod solver_2024_03;
@@ -43,8 +47,6 @@ mod solver_2024_08;
 pub use solver_2024_08::Solver202408;
 mod solver_2024_09;
 pub use solver_2024_09::Solver202409;
-mod solver;
 mod solver_2024_10;
 pub use solver_2024_10::Solver202410;
 
-pub use solver::Solver;
