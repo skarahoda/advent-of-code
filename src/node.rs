@@ -3,9 +3,9 @@ use super::solver::{
     solver_2015_07, solver_2022_01, solver_2022_02, solver_2022_03, solver_2022_04, solver_2022_05,
     solver_2022_06, solver_2022_07, solver_2022_08, solver_2022_09, solver_2022_10, solver_2022_11,
     solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17,
-    solver_2022_18, solver_2022_20, solver_2022_21, solver_2022_22, solver_2024_01, solver_2024_02,
-    Solver, Solver202403, Solver202404, Solver202405, Solver202406, Solver202407, Solver202408,
-    Solver202409, Solver202410,
+    solver_2022_18, solver_2022_20, solver_2022_21, solver_2022_22, solver_2024_01,
+    Solver, Solver202402, Solver202403, Solver202404, Solver202405, Solver202406, Solver202407, 
+    Solver202408, Solver202409, Solver202410,
 };
 use napi_derive::napi;
 use std::fmt::Display;
@@ -65,7 +65,7 @@ pub fn solve(year: u32, day: u32) -> Answers {
         (2022, 21) => Answers::from(solver_2022_21::solve()),
         (2022, 22) => Answers::from(solver_2022_22::solve()),
         (2024, 1) => Answers::from(solver_2024_01::solve()),
-        (2024, 2) => Answers::from(solver_2024_02::solve()),
+        (2024, 2) => Answers::from(Box::new(Solver202402::default()) as Box<dyn Solver<_, _>>),
         (2024, 3) => Answers::from(Box::new(Solver202403::default()) as Box<dyn Solver<_, _>>),
         (2024, 4) => Answers::from(Box::new(Solver202404::default()) as Box<dyn Solver<_, _>>),
         (2024, 5) => Answers::from(Box::new(Solver202405::default()) as Box<dyn Solver<_, _>>),
