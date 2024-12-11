@@ -1,3 +1,4 @@
+use super::Solver;
 mod input;
 use input::INPUT;
 use regex::Regex;
@@ -127,58 +128,72 @@ impl Map {
     }
 }
 
-fn get_map_and_instructions(input: &str) -> (Map, Vec<Instruction>) {
-    let (map, instructions) = input.split_once("\n\n").unwrap();
-    let cells = map
-        .split("\n")
-        .map(|row| row.chars().map(|c| Cell::from(c)).collect())
-        .collect();
-    let re = Regex::new(r"(R|L|\d+)").unwrap();
-    let instructions = re
-        .captures_iter(instructions)
-        .map(|captures| Instruction::from(&captures[1]))
-        .collect();
-    (Map { cells }, instructions)
+pub struct Solver2022_22 {
+    map: Map,
+    instructions: Vec<Instruction>,
 }
 
-fn solve_first_part(map: &Map, instructions: &Vec<Instruction>) -> usize {
-    let mut player = (
-        map.cells[0].iter().position(|c| c == &Cell::Open).unwrap(),
-        0usize,
-        0usize,
-    );
+impl Default for Solver2022_22 {
+    fn default() -> Self {
+        Self::from(INPUT)
+    }
+}
 
-    for instruction in instructions {
-        match instruction {
-            Instruction::Move(distance) => {
-                for _ in 0..*distance {
-                    let next_cell = map.find_next_cell(player.0, player.1, player.2);
-                    if next_cell == (player.0, player.1) {
-                        break;
+impl From<&str> for Solver2022_22 {
+    fn from(input: &str) -> Self {
+        let (map, instructions) = input.split_once("\n\n").unwrap();
+        let cells = map
+            .split("\n")
+            .map(|row| row.chars().map(|c| Cell::from(c)).collect())
+            .collect();
+        let re = Regex::new(r"(R|L|\d+)").unwrap();
+        let instructions = re
+            .captures_iter(instructions)
+            .map(|captures| Instruction::from(&captures[1]))
+            .collect();
+        let map = Map { cells };
+        Self { map, instructions }
+    }
+}
+
+impl Solver<usize, isize> for Solver2022_22 {
+    fn solve_first_part(&self) -> usize {
+        let mut player = (
+            self.map.cells[0]
+                .iter()
+                .position(|c| c == &Cell::Open)
+                .unwrap(),
+            0usize,
+            0usize,
+        );
+
+        for instruction in &self.instructions {
+            match instruction {
+                Instruction::Move(distance) => {
+                    for _ in 0..*distance {
+                        let next_cell = self.map.find_next_cell(player.0, player.1, player.2);
+                        if next_cell == (player.0, player.1) {
+                            break;
+                        }
+                        player.0 = next_cell.0;
+                        player.1 = next_cell.1;
                     }
-                    player.0 = next_cell.0;
-                    player.1 = next_cell.1;
+                }
+                Instruction::Right => {
+                    player.2 = (player.2 + 1) % 4;
+                }
+                Instruction::Left => {
+                    player.2 = player.2.checked_sub(1).unwrap_or(3);
                 }
             }
-            Instruction::Right => {
-                player.2 = (player.2 + 1) % 4;
-            }
-            Instruction::Left => {
-                player.2 = player.2.checked_sub(1).unwrap_or(3);
-            }
         }
+
+        1000 * (player.1 + 1) + 4 * (player.0 + 1) + player.2
     }
 
-    1000 * (player.1 + 1) + 4 * (player.0 + 1) + player.2
-}
-
-fn solve_second_part() -> isize {
-    6032
-}
-
-pub fn solve() -> (usize, isize) {
-    let (map, instructions) = get_map_and_instructions(INPUT);
-    (solve_first_part(&map, &instructions), solve_second_part())
+    fn solve_second_part(&self) -> isize {
+        6032
+    }
 }
 
 #[cfg(test)]
@@ -186,30 +201,31 @@ mod tests {
     use super::*;
 
     static EXAMPLE: &str = concat!(
-    "        ...#\n",
-    "        .#..\n",
-    "        #...\n",
-    "        ....\n",
-    "...#.......#\n",
-    "........#...\n",
-    "..#....#....\n",
-    "..........#.\n",
-    "        ...#....\n",
-    "        .....#..\n",
-    "        .#......\n",
-    "        ......#.\n",
-    "\n",
-    "10R5L5R10L4R5L5"
+        "        ...#\n",
+        "        .#..\n",
+        "        #...\n",
+        "        ....\n",
+        "...#.......#\n",
+        "........#...\n",
+        "..#....#....\n",
+        "..........#.\n",
+        "        ...#....\n",
+        "        .....#..\n",
+        "        .#......\n",
+        "        ......#.\n",
+        "\n",
+        "10R5L5R10L4R5L5"
     );
 
     #[test]
     fn should_solve_first_part() {
-        let (map, instructions) = get_map_and_instructions(EXAMPLE);
-        assert_eq!(solve_first_part(&map, &instructions), 6032);
+        let solver = Solver2022_22::from(EXAMPLE);
+        assert_eq!(solver.solve_first_part(), 6032);
     }
 
     #[test]
     fn should_solve_second_part() {
-        assert_eq!(solve_second_part(), 6032);
+        let solver = Solver2022_22::from(EXAMPLE);
+        assert_eq!(solver.solve_second_part(), 6032);
     }
 }

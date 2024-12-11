@@ -29,6 +29,7 @@ pub mod solver_2022_18;
 pub mod solver_2022_20;
 pub mod solver_2022_21;
 pub mod solver_2022_22;
+pub use solver_2022_22::Solver2022_22;
 mod solver_2024_01;
 pub use solver_2024_01::Solver202401;
 mod solver_2024_02;
@@ -49,4 +50,3 @@ mod solver_2024_09;
 pub use solver_2024_09::Solver202409;
 mod solver_2024_10;
 pub use solver_2024_10::Solver202410;
-
