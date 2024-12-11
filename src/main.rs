@@ -1,3 +1,4 @@
+#![feature(linked_list_cursors)]
 extern crate core;
 extern crate pest;
 
@@ -13,7 +14,7 @@ use solver::{
     solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17,
     solver_2022_18, Solver, Solver2022_20, Solver2022_21, Solver2022_22, Solver2024_01,
     Solver2024_02, Solver2024_03, Solver2024_04, Solver2024_05, Solver2024_06, Solver2024_07,
-    Solver2024_08, Solver2024_09, Solver2024_10,
+    Solver2024_08, Solver2024_09, Solver2024_10, Solver2024_11,
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -151,6 +152,7 @@ fn main() {
         (Year::Year2024, Day::Day8) => solve(Box::new(Solver2024_08::default())),
         (Year::Year2024, Day::Day9) => solve(Box::new(Solver2024_09::default())),
         (Year::Year2024, Day::Day10) => solve(Box::new(Solver2024_10::default())),
+        (Year::Year2024, Day::Day11) => solve(Box::new(Solver2024_11::default())),
         _ => panic!("Puzzle is not solved yet!"),
     }
 }
