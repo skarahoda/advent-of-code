@@ -21,18 +21,23 @@ fn solve_first_part(left_list: &Vec<i32>, right_list: &Vec<i32>) -> i32 {
     let mut right_list = right_list.clone();
     right_list.sort();
 
-    left_list.iter().enumerate().fold(0, |acc, (index, left)| {
-        acc + (left - right_list[index]).abs()
-    })
+    left_list
+        .iter()
+        .enumerate()
+        .map(|(index, left)| (left - right_list[index]).abs())
+        .sum()
 }
 fn solve_second_part(left_list: &Vec<i32>, right_list: &Vec<i32>) -> i32 {
     let count_map = right_list.iter().fold(HashMap::new(), |mut map, right| {
-        map.entry(right).and_modify(|count| *count += 1).or_insert(1);
+        map.entry(right)
+            .and_modify(|count| *count += 1)
+            .or_insert(1);
         map
     });
-    left_list.iter().fold(0, |acc, left| {
-        acc + (count_map.get(left).unwrap_or(&0) * left)
-    })
+    left_list
+        .iter()
+        .map(|left| count_map.get(left).unwrap_or(&0) * left)
+        .sum()
 }
 
 pub fn solve() -> (i32, i32) {
@@ -48,14 +53,14 @@ mod tests {
     #[test]
     fn solve_first_part() {
         assert_eq!(
-            super::solve_first_part(&vec![3, 4, 2, 1, 3, 3, ], &vec![4, 3, 5, 3, 9, 3, ], ),
+            super::solve_first_part(&vec![3, 4, 2, 1, 3, 3,], &vec![4, 3, 5, 3, 9, 3,],),
             11
         );
     }
     #[test]
     fn solve_second_part() {
         assert_eq!(
-            super::solve_second_part(&vec![3, 4, 2, 1, 3, 3, ], &vec![4, 3, 5, 3, 9, 3, ], ),
+            super::solve_second_part(&vec![3, 4, 2, 1, 3, 3,], &vec![4, 3, 5, 3, 9, 3,],),
             31
         );
     }

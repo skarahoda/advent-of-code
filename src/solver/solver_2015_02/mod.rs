@@ -53,14 +53,20 @@ fn get_rectangular_prisms() -> Vec<RectangularPrism> {
 }
 
 fn solve_first_part(rectangle_prisms: &Vec<RectangularPrism>) -> i32 {
-    rectangle_prisms.iter().fold(0, |score, rectangle_prism| {
-        score + rectangle_prism.get_area() + rectangle_prism.get_smallest_area_of_sides()
-    })
+    rectangle_prisms
+        .iter()
+        .map(|rectangle_prism| {
+            rectangle_prism.get_area() + rectangle_prism.get_smallest_area_of_sides()
+        })
+        .sum()
 }
 fn solve_second_part(rectangle_prisms: &Vec<RectangularPrism>) -> i32 {
-    rectangle_prisms.iter().fold(0, |score, rectangle_prism| {
-        score + rectangle_prism.get_volume() + rectangle_prism.get_smallest_perimeter_of_sides()
-    })
+    rectangle_prisms
+        .iter()
+        .map(|rectangle_prism| {
+            rectangle_prism.get_volume() + rectangle_prism.get_smallest_perimeter_of_sides()
+        })
+        .sum()
 }
 
 pub fn solve() -> (i32, i32) {

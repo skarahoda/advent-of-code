@@ -147,17 +147,19 @@ impl Solver202409 {
         self.files
             .iter()
             .flat_map(|file| (file.start..file.start + file.size).map(|i| (i, file.id)))
-            .fold(0, |acc, (id, location)| acc + (id * location))
+            .map(|(id, location)| id * location)
+            .sum()
     }
 
     fn checksum_from_disk(&self) -> usize {
         self.disk
             .iter()
             .enumerate()
-            .fold(0, |acc, (i, space)| match space {
-                Space::Empty => acc,
-                Space::File(file) => acc + (i * file),
+            .map(|(i, space)| match space {
+                Space::Empty => 0,
+                Space::File(file) => i * file,
             })
+            .sum()
     }
 }
 

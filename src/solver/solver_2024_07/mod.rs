@@ -73,14 +73,16 @@ impl Solver<u64, u64> for Solver202407 {
         self.equations
             .iter()
             .filter(|(left, right)| is_valid_equation(*left, right, false))
-            .fold(0, |acc, equation| acc + equation.0)
+            .map(|equation| equation.0)
+            .sum()
     }
 
     fn solve_second_part(&self) -> u64 {
         self.equations
             .iter()
             .filter(|(left, right)| is_valid_equation(*left, right, true))
-            .fold(0, |acc, equation| acc + equation.0)
+            .map(|equation| equation.0)
+            .sum()
     }
 }
 

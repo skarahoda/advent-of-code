@@ -73,24 +73,23 @@ impl Default for Solver202405 {
 
 impl Solver<i32, i32> for Solver202405 {
     fn solve_first_part(&self) -> i32 {
-        let mut result = 0;
-        for print in &self.prints {
-            if self.is_valid_print(print) {
-                result += get_middle(print).unwrap();
-            }
-        }
-        result
+        self.prints
+            .iter()
+            .filter(|print| self.is_valid_print(print))
+            .map(|print| *get_middle(&print).unwrap())
+            .sum()
     }
 
     fn solve_second_part(&self) -> i32 {
-        self.prints.iter().fold(0, |acc, print| {
-            if self.is_valid_print(print) {
-                return acc;
-            }
-            let mut print = print.clone();
-            self.sort_print(&mut print);
-            acc + *get_middle(&print).unwrap()
-        })
+        self.prints
+            .iter()
+            .filter(|print| !self.is_valid_print(print))
+            .map(|print| {
+                let mut print = print.clone();
+                self.sort_print(&mut print);
+                *get_middle(&print).unwrap()
+            })
+            .sum()
     }
 }
 

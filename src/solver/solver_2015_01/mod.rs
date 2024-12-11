@@ -2,11 +2,14 @@ mod input;
 
 use input::INPUT;
 fn solve_first_part(input: &str) -> i32 {
-    input.chars().fold(0, |score, c| match c {
-        '(' => score + 1,
-        ')' => score - 1,
-        other => panic!("Illegal argument: {}", other),
-    })
+    input
+        .chars()
+        .map(|c| match c {
+            '(' => 1,
+            ')' => -1,
+            other => panic!("Illegal argument: {}", other),
+        })
+        .sum()
 }
 fn solve_second_part(input: &str) -> usize {
     let mut score = 0;

@@ -125,9 +125,7 @@ fn get_size_map(input: &str) -> HashMap<String, u32> {
 
 fn solve_first_part(input: &str) -> u32 {
     let size_map = get_size_map(input);
-    size_map
-        .values()
-        .fold(0, |sum, size| if *size < 100000 { sum + size } else { sum })
+    size_map.values().filter(|&&size| size < 100000).sum()
 }
 
 fn solve_second_part(input: &str) -> u32 {

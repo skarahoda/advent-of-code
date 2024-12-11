@@ -76,26 +76,14 @@ impl From<&str> for Solver202402 {
 
 impl Solver<i32, i32> for Solver202402 {
     fn solve_first_part(&self) -> i32 {
-        self.lists.iter().fold(
-            0,
-            |acc, list| {
-                if is_safe_list(list) {
-                    acc + 1
-                } else {
-                    acc
-                }
-            },
-        )
+        self.lists.iter().filter(|list| is_safe_list(list)).count() as i32
     }
 
     fn solve_second_part(&self) -> i32 {
-        self.lists.iter().fold(0, |acc, list| {
-            if is_safe_list_with_a_removed_level(list) {
-                acc + 1
-            } else {
-                acc
-            }
-        })
+        self.lists
+            .iter()
+            .filter(|list| is_safe_list_with_a_removed_level(list))
+            .count() as i32
     }
 }
 

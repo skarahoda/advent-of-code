@@ -51,12 +51,10 @@ fn solve_first_part(instructions: &Vec<Instruction>) -> usize {
         }
     }
 
-    lights.iter().fold(0, |acc: usize, row: &[bool; 1000]| {
-        row.iter().fold(
-            acc,
-            |acc: usize, light: &bool| if *light { acc + 1 } else { acc },
-        )
-    })
+    lights
+        .iter()
+        .map(|row: &[bool; 1000]| row.iter().filter(|light| **light).count())
+        .sum()
 }
 fn solve_second_part(instructions: &Vec<Instruction>) -> usize {
     let mut lights = [[0usize; 1000]; 1000];
@@ -73,10 +71,10 @@ fn solve_second_part(instructions: &Vec<Instruction>) -> usize {
         }
     }
 
-    lights.iter().fold(0, |acc: usize, row: &[usize; 1000]| {
-        row.iter()
-            .fold(acc, |acc: usize, light: &usize| acc + light)
-    })
+    lights
+        .iter()
+        .map(|row: &[usize; 1000]| row.iter().sum::<usize>())
+        .sum()
 }
 
 pub fn solve() -> (usize, usize) {
