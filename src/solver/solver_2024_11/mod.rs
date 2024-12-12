@@ -1,12 +1,11 @@
 use super::Solver;
-use std::collections::LinkedList;
 
 mod input;
 use input::INPUT;
 
 #[derive(Clone)]
 pub struct Solver2024_11 {
-    rocks: LinkedList<usize>,
+    rocks: Vec<usize>,
 }
 
 impl<'a> Default for Solver2024_11 {
@@ -28,21 +27,22 @@ impl<'a> From<&'a str> for Solver2024_11 {
 
 impl Solver2024_11 {
     fn blink(&mut self) {
-        let mut cursor = self.rocks.cursor_front_mut();
-        while let Some(node) = cursor.current() {
-            let num_of_digits = if *node == 0 { 1 } else { node.ilog10() + 1 };
-            if node == &0 {
-                *node = 1;
+        let len = self.rocks.len();
+        for i in 0..len {
+            let rock = self.rocks.get_mut(i).unwrap();
+            let num_of_digits = if *rock == 0 { 1 } else { rock.ilog10() + 1 };
+
+            if *rock == 0 {
+                *rock = 1;
             } else if num_of_digits % 2 == 0 {
                 let divisor = 10_usize.pow(num_of_digits / 2);
-                let left = *node / divisor;
-                let right = *node % divisor;
-                *node = right;
-                cursor.insert_before(left);
+                let left = *rock / divisor;
+                let right = *rock % divisor;
+                *rock = right;
+                self.rocks.push(left);
             } else {
-                *node *= 2024;
+                *rock *= 2024;
             }
-            cursor.move_next();
         }
     }
 }
