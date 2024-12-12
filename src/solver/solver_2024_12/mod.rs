@@ -2,7 +2,7 @@ use super::Solver;
 mod input;
 use input::INPUT;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 enum RegionWithPointer {
     // first number is the area, second number is the perimeter
     Actual(Region),
@@ -24,15 +24,20 @@ impl RegionWithPointer {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct Region {
     area: usize,
     perimeter: usize,
+    corners: usize,
 }
 
 impl Region {
     fn new(area: usize, perimeter: usize) -> Self {
-        Self { area, perimeter }
+        Self {
+            area,
+            perimeter,
+            corners: 0,
+        }
     }
 }
 #[derive(Clone)]
@@ -99,6 +104,107 @@ impl Solver2024_12 {
         wrapper().is_some()
     }
 
+    fn is_down_cell_same_region(&self, x: usize, y: usize) -> bool {
+        let wrapper = || -> Option<()> {
+            let down_cell = self.input.get(y.checked_add(1)?)?.get(x)?;
+            let current_cell = self.input.get(y)?.get(x)?;
+            if down_cell == current_cell {
+                Some(())
+            } else {
+                None
+            }
+        };
+        wrapper().is_some()
+    }
+    fn is_right_cell_same_region(&self, x: usize, y: usize) -> bool {
+        let wrapper = || -> Option<()> {
+            let right_cell = self.input.get(y)?.get(x.checked_add(1)?)?;
+            let current_cell = self.input.get(y)?.get(x)?;
+            if right_cell == current_cell {
+                Some(())
+            } else {
+                None
+            }
+        };
+        wrapper().is_some()
+    }
+    fn is_up_left_cell_same_region(&self, x: usize, y: usize) -> bool {
+        let wrapper = || -> Option<()> {
+            let up_left_cell = self.input.get(y.checked_sub(1)?)?.get(x.checked_sub(1)?)?;
+            let current_cell = self.input.get(y)?.get(x)?;
+            if up_left_cell == current_cell {
+                Some(())
+            } else {
+                None
+            }
+        };
+        wrapper().is_some()
+    }
+
+    fn is_up_right_cell_same_region(&self, x: usize, y: usize) -> bool {
+        let wrapper = || -> Option<()> {
+            let up_right_cell = self.input.get(y.checked_sub(1)?)?.get(x.checked_add(1)?)?;
+            let current_cell = self.input.get(y)?.get(x)?;
+            if up_right_cell == current_cell {
+                Some(())
+            } else {
+                None
+            }
+        };
+        wrapper().is_some()
+    }
+
+    fn is_down_right_cell_same_region(&self, x: usize, y: usize) -> bool {
+        let wrapper = || -> Option<()> {
+            let down_right_cell = self.input.get(y.checked_add(1)?)?.get(x.checked_add(1)?)?;
+            let current_cell = self.input.get(y)?.get(x)?;
+            if down_right_cell == current_cell {
+                Some(())
+            } else {
+                None
+            }
+        };
+        wrapper().is_some()
+    }
+    fn is_down_left_cell_same_region(&self, x: usize, y: usize) -> bool {
+        let wrapper = || -> Option<()> {
+            let down_left_cell = self.input.get(y.checked_add(1)?)?.get(x.checked_sub(1)?)?;
+            let current_cell = self.input.get(y)?.get(x)?;
+            if down_left_cell == current_cell {
+                Some(())
+            } else {
+                None
+            }
+        };
+        wrapper().is_some()
+    }
+
+    fn get_number_of_corners(&self, x: usize, y: usize) -> usize {
+        let is_up_cell_same_region = self.is_up_cell_same_region(x, y);
+        let is_left_cell_same_region = self.is_left_cell_same_region(x, y);
+        let is_down_cell_same_region = self.is_down_cell_same_region(x, y);
+        let is_right_cell_same_region = self.is_right_cell_same_region(x, y);
+        let is_up_left_cell_same_region = self.is_up_left_cell_same_region(x, y);
+        let is_up_right_cell_same_region = self.is_up_right_cell_same_region(x, y);
+        let is_down_right_cell_same_region = self.is_down_right_cell_same_region(x, y);
+        let is_down_left_cell_same_region = self.is_down_left_cell_same_region(x, y);
+        vec![
+            !is_up_cell_same_region && !is_left_cell_same_region,
+            !is_up_cell_same_region && !is_right_cell_same_region,
+            !is_down_cell_same_region && !is_left_cell_same_region,
+            !is_down_cell_same_region && !is_right_cell_same_region,
+            !is_up_left_cell_same_region && is_left_cell_same_region && is_up_cell_same_region,
+            !is_up_right_cell_same_region && is_right_cell_same_region && is_up_cell_same_region,
+            !is_down_right_cell_same_region
+                && is_right_cell_same_region
+                && is_down_cell_same_region,
+            !is_down_left_cell_same_region && is_left_cell_same_region && is_down_cell_same_region,
+        ]
+        .iter()
+        .filter(|&&b| b)
+        .count()
+    }
+
     fn calculate_regions(&self) -> Vec<RegionWithPointer> {
         let mut region_map: Vec<Vec<usize>> = vec![];
         let mut regions: Vec<RegionWithPointer> = vec![];
@@ -122,10 +228,12 @@ impl Solver2024_12 {
                     } else {
                         let up_region_area = regions[up_region_index].as_region().area;
                         let up_region_perimeter = regions[up_region_index].as_region().perimeter;
+                        let up_region_corners = regions[up_region_index].as_region().corners;
                         let left_region = regions[left_region_index].as_mut_region();
                         // left area + up area + current cell
                         left_region.area += up_region_area + 1;
                         left_region.perimeter += up_region_perimeter;
+                        left_region.corners += up_region_corners;
                         regions[up_region_index] = RegionWithPointer::Pointer(left_region_index);
                     }
                 } else if is_left_cell_same_region {
@@ -174,6 +282,10 @@ impl Solver2024_12 {
                         region.perimeter += 1;
                     }
                 }
+                let last_cell_region_index =
+                    get_region_index(&region_map, &mut regions, x, y).unwrap();
+                let last_cell_region = regions[last_cell_region_index].as_mut_region();
+                last_cell_region.corners += self.get_number_of_corners(x, y);
             }
             let last_cell_region_index =
                 get_region_index(&region_map, &mut regions, width - 1, y).unwrap();
@@ -202,7 +314,13 @@ impl Solver<usize, usize> for Solver2024_12 {
     }
 
     fn solve_second_part(&self) -> usize {
-        0 // TODO: Implement solution
+        self.calculate_regions()
+            .iter()
+            .filter_map(|r| match r {
+                RegionWithPointer::Pointer(_) => None,
+                RegionWithPointer::Actual(region) => Some(region.area * region.corners),
+            })
+            .sum()
     }
 }
 
@@ -230,6 +348,31 @@ MMMISSJEEE";
     #[test]
     fn should_solve_second_part() {
         let solver = Solver2024_12::from(EXAMPLE);
-        assert_eq!(solver.solve_second_part(), 0); // TODO: Add expected result
+        assert_eq!(solver.solve_second_part(), 1206);
+    }
+
+    #[test]
+    fn should_solve_second_part_e_shape() {
+        let solver = Solver2024_12::from(
+            "EEEEE
+EXXXX
+EEEEE
+EXXXX
+EEEEE",
+        );
+        assert_eq!(solver.solve_second_part(), 236);
+    }
+
+    #[test]
+    fn should_solve_second_part_two_inner_squares() {
+        let solver = Solver2024_12::from(
+            "AAAAAA
+AAABBA
+AAABBA
+ABBAAA
+ABBAAA
+AAAAAA",
+        );
+        assert_eq!(solver.solve_second_part(), 368);
     }
 }
