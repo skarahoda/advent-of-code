@@ -1,11 +1,12 @@
 use super::Solver;
+use std::collections::HashMap;
 
 mod input;
 use input::INPUT;
 
 #[derive(Clone)]
 pub struct Solver2024_11 {
-    rocks: Vec<usize>,
+    rocks: HashMap<usize, usize>,
 }
 
 impl<'a> Default for Solver2024_11 {
@@ -19,30 +20,42 @@ impl<'a> From<&'a str> for Solver2024_11 {
         Self {
             rocks: input
                 .split_whitespace()
-                .map(|s| s.parse().unwrap())
+                .map(|s| (s.parse().unwrap(), 1))
                 .collect(),
         }
     }
 }
 
 impl Solver2024_11 {
-    fn blink(&mut self) {
-        let len = self.rocks.len();
-        for i in 0..len {
-            let rock = self.rocks.get_mut(i).unwrap();
-            let num_of_digits = if *rock == 0 { 1 } else { rock.ilog10() + 1 };
+    fn add(&mut self, rock: usize, count: usize) {
+        let rock = self.rocks.entry(rock).or_insert(0);
+        *rock += count;
+    }
 
-            if *rock == 0 {
-                *rock = 1;
+    fn blink(&self) -> Self {
+        let mut result = Self {
+            rocks: HashMap::new(),
+        };
+        for (&rock, &count) in self.rocks.iter() {
+            let num_of_digits = if rock == 0 { 1 } else { rock.ilog10() + 1 };
+            if rock == 0 {
+                result.add(1, count);
             } else if num_of_digits % 2 == 0 {
                 let divisor = 10_usize.pow(num_of_digits / 2);
-                let left = *rock / divisor;
-                let right = *rock % divisor;
-                *rock = right;
-                self.rocks.push(left);
+                let left = rock / divisor;
+                let right = rock % divisor;
+                result.add(left, count);
+                result.add(right, count);
             } else {
-                *rock *= 2024;
+                result.add(rock * 2024, count);
             }
+        }
+        result
+    }
+
+    fn blink_n_times(&mut self, n: usize) {
+        for _ in 0..n {
+            *self = self.blink();
         }
     }
 }
@@ -50,14 +63,14 @@ impl Solver2024_11 {
 impl Solver<usize, usize> for Solver2024_11 {
     fn solve_first_part(&self) -> usize {
         let mut muted = self.clone();
-        for _ in 0..25 {
-            muted.blink();
-        }
-        muted.rocks.len()
+        muted.blink_n_times(25);
+        muted.rocks.values().sum()
     }
 
     fn solve_second_part(&self) -> usize {
-        panic!("second part is not working");
+        let mut muted = self.clone();
+        muted.blink_n_times(75);
+        muted.rocks.values().sum()
     }
 }
 
