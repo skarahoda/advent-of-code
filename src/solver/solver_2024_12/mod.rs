@@ -78,11 +78,16 @@ fn get_region_index(
 }
 
 impl Solver2024_12 {
-    fn is_left_cell_same_region(&self, x: usize, y: usize) -> bool {
+    fn are_cells_same_region(&self, position: (usize, usize), direction: (isize, isize)) -> bool {
+        let (x, y) = position;
+        let (dx, dy) = direction;
         let wrapper = || -> Option<()> {
-            let left_cell = self.input.get(y)?.get(x.checked_sub(1)?)?;
+            let other_cell = self
+                .input
+                .get(y.checked_add_signed(dy)?)?
+                .get(x.checked_add_signed(dx)?)?;
             let current_cell = self.input.get(y)?.get(x)?;
-            if left_cell == current_cell {
+            if other_cell == current_cell {
                 Some(())
             } else {
                 None
@@ -91,103 +96,15 @@ impl Solver2024_12 {
         wrapper().is_some()
     }
 
-    fn is_up_cell_same_region(&self, x: usize, y: usize) -> bool {
-        let wrapper = || -> Option<()> {
-            let up_cell = self.input.get(y.checked_sub(1)?)?.get(x)?;
-            let current_cell = self.input.get(y)?.get(x)?;
-            if up_cell == current_cell {
-                Some(())
-            } else {
-                None
-            }
-        };
-        wrapper().is_some()
-    }
-
-    fn is_down_cell_same_region(&self, x: usize, y: usize) -> bool {
-        let wrapper = || -> Option<()> {
-            let down_cell = self.input.get(y.checked_add(1)?)?.get(x)?;
-            let current_cell = self.input.get(y)?.get(x)?;
-            if down_cell == current_cell {
-                Some(())
-            } else {
-                None
-            }
-        };
-        wrapper().is_some()
-    }
-    fn is_right_cell_same_region(&self, x: usize, y: usize) -> bool {
-        let wrapper = || -> Option<()> {
-            let right_cell = self.input.get(y)?.get(x.checked_add(1)?)?;
-            let current_cell = self.input.get(y)?.get(x)?;
-            if right_cell == current_cell {
-                Some(())
-            } else {
-                None
-            }
-        };
-        wrapper().is_some()
-    }
-    fn is_up_left_cell_same_region(&self, x: usize, y: usize) -> bool {
-        let wrapper = || -> Option<()> {
-            let up_left_cell = self.input.get(y.checked_sub(1)?)?.get(x.checked_sub(1)?)?;
-            let current_cell = self.input.get(y)?.get(x)?;
-            if up_left_cell == current_cell {
-                Some(())
-            } else {
-                None
-            }
-        };
-        wrapper().is_some()
-    }
-
-    fn is_up_right_cell_same_region(&self, x: usize, y: usize) -> bool {
-        let wrapper = || -> Option<()> {
-            let up_right_cell = self.input.get(y.checked_sub(1)?)?.get(x.checked_add(1)?)?;
-            let current_cell = self.input.get(y)?.get(x)?;
-            if up_right_cell == current_cell {
-                Some(())
-            } else {
-                None
-            }
-        };
-        wrapper().is_some()
-    }
-
-    fn is_down_right_cell_same_region(&self, x: usize, y: usize) -> bool {
-        let wrapper = || -> Option<()> {
-            let down_right_cell = self.input.get(y.checked_add(1)?)?.get(x.checked_add(1)?)?;
-            let current_cell = self.input.get(y)?.get(x)?;
-            if down_right_cell == current_cell {
-                Some(())
-            } else {
-                None
-            }
-        };
-        wrapper().is_some()
-    }
-    fn is_down_left_cell_same_region(&self, x: usize, y: usize) -> bool {
-        let wrapper = || -> Option<()> {
-            let down_left_cell = self.input.get(y.checked_add(1)?)?.get(x.checked_sub(1)?)?;
-            let current_cell = self.input.get(y)?.get(x)?;
-            if down_left_cell == current_cell {
-                Some(())
-            } else {
-                None
-            }
-        };
-        wrapper().is_some()
-    }
-
-    fn get_number_of_corners(&self, x: usize, y: usize) -> usize {
-        let is_up_cell_same_region = self.is_up_cell_same_region(x, y);
-        let is_left_cell_same_region = self.is_left_cell_same_region(x, y);
-        let is_down_cell_same_region = self.is_down_cell_same_region(x, y);
-        let is_right_cell_same_region = self.is_right_cell_same_region(x, y);
-        let is_up_left_cell_same_region = self.is_up_left_cell_same_region(x, y);
-        let is_up_right_cell_same_region = self.is_up_right_cell_same_region(x, y);
-        let is_down_right_cell_same_region = self.is_down_right_cell_same_region(x, y);
-        let is_down_left_cell_same_region = self.is_down_left_cell_same_region(x, y);
+    fn get_number_of_corners(&self, position: (usize, usize)) -> usize {
+        let is_up_cell_same_region = self.are_cells_same_region(position, (0, -1));
+        let is_left_cell_same_region = self.are_cells_same_region(position, (-1, 0));
+        let is_down_cell_same_region = self.are_cells_same_region(position, (0, 1));
+        let is_right_cell_same_region = self.are_cells_same_region(position, (1, 0));
+        let is_up_left_cell_same_region = self.are_cells_same_region(position, (-1, -1));
+        let is_up_right_cell_same_region = self.are_cells_same_region(position, (1, -1));
+        let is_down_right_cell_same_region = self.are_cells_same_region(position, (1, 1));
+        let is_down_left_cell_same_region = self.are_cells_same_region(position, (-1, 1));
         vec![
             !is_up_cell_same_region && !is_left_cell_same_region,
             !is_up_cell_same_region && !is_right_cell_same_region,
@@ -213,8 +130,9 @@ impl Solver2024_12 {
         for y in 0..height {
             region_map.push(vec![]);
             for x in 0..width {
-                let is_left_cell_same_region = self.is_left_cell_same_region(x, y);
-                let is_up_cell_same_region = self.is_up_cell_same_region(x, y);
+                let position = (x, y);
+                let is_left_cell_same_region = self.are_cells_same_region(position, (-1, 0));
+                let is_up_cell_same_region = self.are_cells_same_region(position, (0, -1));
                 if is_up_cell_same_region && is_left_cell_same_region {
                     let left_region_index =
                         get_region_index(&region_map, &mut regions, x - 1, y).unwrap();
@@ -285,7 +203,7 @@ impl Solver2024_12 {
                 let last_cell_region_index =
                     get_region_index(&region_map, &mut regions, x, y).unwrap();
                 let last_cell_region = regions[last_cell_region_index].as_mut_region();
-                last_cell_region.corners += self.get_number_of_corners(x, y);
+                last_cell_region.corners += self.get_number_of_corners(position);
             }
             let last_cell_region_index =
                 get_region_index(&region_map, &mut regions, width - 1, y).unwrap();
