@@ -122,6 +122,25 @@ impl Solver2024_12 {
         .count()
     }
 
+    fn update_perimeter(
+        &self,
+        region_map: &mut Vec<Vec<usize>>,
+        regions: &mut Vec<RegionWithPointer>,
+        position: (usize, usize),
+        direction: (isize, isize),
+    ) {
+        let (x, y) = position;
+        let (dx, dy) = direction;
+        let mut wrapper = || -> Option<()> {
+            let (new_x, new_y) = (x.checked_add_signed(dx)?, y.checked_add_signed(dy)?);
+            let region_index = get_region_index(&region_map, regions, new_x, new_y)?;
+            let region = regions[region_index].as_mut_region();
+            region.perimeter += 1;
+            Some(())
+        };
+        wrapper();
+    }
+
     fn calculate_region_for_cell(
         &self,
         region_map: &mut Vec<Vec<usize>>,
@@ -140,9 +159,10 @@ impl Solver2024_12 {
                 let left_region = regions[left_region_index].as_mut_region();
                 left_region.area += 1;
             } else {
-                let up_region_area = regions[up_region_index].as_region().area;
-                let up_region_perimeter = regions[up_region_index].as_region().perimeter;
-                let up_region_corners = regions[up_region_index].as_region().corners;
+                let up_region = regions[up_region_index].as_region();
+                let up_region_area = up_region.area;
+                let up_region_perimeter = up_region.perimeter;
+                let up_region_corners = up_region.corners;
                 let left_region = regions[left_region_index].as_mut_region();
                 // left area + up area + current cell
                 left_region.area += up_region_area + 1;
@@ -156,43 +176,19 @@ impl Solver2024_12 {
             let left_region = regions[left_region_index].as_mut_region();
             left_region.perimeter += 1;
             left_region.area += 1;
-            if let Some(index) = y
-                .checked_sub(1)
-                .and_then(|y| get_region_index(&region_map, regions, x, y))
-            {
-                let region = regions[index].as_mut_region();
-                region.perimeter += 1;
-            }
+            self.update_perimeter(region_map, regions, position, (0, -1));
         } else if is_up_cell_same_region {
             let up_region_index = get_region_index(&region_map, regions, x, y - 1).unwrap();
             let up_region = regions[up_region_index].as_mut_region();
             region_map[y].push(up_region_index);
             up_region.perimeter += 1;
             up_region.area += 1;
-            if let Some(index) = x
-                .checked_sub(1)
-                .and_then(|x| get_region_index(&region_map, regions, x, y))
-            {
-                let region = regions[index].as_mut_region();
-                region.perimeter += 1;
-            }
+            self.update_perimeter(region_map, regions, position, (-1, 0));
         } else {
             region_map[y].push(regions.len());
             regions.push(RegionWithPointer::Actual(Region::new(1, 2)));
-            if let Some(index) = x
-                .checked_sub(1)
-                .and_then(|x| get_region_index(&region_map, regions, x, y))
-            {
-                let region = regions[index].as_mut_region();
-                region.perimeter += 1;
-            }
-            if let Some(index) = y
-                .checked_sub(1)
-                .and_then(|y| get_region_index(&region_map, regions, x, y))
-            {
-                let region = regions[index].as_mut_region();
-                region.perimeter += 1;
-            }
+            self.update_perimeter(region_map, regions, position, (-1, 0));
+            self.update_perimeter(region_map, regions, position, (0, -1));
         }
         let last_cell_region_index = get_region_index(&region_map, regions, x, y).unwrap();
         let last_cell_region = regions[last_cell_region_index].as_mut_region();
