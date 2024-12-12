@@ -32,7 +32,7 @@ impl Solver2024_11 {
         *rock += count;
     }
 
-    fn blink(&self) -> Self {
+    fn blink(&mut self) {
         let mut result = Self {
             rocks: HashMap::new(),
         };
@@ -50,12 +50,12 @@ impl Solver2024_11 {
                 result.add(rock * 2024, count);
             }
         }
-        result
+        *self = result;
     }
 
     fn blink_n_times(&mut self, n: usize) {
         for _ in 0..n {
-            *self = self.blink();
+            self.blink();
         }
     }
 }
