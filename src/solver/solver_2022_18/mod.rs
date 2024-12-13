@@ -5,10 +5,19 @@ use std::collections::HashSet;
 mod input;
 use input::INPUT;
 
-type Coordinates = (usize, usize, usize);
+#[derive(Hash, Eq, PartialEq, Copy, Clone)]
+struct Coordinate(usize, usize, usize);
+
+impl std::ops::Sub<Coordinate> for Coordinate {
+    type Output = Coordinate;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self(self.0 - rhs.0, self.1 - rhs.1, self.2 - rhs.2)
+    }
+}
 
 pub struct Solver2022_18 {
-    droplets: Vec<Coordinates>,
+    droplets: Vec<Coordinate>,
 }
 
 impl Default for Solver2022_18 {
@@ -24,7 +33,7 @@ impl<'a> From<&'a str> for Solver2022_18 {
             .map(|coordinate| {
                 let coordinate: Vec<usize> =
                     coordinate.split(",").map(|i| i.parse().unwrap()).collect();
-                (coordinate[0], coordinate[1], coordinate[2])
+                Coordinate(coordinate[0], coordinate[1], coordinate[2])
             })
             .collect();
 
@@ -32,11 +41,11 @@ impl<'a> From<&'a str> for Solver2022_18 {
     }
 }
 impl Solver2022_18 {
-    fn get_max(&self) -> Coordinates {
+    fn get_max(&self) -> Coordinate {
         self.droplets
             .iter()
             .fold(*self.droplets.first().unwrap(), |acc, current| {
-                (
+                Coordinate(
                     max(acc.0, current.0),
                     max(acc.1, current.1),
                     max(acc.2, current.2),
@@ -44,36 +53,32 @@ impl Solver2022_18 {
             })
     }
 
-    fn get_min(&self) -> Coordinates {
+    fn get_min(&self) -> Coordinate {
         self.droplets
             .iter()
             .fold(*self.droplets.first().unwrap(), |acc, current| {
-                (
+                Coordinate(
                     min(acc.0, current.0),
                     min(acc.1, current.1),
                     min(acc.2, current.2),
                 )
             })
     }
-
-    fn subtract(&self, a: Coordinates, b: Coordinates) -> Coordinates {
-        (a.0 - b.0, a.1 - b.1, a.2 - b.2)
-    }
 }
 
 impl Solver<usize, usize> for Solver2022_18 {
     fn solve_first_part(&self) -> usize {
-        let droplet_set: HashSet<Coordinates> = HashSet::from_iter(self.droplets.iter().copied());
+        let droplet_set: HashSet<Coordinate> = HashSet::from_iter(self.droplets.iter().copied());
         let mut result = self.droplets.len() * 6;
 
         for droplet in &self.droplets {
-            if droplet_set.contains(&(droplet.0 + 1, droplet.1, droplet.2)) {
+            if droplet_set.contains(&Coordinate(droplet.0 + 1, droplet.1, droplet.2)) {
                 result -= 2;
             }
-            if droplet_set.contains(&(droplet.0, droplet.1 + 1, droplet.2)) {
+            if droplet_set.contains(&Coordinate(droplet.0, droplet.1 + 1, droplet.2)) {
                 result -= 2;
             }
-            if droplet_set.contains(&(droplet.0, droplet.1, droplet.2 + 1)) {
+            if droplet_set.contains(&Coordinate(droplet.0, droplet.1, droplet.2 + 1)) {
                 result -= 2;
             }
         }
@@ -82,12 +87,9 @@ impl Solver<usize, usize> for Solver2022_18 {
     fn solve_second_part(&self) -> usize {
         let max_coordinates = self.get_max();
         let min_coordinates = self.get_min();
-        let reduced_max_coordinates = self.subtract(max_coordinates, min_coordinates);
-        let droplet_set: HashSet<Coordinates> = HashSet::from_iter(
-            self.droplets
-                .iter()
-                .map(|&c| self.subtract(c, min_coordinates)),
-        );
+        let reduced_max_coordinates = max_coordinates - min_coordinates;
+        let droplet_set: HashSet<Coordinate> =
+            HashSet::from_iter(self.droplets.iter().map(|&c| c - min_coordinates));
 
         let mut group_map =
             vec![
@@ -100,17 +102,17 @@ impl Solver<usize, usize> for Solver2022_18 {
         for i in 0..=reduced_max_coordinates.0 {
             for j in 0..=reduced_max_coordinates.1 {
                 for k in 0..=reduced_max_coordinates.2 {
-                    if droplet_set.contains(&(i, j, k)) {
+                    if droplet_set.contains(&Coordinate(i, j, k)) {
                         continue;
                     }
                     let mut neighbours: HashSet<usize> = HashSet::new();
-                    if k > 0 && !droplet_set.contains(&(i, j, k - 1)) {
+                    if k > 0 && !droplet_set.contains(&Coordinate(i, j, k - 1)) {
                         neighbours.insert(group_map[i][j][k - 1]);
                     }
-                    if j > 0 && !droplet_set.contains(&(i, j - 1, k)) {
+                    if j > 0 && !droplet_set.contains(&Coordinate(i, j - 1, k)) {
                         neighbours.insert(group_map[i][j - 1][k]);
                     }
-                    if i > 0 && !droplet_set.contains(&(i - 1, j, k)) {
+                    if i > 0 && !droplet_set.contains(&Coordinate(i - 1, j, k)) {
                         neighbours.insert(group_map[i - 1][j][k]);
                     }
                     if let Some(&group) = neighbours.iter().next() {
@@ -160,7 +162,7 @@ impl Solver<usize, usize> for Solver2022_18 {
         }
 
         let mut result = 0;
-        for (x, y, z) in droplet_set {
+        for Coordinate(x, y, z) in droplet_set {
             if x == 0 || outer_groups.contains(&group_map[x - 1][y][z]) {
                 result += 1;
             }
