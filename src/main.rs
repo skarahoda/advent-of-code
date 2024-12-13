@@ -13,7 +13,7 @@ use solver::{
     solver_2015_07, solver_2022_01, solver_2022_02, solver_2022_03, solver_2022_04, solver_2022_05,
     solver_2022_06, solver_2022_07, solver_2022_08, solver_2022_09, solver_2022_10, solver_2022_11,
     solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17,
-    solver_2022_18, Solver, Solver2022_20, Solver2022_21, Solver2022_22, Solver2024_01,
+    Solver, Solver2022_18, Solver2022_20, Solver2022_21, Solver2022_22, Solver2024_01,
     Solver2024_02, Solver2024_03, Solver2024_04, Solver2024_05, Solver2024_06, Solver2024_07,
     Solver2024_08, Solver2024_09, Solver2024_10, Solver2024_11, Solver2024_12,
 };
@@ -145,7 +145,7 @@ fn main() {
         (Year::Year2022, Day::Day15) => print_answers(solver_2022_15::solve()),
         (Year::Year2022, Day::Day16) => print_answers(solver_2022_16::solve()),
         (Year::Year2022, Day::Day17) => print_answers(solver_2022_17::solve()),
-        (Year::Year2022, Day::Day18) => print_answers(solver_2022_18::solve()),
+        (Year::Year2022, Day::Day18) => solve(Box::new(Solver2022_18::default())),
         (Year::Year2022, Day::Day20) => solve(Box::new(Solver2022_20::default())),
         (Year::Year2022, Day::Day21) => solve(Box::new(Solver2022_21::default())),
         (Year::Year2022, Day::Day22) => solve(Box::new(Solver2022_22::default())),

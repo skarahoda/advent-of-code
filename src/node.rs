@@ -3,7 +3,7 @@ use super::solver::{
     solver_2015_07, solver_2022_01, solver_2022_02, solver_2022_03, solver_2022_04, solver_2022_05,
     solver_2022_06, solver_2022_07, solver_2022_08, solver_2022_09, solver_2022_10, solver_2022_11,
     solver_2022_12, solver_2022_13, solver_2022_14, solver_2022_15, solver_2022_16, solver_2022_17,
-    solver_2022_18, Solver, Solver2022_20, Solver2022_21, Solver2022_22, Solver2024_01,
+    Solver, Solver2022_18, Solver2022_20, Solver2022_21, Solver2022_22, Solver2024_01,
     Solver2024_02, Solver2024_03, Solver2024_04, Solver2024_05, Solver2024_06, Solver2024_07,
     Solver2024_08, Solver2024_09, Solver2024_10, Solver2024_11, Solver2024_12,
 };
@@ -60,7 +60,7 @@ pub fn solve(year: u32, day: u32) -> Answers {
         (2022, 15) => Answers::from(solver_2022_15::solve()),
         (2022, 16) => Answers::from(solver_2022_16::solve()),
         (2022, 17) => Answers::from(solver_2022_17::solve()),
-        (2022, 18) => Answers::from(solver_2022_18::solve()),
+        (2022, 18) => Answers::from(Box::new(Solver2022_18::default()) as Box<dyn Solver<_, _>>),
         (2022, 20) => Answers::from(Box::new(Solver2022_20::default()) as Box<dyn Solver<_, _>>),
         (2022, 21) => Answers::from(Box::new(Solver2022_21::default()) as Box<dyn Solver<_, _>>),
         (2022, 22) => Answers::from(Box::new(Solver2022_22::default()) as Box<dyn Solver<_, _>>),
