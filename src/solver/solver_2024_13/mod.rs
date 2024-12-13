@@ -21,42 +21,30 @@ fn div_without_remainder(a: usize, b: usize) -> Option<usize> {
         None
     }
 }
+
+fn calc_det(a: (usize, usize), b: (usize, usize)) -> usize {
+    (a.0 * b.1).abs_diff(a.1 * b.0)
+}
+
 impl ClawMachine {
-    fn get_result_with_all_button_b(&self) -> Option<usize> {
-        let steps_x = div_without_remainder(self.prize.0, self.button_b.0)?;
-        let steps_y = div_without_remainder(self.prize.1, self.button_b.1)?;
-
-        if steps_x == steps_y {
-            Some(steps_x)
-        } else {
-            None
-        }
-    }
-
     fn get_with_min_cost(&self) -> Option<(usize, usize)> {
-        if self.prize.0 == 0 && self.prize.1 == 0 {
-            return Some((0, 0));
+        let det = calc_det(self.button_a, self.button_b);
+        if det == 0 {
+            let button_a_steps = div_without_remainder(self.prize.0, self.button_a.0)?;
+            let button_b_steps = div_without_remainder(self.prize.1, self.button_a.1)?;
+            if button_a_steps * 3 < button_b_steps {
+                return Some((button_a_steps, 0));
+            } else {
+                return Some((0, button_b_steps));
+            }
         }
+        let det_a = calc_det(self.button_a, self.prize);
+        let det_b = calc_det(self.button_b, self.prize);
 
-        let recursion = || {
-            let mutated_prize = Self {
-                prize: (
-                    self.prize.0.checked_sub(self.button_a.0)?,
-                    self.prize.1.checked_sub(self.button_a.1)?,
-                ),
-                ..*self
-            };
-            mutated_prize.get_with_min_cost().map(|(a, b)| (a + 1, b))
-        };
-
-        vec![
-            self.get_result_with_all_button_b().map(|b| (0, b)),
-            recursion(),
-        ]
-        .iter()
-        .flatten()
-        .min_by(|&lhs, &rhs| calculate_token_cost(lhs).cmp(&calculate_token_cost(rhs)))
-        .cloned()
+        Some((
+            div_without_remainder(det_b, det)?,
+            div_without_remainder(det_a, det)?,
+        ))
     }
 }
 
@@ -95,10 +83,10 @@ impl Solver2024_13 {
         self.machines
             .iter()
             .filter_map(|machine| {
-                machine
-                    .get_with_min_cost()
-                    .map(|val| calculate_token_cost(&val))
+                // println!("{:?} {:?}", machine, machine.get_with_min_cost());
+                machine.get_with_min_cost()
             })
+            .map(|(a, b)| calculate_token_cost(&(a, b)))
             .sum()
     }
 }
