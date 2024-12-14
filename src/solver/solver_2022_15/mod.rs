@@ -1,103 +1,119 @@
+use super::Solver;
 mod input;
 use input::INPUT;
 use regex::Regex;
 use std::collections::HashSet;
 
-type Coordinates = (i64, i64);
-type SensorAndBeacons = Vec<(Coordinates, Coordinates)>;
+#[derive(Debug, PartialEq, Eq)]
+struct Coordinate(i64, i64);
 
-fn get_sensor_and_beacons(input: &str) -> SensorAndBeacons {
-    let re =
-        Regex::new(r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)")
-            .unwrap();
-    input
-        .split("\n")
-        .map(|row| {
-            let positions = re.captures(row).unwrap();
-            (
-                (
-                    positions.get(1).unwrap().as_str().parse().unwrap(),
-                    positions.get(2).unwrap().as_str().parse().unwrap(),
-                ),
-                (
-                    positions.get(3).unwrap().as_str().parse().unwrap(),
-                    positions.get(4).unwrap().as_str().parse().unwrap(),
-                ),
-            )
-        })
-        .collect()
+impl Coordinate {
+    fn distance(&self, other: &Coordinate) -> i64 {
+        (self.0 - other.0).abs() + (self.1 - other.1).abs()
+    }
 }
 
-fn find_distance(a: &Coordinates, b: &Coordinates) -> i64 {
-    (a.0 - b.0).abs() + (a.1 - b.1).abs()
+type SensorAndBeacons = Vec<(Coordinate, Coordinate)>;
+
+pub struct Solver2022_15 {
+    sensor_and_beacons: SensorAndBeacons,
 }
 
-fn find_beacon_free_cells(sensor_and_beacons: &SensorAndBeacons, row: i64) -> usize {
-    let mut beacons: HashSet<i64> = HashSet::new();
-    let mut results: HashSet<i64> = HashSet::new();
-    for (sensor, beacon) in sensor_and_beacons {
-        if beacon.1 == row {
-            beacons.insert(beacon.0);
+impl Default for Solver2022_15 {
+    fn default() -> Self {
+        Self::from(INPUT)
+    }
+}
+
+impl<'a> From<&'a str> for Solver2022_15 {
+    fn from(input: &'a str) -> Self {
+        let re = Regex::new(
+            r"Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)",
+        )
+        .unwrap();
+        Self {
+            sensor_and_beacons: input
+                .split("\n")
+                .map(|row| {
+                    let positions = re.captures(row).unwrap();
+                    (
+                        Coordinate(
+                            positions.get(1).unwrap().as_str().parse().unwrap(),
+                            positions.get(2).unwrap().as_str().parse().unwrap(),
+                        ),
+                        Coordinate(
+                            positions.get(3).unwrap().as_str().parse().unwrap(),
+                            positions.get(4).unwrap().as_str().parse().unwrap(),
+                        ),
+                    )
+                })
+                .collect(),
         }
-        let distance = find_distance(sensor, beacon);
-        let row_distance = (sensor.1 - row).abs();
-        if row_distance < distance {
-            let diff = distance - row_distance;
-            for i in sensor.0 - diff..=sensor.0 + diff {
-                results.insert(i);
+    }
+}
+
+impl Solver2022_15 {
+    fn find_beacon_free_cells(&self, row: i64) -> usize {
+        let mut beacons: HashSet<i64> = HashSet::new();
+        let mut results: HashSet<i64> = HashSet::new();
+        for (sensor, beacon) in &self.sensor_and_beacons {
+            if beacon.1 == row {
+                beacons.insert(beacon.0);
             }
-        }
-    }
-    for beacon in beacons {
-        results.remove(&beacon);
-    }
-    results.len()
-}
-
-fn find_distress_beacon(sensor_and_beacons: &SensorAndBeacons, max_coordinate: i64) -> Coordinates {
-    let coverage_areas: Vec<(Coordinates, i64)> = sensor_and_beacons
-        .iter()
-        .map(|&(sensor, beacon)| (sensor, find_distance(&sensor, &beacon)))
-        .collect();
-
-    for j in 0..=max_coordinate {
-        let mut i = 0;
-        while i < max_coordinate {
-            let current_location = (i, j);
-            let mut covered = false;
-            for &(sensor, radius) in &coverage_areas {
-                let distance = find_distance(&sensor, &current_location);
-                if distance <= radius {
-                    i += radius - distance;
-                    covered = true;
-                    break;
+            let distance = sensor.distance(beacon);
+            let row_distance = (sensor.1 - row).abs();
+            if row_distance < distance {
+                let diff = distance - row_distance;
+                for i in sensor.0 - diff..=sensor.0 + diff {
+                    results.insert(i);
                 }
             }
-            if !covered {
-                return current_location;
-            }
-            i += 1;
         }
+        for beacon in beacons {
+            results.remove(&beacon);
+        }
+        results.len()
     }
-    panic!("beacon not found");
+
+    fn find_distress_beacon(&self, max_coordinate: i64) -> Coordinate {
+        let coverage_areas: Vec<(&Coordinate, i64)> = self
+            .sensor_and_beacons
+            .iter()
+            .map(|(sensor, beacon)| (sensor, sensor.distance(beacon)))
+            .collect();
+
+        for j in 0..=max_coordinate {
+            let mut i = 0;
+            while i < max_coordinate {
+                let current_location = Coordinate(i, j);
+                let mut covered = false;
+                for &(sensor, radius) in &coverage_areas {
+                    let distance = sensor.distance(&current_location);
+                    if distance <= radius {
+                        i += radius - distance;
+                        covered = true;
+                        break;
+                    }
+                }
+                if !covered {
+                    return current_location;
+                }
+                i += 1;
+            }
+        }
+        panic!("beacon not found");
+    }
 }
 
-fn solve_first_part(sensor_and_beacons: &SensorAndBeacons) -> usize {
-    find_beacon_free_cells(sensor_and_beacons, 2000000)
-}
+impl Solver<usize, i64> for Solver2022_15 {
+    fn solve_first_part(&self) -> usize {
+        self.find_beacon_free_cells(2000000)
+    }
 
-fn solve_second_part(sensor_and_beacons: &SensorAndBeacons) -> i64 {
-    let beacon = find_distress_beacon(sensor_and_beacons, 4000000);
-    dbg!(&beacon);
-    (beacon.0 * 4000000) + beacon.1
-}
-
-pub fn solve() -> (usize, i64) {
-    let sensor_and_beacons = get_sensor_and_beacons(INPUT);
-    (
-        solve_first_part(&sensor_and_beacons),
-        solve_second_part(&sensor_and_beacons),
-    )
+    fn solve_second_part(&self) -> i64 {
+        let beacon = self.find_distress_beacon(4000000);
+        (beacon.0 * 4000000) + beacon.1
+    }
 }
 
 #[cfg(test)]
@@ -121,37 +137,14 @@ mod tests {
         Sensor at x=20, y=1: closest beacon is at x=15, y=3";
 
     #[test]
-    fn should_get_sensor_and_beacons() {
-        assert_eq!(
-            get_sensor_and_beacons(EXAMPLE),
-            vec![
-                ((2, 18), (-2, 15)),
-                ((9, 16), (10, 16)),
-                ((13, 2), (15, 3)),
-                ((12, 14), (10, 16)),
-                ((10, 20), (10, 16)),
-                ((14, 17), (10, 16)),
-                ((8, 7), (2, 10)),
-                ((2, 0), (2, 10)),
-                ((0, 11), (2, 10)),
-                ((20, 14), (25, 17)),
-                ((17, 20), (21, 22)),
-                ((16, 7), (15, 3)),
-                ((14, 3), (15, 3)),
-                ((20, 1), (15, 3)),
-            ]
-        );
-    }
-
-    #[test]
     fn should_solve_first_part() {
-        let sensors_and_beacons = get_sensor_and_beacons(EXAMPLE);
-        assert_eq!(find_beacon_free_cells(&sensors_and_beacons, 10), 26);
+        let solver = Solver2022_15::from(EXAMPLE);
+        assert_eq!(solver.find_beacon_free_cells(10), 26);
     }
 
     #[test]
     fn should_solve_second_part() {
-        let sensors_and_beacons = get_sensor_and_beacons(EXAMPLE);
-        assert_eq!(find_distress_beacon(&sensors_and_beacons, 20), (14, 11));
+        let solver = Solver2022_15::from(EXAMPLE);
+        assert_eq!(solver.find_distress_beacon(20), Coordinate(14, 11));
     }
 }
