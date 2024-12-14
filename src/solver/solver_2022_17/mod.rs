@@ -1,3 +1,4 @@
+use super::Solver;
 mod input;
 use input::INPUT;
 use std::collections::{HashMap, HashSet};
@@ -292,17 +293,32 @@ fn solve_puzzle(moves: &Vec<Move>, number_of_rocks: usize) -> usize {
     chamber.height
 }
 
-fn solve_first_part(moves: &Vec<Move>) -> usize {
-    solve_puzzle(moves, 2022)
+pub struct Solver2022_17 {
+    moves: Vec<Move>,
 }
 
-fn solve_second_part(moves: &Vec<Move>) -> usize {
-    solve_puzzle(moves, 1000000000000)
+impl Default for Solver2022_17 {
+    fn default() -> Self {
+        Self::from(INPUT)
+    }
 }
 
-pub fn solve() -> (usize, usize) {
-    let moves = get_moves(INPUT);
-    (solve_first_part(&moves), solve_second_part(&moves))
+impl<'a> From<&'a str> for Solver2022_17 {
+    fn from(input: &'a str) -> Self {
+        Self {
+            moves: get_moves(input)
+        }
+    }
+}
+
+impl Solver<usize, usize> for Solver2022_17 {
+    fn solve_first_part(&self) -> usize {
+        solve_puzzle(&self.moves, 2022)
+    }
+
+    fn solve_second_part(&self) -> usize {
+        solve_puzzle(&self.moves, 1000000000000)
+    }
 }
 
 #[cfg(test)]
@@ -362,11 +378,13 @@ mod tests {
 
     #[test]
     fn should_solve_first_part() {
-        assert_eq!(solve_first_part(&get_moves(EXAMPLE)), 3068);
+        let solver = Solver2022_17::from(EXAMPLE);
+        assert_eq!(solver.solve_first_part(), 3068);
     }
 
     #[test]
     fn should_solve_second_part() {
-        assert_eq!(solve_second_part(&get_moves(EXAMPLE)), 1514285714288);
+        let solver = Solver2022_17::from(EXAMPLE);
+        assert_eq!(solver.solve_second_part(), 1514285714288);
     }
 }
