@@ -1,4 +1,5 @@
 use super::Solver;
+use std::collections::VecDeque;
 mod input;
 use input::INPUT;
 
@@ -92,15 +93,15 @@ impl From<&str> for Game {
 impl Game {
     fn find_boxes_on_the_way(&mut self, direction: &Direction) -> Option<Vec<(Coordinate, bool)>> {
         let mut boxes = Vec::new();
-        let mut queue = vec![self.player.next(direction)];
-        while let Some(current_coordinate) = queue.pop() {
+        let mut queue = VecDeque::from(vec![self.player.next(direction)]);
+        while let Some(current_coordinate) = queue.pop_front() {
             let cell = &self.map[current_coordinate.1][current_coordinate.0];
             match cell {
                 Cell::Wall => return None,
                 Cell::Empty => {}
                 Cell::Box => {
                     boxes.push((current_coordinate.clone(), false));
-                    queue.push(current_coordinate.next(direction));
+                    queue.push_back(current_coordinate.next(direction));
                 }
                 Cell::BoxLeft | Cell::BoxRight => {
                     let anchor_coordinate = if *cell == Cell::BoxLeft {
@@ -110,8 +111,8 @@ impl Game {
                     };
                     if !boxes.contains(&(anchor_coordinate.clone(), true)) {
                         boxes.push((anchor_coordinate.clone(), true));
-                        queue.push(anchor_coordinate.next(direction));
-                        queue.push(anchor_coordinate.next(&Direction::Right).next(direction));
+                        queue.push_back(anchor_coordinate.next(direction));
+                        queue.push_back(anchor_coordinate.next(&Direction::Right).next(direction));
                     }
                 }
             }
@@ -263,5 +264,25 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^\
     fn should_solve_second_part() {
         let solver = Solver2024_15::from(BIG_EXAMPLE);
         assert_eq!(solver.solve_second_part(), 9021);
+    }
+
+    #[test]
+    fn should_solve_second_part_example_from_reddit() {
+        let solver = Solver2024_15::from(
+            "\
+######
+#....#
+#..#.#
+#....#
+#.O..#
+#.OO@#
+#.O..#
+#....#
+######
+
+<vv<<^^^\
+",
+        );
+        assert_eq!(solver.solve_second_part(), 1216);
     }
 }
