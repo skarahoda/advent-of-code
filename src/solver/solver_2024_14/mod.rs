@@ -1,10 +1,12 @@
 use super::Solver;
 use regex::Regex;
-use std::collections::{HashMap, HashSet};
-use std::io::Write;
+use std::collections::HashMap;
 
 mod input;
 use input::INPUT;
+
+mod christmas_tree;
+use christmas_tree::CHRISTMAS_TREE;
 
 fn move_robot(
     robot: &mut (usize, usize, isize, isize),
@@ -56,23 +58,34 @@ impl From<&str> for Solver2024_14 {
 }
 
 impl Solver2024_14 {
-    fn write_to_file(&self, path: &str) {
-        let mut file = std::fs::File::create(path).unwrap();
-        let map = self
-            .robots
-            .iter()
-            .map(|&(x, y, ..)| (x, y))
-            .collect::<HashSet<(usize, usize)>>();
-        for y in 0..self.height {
-            for x in 0..self.width {
-                if map.contains(&(x, y)) {
-                    write!(file, "#").unwrap();
-                } else {
-                    write!(file, ".").unwrap();
+    fn has_christmas_tree(&self) -> bool {
+        let mut map = vec![vec![false; self.width]; self.height];
+        for &(x, y, ..) in &self.robots {
+            if x < self.width && y < self.height {
+                map[y][x] = true;
+            }
+        }
+
+        for x in 0..self.width - CHRISTMAS_TREE[0].len() + 1 {
+            for y in 0..self.height - CHRISTMAS_TREE.len() + 1 {
+                let window = map
+                    .iter()
+                    .skip(y)
+                    .take(CHRISTMAS_TREE.len())
+                    .map(|row| row.iter().skip(x).take(CHRISTMAS_TREE[0].len()));
+                let mut is_christmas_tree = true;
+                for (y, row) in window.enumerate() {
+                    if !row.eq(&CHRISTMAS_TREE[y]) {
+                        is_christmas_tree = false;
+                        break;
+                    }
+                }
+                if is_christmas_tree {
+                    return true;
                 }
             }
-            write!(file, "\n").unwrap();
         }
+        false
     }
 
     fn move_robots(&mut self, duration: usize) {
@@ -105,14 +118,14 @@ impl Solver<usize, usize> for Solver2024_14 {
 
     fn solve_second_part(&self) -> usize {
         let mut mutated = self.clone();
-        for i in 0..10000 {
-            if i % 100 == 0 {
-                println!("Iteration: {}", i);
+        let mut i = 0;
+        loop {
+            if mutated.has_christmas_tree() {
+                return i;
             }
-            mutated.write_to_file(&format!("outputs/map_{}.txt", i));
             mutated.move_robots(1);
+            i += 1;
         }
-        0
     }
 }
 
