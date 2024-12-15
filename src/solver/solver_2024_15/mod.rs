@@ -29,78 +29,24 @@ impl Coordinate {
             Direction::Right => self.0 += 1,
         }
     }
+    fn next(&self, direction: &Direction) -> Self {
+        match direction {
+            Direction::Up => Self(self.0, self.1 - 1),
+            Direction::Down => Self(self.0, self.1 + 1),
+            Direction::Left => Self(self.0 - 1, self.1),
+            Direction::Right => Self(self.0 + 1, self.1),
+        }
+    }
 }
 
 #[derive(Clone)]
-pub struct Solver2024_15 {
+pub struct Game {
     map: Vec<Vec<Cell>>,
     player: Coordinate,
     directions: Vec<Direction>,
 }
 
-impl Default for Solver2024_15 {
-    fn default() -> Self {
-        Self::from(INPUT)
-    }
-}
-
-impl Solver2024_15 {
-    fn find_first_wall_or_empty_cell(
-        &self,
-        coordinate: &Coordinate,
-        direction: &Direction,
-    ) -> (Coordinate, bool) {
-        let mut coordinate = coordinate.clone();
-        loop {
-            coordinate.move_by(direction);
-
-            let cell = &self.map[coordinate.1][coordinate.0];
-            match cell {
-                Cell::Wall => return (coordinate.clone(), false),
-                Cell::Empty => return (coordinate.clone(), true),
-                _ => {}
-            }
-        }
-    }
-
-    fn set_boxes(&mut self, first_empty_cell: &Coordinate) {
-        let min_x = first_empty_cell.0.min(self.player.0);
-        let min_y = first_empty_cell.1.min(self.player.1);
-        let max_x = first_empty_cell.0.max(self.player.0);
-        let max_y = first_empty_cell.1.max(self.player.1);
-        for y in min_y..=max_y {
-            for x in min_x..=max_x {
-                self.map[y][x] = Cell::Box;
-            }
-        }
-    }
-
-    fn move_player(&mut self) {
-        while let Some(direction) = self.directions.pop() {
-            let (first_cell, is_empty) =
-                self.find_first_wall_or_empty_cell(&self.player, &direction);
-            if is_empty {
-                self.player.move_by(&direction);
-                self.set_boxes(&first_cell);
-                self.map[self.player.1][self.player.0] = Cell::Empty;
-            }
-        }
-    }
-
-    fn calculate_score(&self) -> usize {
-        self.map.iter().enumerate().fold(0, |acc, (y, row)| {
-            row.iter().enumerate().fold(acc, |acc, (x, cell)| {
-                if *cell == Cell::Box {
-                    acc + (x + 100usize * y)
-                } else {
-                    acc
-                }
-            })
-        })
-    }
-}
-
-impl From<&str> for Solver2024_15 {
+impl From<&str> for Game {
     fn from(input: &str) -> Self {
         let parts = input.split("\n\n").collect::<Vec<_>>();
         let map = parts[0]
@@ -142,11 +88,78 @@ impl From<&str> for Solver2024_15 {
     }
 }
 
+impl Game {
+    fn find_boxes_on_the_way(&mut self, direction: &Direction) -> Option<Vec<Coordinate>> {
+        let mut boxes = Vec::new();
+        let mut queue = vec![self.player.next(direction)];
+        while let Some(current_coordinate) = queue.pop() {
+            let cell = &self.map[current_coordinate.1][current_coordinate.0];
+            match cell {
+                Cell::Wall => return None,
+                Cell::Empty => {}
+                Cell::Box => {
+                    boxes.push(current_coordinate.clone());
+                    queue.push(current_coordinate.next(direction));
+                }
+            }
+        }
+        Some(boxes)
+    }
+
+    fn move_boxes(&mut self, boxes: &Vec<Coordinate>, direction: &Direction) {
+        for box_coordinate in boxes.iter().rev() {
+            self.map[box_coordinate.1][box_coordinate.0] = Cell::Empty;
+            let next_coordinate = box_coordinate.next(direction);
+            self.map[next_coordinate.1][next_coordinate.0] = Cell::Box;
+        }
+    }
+
+    fn move_player(&mut self) {
+        while let Some(direction) = self.directions.pop() {
+            let boxes = self.find_boxes_on_the_way(&direction);
+            if let Some(boxes) = boxes {
+                self.move_boxes(&boxes, &direction);
+                self.player.move_by(&direction);
+            }
+        }
+    }
+
+    fn calculate_score(&self) -> usize {
+        self.map.iter().enumerate().fold(0, |acc, (y, row)| {
+            row.iter().enumerate().fold(acc, |acc, (x, cell)| {
+                if *cell == Cell::Box {
+                    acc + (x + 100usize * y)
+                } else {
+                    acc
+                }
+            })
+        })
+    }
+}
+
+#[derive(Clone)]
+pub struct Solver2024_15 {
+    part1: Game,
+}
+
+impl Default for Solver2024_15 {
+    fn default() -> Self {
+        Self::from(INPUT)
+    }
+}
+
+impl From<&str> for Solver2024_15 {
+    fn from(input: &str) -> Self {
+        let part1 = Game::from(input);
+        Self { part1 }
+    }
+}
+
 impl Solver<usize, u64> for Solver2024_15 {
     fn solve_first_part(&self) -> usize {
         let mut mutated = self.clone();
-        mutated.move_player();
-        mutated.calculate_score()
+        mutated.part1.move_player();
+        mutated.part1.calculate_score()
     }
 
     fn solve_second_part(&self) -> u64 {
