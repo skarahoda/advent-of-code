@@ -64,3 +64,5 @@ mod solver_2024_13;
 pub use solver_2024_13::Solver2024_13;
 mod solver_2024_14;
 pub use solver_2024_14::Solver2024_14;
+mod solver_2024_15;
+pub use solver_2024_15::Solver2024_15;
