@@ -8,7 +8,7 @@ use std::cmp::Ordering;
 #[derive(pest_derive::Parser)]
 #[grammar = "solver/solver_2022_13/grammar.pest"]
 struct SantaParser;
-type List = Vec<Box<ListItem>>;
+type List = Vec<ListItem>;
 
 fn cmp(left: &List, right: &List) -> Ordering {
     if left.is_empty() && right.is_empty() {
@@ -35,8 +35,8 @@ impl Ord for ListItem {
         match (self.clone(), other.clone()) {
             (ListItem::Integer(left), ListItem::Integer(right)) => left.cmp(&right),
             (ListItem::List(left), ListItem::List(right)) => cmp(&left, &right),
-            (left, ListItem::List(right)) => cmp(&vec![Box::new(left)], &right),
-            (ListItem::List(left), right) => cmp(&left, &vec![Box::new(right)]),
+            (left, ListItem::List(right)) => cmp(&vec![left], &right),
+            (ListItem::List(left), right) => cmp(&left, &vec![right]),
         }
     }
 }
@@ -59,19 +59,17 @@ impl Default for Solver2022_13 {
 
 fn parse_list(list: Pair<Rule>) -> List {
     list.into_inner()
-        .map(|item| {
-            Box::new(match item.as_rule() {
-                Rule::Number => ListItem::Integer(item.as_str().parse().unwrap()),
-                Rule::List => ListItem::List(parse_list(item)),
-                other => panic!("syntax error: list item expected, found {:?}", other),
-            })
+        .map(|item| match item.as_rule() {
+            Rule::Number => ListItem::Integer(item.as_str().parse().unwrap()),
+            Rule::List => ListItem::List(parse_list(item)),
+            _ => unreachable!(),
         })
         .collect()
 }
 
 impl From<&str> for Solver2022_13 {
     fn from(input: &str) -> Self {
-        let packets = SantaParser::parse(Rule::Packets, input).unwrap_or_else(|e| panic!("{}", e));
+        let packets = SantaParser::parse(Rule::Packets, input).unwrap();
         let pair_of_packets = packets
             .peek()
             .unwrap()
@@ -100,12 +98,8 @@ impl Solver<usize, usize> for Solver2022_13 {
     }
 
     fn solve_second_part(&self) -> usize {
-        let first: &List = &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(
-            2,
-        ))]))];
-        let second: &List = &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(
-            6,
-        ))]))];
+        let first: &List = &vec![ListItem::List(vec![ListItem::Integer(2)])];
+        let second: &List = &vec![ListItem::List(vec![ListItem::Integer(6)])];
 
         let mut packets: Vec<List> = self.pair_of_packets.iter().fold(
             vec![first.clone(), second.clone()],
@@ -167,32 +161,32 @@ mod tests {
             vec![
                 (
                     vec![
-                        Box::new(ListItem::Integer(1)),
-                        Box::new(ListItem::Integer(1)),
-                        Box::new(ListItem::Integer(3)),
-                        Box::new(ListItem::Integer(1)),
-                        Box::new(ListItem::Integer(1)),
+                        ListItem::Integer(1),
+                        ListItem::Integer(1),
+                        ListItem::Integer(3),
+                        ListItem::Integer(1),
+                        ListItem::Integer(1),
                     ],
                     vec![
-                        Box::new(ListItem::Integer(1)),
-                        Box::new(ListItem::Integer(1)),
-                        Box::new(ListItem::Integer(5)),
-                        Box::new(ListItem::Integer(1)),
-                        Box::new(ListItem::Integer(1)),
+                        ListItem::Integer(1),
+                        ListItem::Integer(1),
+                        ListItem::Integer(5),
+                        ListItem::Integer(1),
+                        ListItem::Integer(1),
                     ]
                 ),
                 (
                     vec![
-                        Box::new(ListItem::List(vec![Box::new(ListItem::Integer(1))])),
-                        Box::new(ListItem::List(vec![
-                            Box::new(ListItem::Integer(2)),
-                            Box::new(ListItem::Integer(3)),
-                            Box::new(ListItem::Integer(4)),
-                        ])),
+                        ListItem::List(vec![ListItem::Integer(1)]),
+                        ListItem::List(vec![
+                            ListItem::Integer(2),
+                            ListItem::Integer(3),
+                            ListItem::Integer(4),
+                        ]),
                     ],
                     vec![
-                        Box::new(ListItem::List(vec![Box::new(ListItem::Integer(1))])),
-                        Box::new(ListItem::Integer(4))
+                        ListItem::List(vec![ListItem::Integer(1)]),
+                        ListItem::Integer(4),
                     ]
                 )
             ]
