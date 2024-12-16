@@ -1,21 +1,53 @@
+use super::Solver;
 use std::collections::VecDeque;
 
-#[derive(PartialEq, Debug)]
-struct Maze {
-    pub points: Vec<Vec<usize>>,
-    pub start_coordinates: (usize, usize),
-    pub end_coordinates: (usize, usize),
+pub struct Solver2022_12 {
+    points: Vec<Vec<usize>>,
+    start_coordinates: (usize, usize),
+    end_coordinates: (usize, usize),
 }
 
-impl Maze {
-    fn new(x: usize, y: usize) -> Self {
+impl Default for Solver2022_12 {
+    fn default() -> Self {
+        Self::from(include_str!("input.txt"))
+    }
+}
+
+impl From<&str> for Solver2022_12 {
+    fn from(input: &str) -> Self {
+        let rows: Vec<&str> = input.split("\n").collect();
+        let x = rows[0].len();
+        let y = rows.len();
+        let mut start_coordinates = (0, 0);
+        let mut end_coordinates = (0, 0);
+        let mut points = vec![vec![0; x]; y];
+        for (i, row) in rows.iter().enumerate() {
+            for (j, char) in row.chars().enumerate() {
+                match char {
+                    'S' => {
+                        start_coordinates = (j, i);
+                        points[i][j] = 0;
+                    }
+                    'E' => {
+                        end_coordinates = (j, i);
+                        points[i][j] = 25;
+                    }
+                    'a'..='z' => {
+                        points[i][j] = (char as usize) - ('a' as usize);
+                    }
+                    _ => unreachable!(),
+                }
+            }
+        }
         Self {
-            points: vec![vec![0; x]; y],
-            start_coordinates: (0, 0),
-            end_coordinates: (0, 0),
+            start_coordinates,
+            end_coordinates,
+            points,
         }
     }
+}
 
+impl Solver2022_12 {
     fn get_available_neighbours(
         &self,
         (x, y): (usize, usize),
@@ -120,43 +152,14 @@ impl Maze {
     }
 }
 
-fn get_maze(input: &str) -> Maze {
-    let rows: Vec<&str> = input.split("\n").collect();
-    let x = rows[0].len();
-    let y = rows.len();
-    let mut result = Maze::new(x, y);
-    for (i, row) in rows.iter().enumerate() {
-        for (j, char) in row.chars().enumerate() {
-            match char {
-                'S' => {
-                    result.start_coordinates = (j, i);
-                    result.points[i][j] = 0;
-                }
-                'E' => {
-                    result.end_coordinates = (j, i);
-                    result.points[i][j] = 25;
-                }
-                'a'..='z' => {
-                    result.points[i][j] = (char as usize) - ('a' as usize);
-                }
-                other => panic!("Illegal argument: {}", other),
-            }
-        }
+impl Solver<usize, usize> for Solver2022_12 {
+    fn solve_first_part(&self) -> usize {
+        self.find_shortest_path_from_start()
     }
-    result
-}
 
-fn solve_first_part(maze: &Maze) -> usize {
-    maze.find_shortest_path_from_start()
-}
-
-fn solve_second_part(maze: &Maze) -> usize {
-    maze.find_shortest_path_from_anywhere()
-}
-
-pub fn solve() -> (usize, usize) {
-    let maze = get_maze(include_str!("input.txt"));
-    (solve_first_part(&maze), solve_second_part(&maze))
+    fn solve_second_part(&self) -> usize {
+        self.find_shortest_path_from_anywhere()
+    }
 }
 
 #[cfg(test)]
@@ -171,31 +174,14 @@ mod tests {
         abdefghi";
 
     #[test]
-    fn should_parse_input() {
-        assert_eq!(
-            get_maze(EXAMPLE),
-            Maze {
-                points: vec![
-                    vec![0, 0, 1, 16, 15, 14, 13, 12],
-                    vec![0, 1, 2, 17, 24, 23, 23, 11],
-                    vec![0, 2, 2, 18, 25, 25, 23, 10],
-                    vec![0, 2, 2, 19, 20, 21, 22, 9],
-                    vec![0, 1, 3, 4, 5, 6, 7, 8]
-                ],
-                start_coordinates: (0, 0),
-                end_coordinates: (5, 2)
-            }
-        )
+    fn should_solve_first_part_example() {
+        let solver = Solver2022_12::from(EXAMPLE);
+        assert_eq!(solver.solve_first_part(), 31);
     }
 
     #[test]
-    fn should_solve_first_part_example() {
-        let maze = get_maze(EXAMPLE);
-        assert_eq!(solve_first_part(&maze), 31);
-    }
-    #[test]
     fn should_solve_second_part_example() {
-        let maze = get_maze(EXAMPLE);
-        assert_eq!(solve_second_part(&maze), 29);
+        let solver = Solver2022_12::from(EXAMPLE);
+        assert_eq!(solver.solve_second_part(), 29);
     }
 }
