@@ -1,3 +1,4 @@
+use super::Solver;
 mod input;
 use input::INPUT;
 use pest::iterators::Pair;
@@ -7,7 +8,6 @@ use std::cmp::Ordering;
 #[derive(pest_derive::Parser)]
 #[grammar = "solver/solver_2022_13/grammar.pest"]
 struct SantaParser;
-
 type List = Vec<Box<ListItem>>;
 
 fn cmp(left: &List, right: &List) -> Ordering {
@@ -47,80 +47,87 @@ impl PartialOrd for ListItem {
     }
 }
 
-fn parse_list_item(input: Pair<Rule>) -> ListItem {
-    match input.as_rule() {
-        Rule::Number => ListItem::Integer(input.as_str().parse().unwrap()),
-        Rule::List => ListItem::List(parse_list(input)),
-        other => panic!("syntax error: list item expected, found {:?}", other),
+pub struct Solver2022_13 {
+    pair_of_packets: Vec<(List, List)>,
+}
+
+impl Default for Solver2022_13 {
+    fn default() -> Self {
+        Self::from(INPUT)
     }
 }
 
-fn parse_list(input: Pair<Rule>) -> List {
-    input
-        .into_inner()
-        .map(|item| Box::new(parse_list_item(item)))
-        .collect()
-}
-
-fn parse_pair_of_packets(input: &str) -> Vec<(List, List)> {
-    let pockets = SantaParser::parse(Rule::Pockets, input).unwrap_or_else(|e| panic!("{}", e));
-    pockets
-        .peek()
-        .unwrap()
-        .into_inner()
-        .map(|pocket| {
-            let mut pair = pocket.into_inner();
-            (
-                parse_list(pair.next().unwrap()),
-                parse_list(pair.next().unwrap()),
-            )
+fn parse_list(list: Pair<Rule>) -> List {
+    list.into_inner()
+        .map(|item| {
+            Box::new(match item.as_rule() {
+                Rule::Number => ListItem::Integer(item.as_str().parse().unwrap()),
+                Rule::List => ListItem::List(parse_list(item)),
+                other => panic!("syntax error: list item expected, found {:?}", other),
+            })
         })
         .collect()
 }
 
-fn solve_first_part(pair_of_pockets: &Vec<(List, List)>) -> usize {
-    pair_of_pockets.iter().enumerate().fold(
-        0,
-        |sum, (i, (left, right))| if left <= right { sum + i + 1 } else { sum },
-    )
+impl From<&str> for Solver2022_13 {
+    fn from(input: &str) -> Self {
+        let packets = SantaParser::parse(Rule::Packets, input).unwrap_or_else(|e| panic!("{}", e));
+        let pair_of_packets = packets
+            .peek()
+            .unwrap()
+            .into_inner()
+            .map(|packet| {
+                let mut pair = packet.into_inner();
+                (
+                    parse_list(pair.next().unwrap()),
+                    parse_list(pair.next().unwrap()),
+                )
+            })
+            .collect();
+        Self { pair_of_packets }
+    }
 }
 
-fn solve_second_part(pair_of_pockets: &Vec<(List, List)>) -> usize {
-    let first: &List = &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(
-        2,
-    ))]))];
-    let second: &List = &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(
-        6,
-    ))]))];
+impl Solver<usize, usize> for Solver2022_13 {
+    fn solve_first_part(&self) -> usize {
+        self.pair_of_packets
+            .iter()
+            .enumerate()
+            .fold(
+                0,
+                |sum, (i, (left, right))| if left <= right { sum + i + 1 } else { sum },
+            )
+    }
 
-    let mut pockets: Vec<List> = pair_of_pockets.iter().fold(
-        vec![first.clone(), second.clone()],
-        |mut vector, (left, right)| {
-            vector.push(left.clone());
-            vector.push(right.clone());
-            vector
-        },
-    );
-    pockets.sort();
-    let (first_index, _) = pockets
-        .iter()
-        .enumerate()
-        .find(|&(_, list)| cmp(list, first) == Ordering::Equal)
-        .unwrap();
-    let (second_index, _) = pockets
-        .iter()
-        .enumerate()
-        .find(|&(_, list)| cmp(list, second) == Ordering::Equal)
-        .unwrap();
-    (first_index + 1) * (second_index + 1)
-}
+    fn solve_second_part(&self) -> usize {
+        let first: &List = &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(
+            2,
+        ))]))];
+        let second: &List = &vec![Box::new(ListItem::List(vec![Box::new(ListItem::Integer(
+            6,
+        ))]))];
 
-pub fn solve() -> (usize, usize) {
-    let pair_of_packets = parse_pair_of_packets(INPUT);
-    (
-        solve_first_part(&pair_of_packets),
-        solve_second_part(&pair_of_packets),
-    )
+        let mut packets: Vec<List> = self.pair_of_packets.iter().fold(
+            vec![first.clone(), second.clone()],
+            |mut vector, (left, right)| {
+                vector.push(left.clone());
+                vector.push(right.clone());
+                vector
+            },
+        );
+        packets.sort();
+        let (first_index, _) = packets
+            .iter()
+            .enumerate()
+            .find(|&(_, list)| cmp(list, first) == Ordering::Equal)
+            .unwrap();
+        let (second_index, _) = packets
+            .iter()
+            .enumerate()
+            .find(|&(_, list)| cmp(list, second) == Ordering::Equal)
+            .unwrap();
+        (first_index + 1) * (second_index + 1)
+    }
 }
 
 #[cfg(test)]
@@ -154,8 +161,9 @@ mod tests {
 
     #[test]
     fn should_parse_input() {
+        let solver = Solver2022_13::from(EXAMPLE);
         assert_eq!(
-            parse_pair_of_packets(EXAMPLE)[0..=1],
+            solver.pair_of_packets[0..=1],
             vec![
                 (
                     vec![
@@ -193,10 +201,12 @@ mod tests {
 
     #[test]
     fn should_solve_first_part_example() {
-        assert_eq!(solve_first_part(&parse_pair_of_packets(EXAMPLE)), 13);
+        let solver = Solver2022_13::from(EXAMPLE);
+        assert_eq!(solver.solve_first_part(), 13);
     }
     #[test]
     fn should_solve_second_part_example() {
-        assert_eq!(solve_second_part(&parse_pair_of_packets(EXAMPLE)), 140);
+        let solver = Solver2022_13::from(EXAMPLE);
+        assert_eq!(solver.solve_second_part(), 140);
     }
 }

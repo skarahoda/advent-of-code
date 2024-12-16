@@ -1,5 +1,5 @@
-Pockets = { Pocket ~ ( NewLine ~ NewLine ~ Pocket )* }
-Pocket = { List ~ NewLine ~ List }
+Packets = { Packet ~ ( NewLine ~ NewLine ~ Packet )* }
+Packet = { List ~ NewLine ~ List }
 List = { "[" ~ ( Item ~ ( "," ~ Item )* )? ~ "]" }
 Item = _{ Number | List }
 Number = { '0'..'9'+ }
