@@ -1,5 +1,3 @@
-mod input;
-use input::INPUT;
 use regex::{Captures, Regex};
 
 enum Command {
@@ -16,7 +14,7 @@ struct Instruction {
 
 fn get_instructions() -> Vec<Instruction> {
     let re = Regex::new(r"(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)").unwrap();
-    re.captures_iter(INPUT)
+    re.captures_iter(include_str!("input.txt"))
         .map(|captures: Captures| Instruction {
             start: (
                 (&captures)[2].parse().unwrap(),

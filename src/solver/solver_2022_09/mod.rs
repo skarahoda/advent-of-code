@@ -1,5 +1,3 @@
-mod input;
-use input::INPUT;
 use std::cmp::Ordering;
 const BOARD_SIZE: usize = 1000;
 #[derive(Copy, Clone)]
@@ -115,7 +113,7 @@ impl Rope {
 }
 
 fn get_steps() -> Vec<(Direction, usize)> {
-    INPUT
+    include_str!("input.txt")
         .split("\n")
         .map(|step| -> (Direction, usize) {
             let parts: Vec<&str> = step.split(" ").collect();

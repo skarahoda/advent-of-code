@@ -1,8 +1,5 @@
-mod input;
-use input::INPUT;
-
 fn get_forest() -> Vec<Vec<u32>> {
-    INPUT
+    include_str!("input.txt")
         .lines()
         .map(|row| row.chars().map(|tree| tree.to_digit(10).unwrap()).collect())
         .collect()

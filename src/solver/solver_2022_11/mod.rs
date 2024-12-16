@@ -1,5 +1,3 @@
-mod input;
-use input::INPUT;
 use pest::iterators::Pair;
 use pest::Parser;
 use std::collections::HashMap;
@@ -173,7 +171,10 @@ fn solve_second_part(input: &str) -> u64 {
 }
 
 pub fn solve() -> (u64, u64) {
-    (solve_first_part(INPUT), solve_second_part(INPUT))
+    (
+        solve_first_part(include_str!("input.txt")),
+        solve_second_part(include_str!("input.txt")),
+    )
 }
 
 #[cfg(test)]

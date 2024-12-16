@@ -1,6 +1,5 @@
-mod input;
 use super::Solver;
-use input::INPUT;
+
 use pest::iterators::Pair;
 use pest::Parser;
 use std::borrow::Cow;
@@ -110,7 +109,7 @@ pub struct Solver2022_21<'a> {
 
 impl<'a> Default for Solver2022_21<'a> {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

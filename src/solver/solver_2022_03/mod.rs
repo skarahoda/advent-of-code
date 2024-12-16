@@ -1,5 +1,3 @@
-mod input;
-use input::INPUT;
 use std::collections::HashSet;
 
 fn find_common_character(a: &str, b: &str) -> char {
@@ -72,7 +70,10 @@ fn solve_second_part(input: &str) -> u32 {
 }
 
 pub fn solve() -> (u32, u32) {
-    (solve_first_part(INPUT), solve_second_part(INPUT))
+    (
+        solve_first_part(include_str!("input.txt")),
+        solve_second_part(include_str!("input.txt")),
+    )
 }
 
 #[cfg(test)]

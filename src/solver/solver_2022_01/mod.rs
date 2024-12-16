@@ -1,8 +1,5 @@
-mod input;
-use input::INPUT;
-
 fn get_carried_foods() -> Vec<i32> {
-    let carried_foods: Vec<Vec<i32>> = INPUT
+    let carried_foods: Vec<Vec<i32>> = include_str!("input.txt")
         .split("\n\n")
         .map(|e| e.split("\n").map(|i| i.parse().unwrap()).collect())
         .collect();

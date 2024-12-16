@@ -1,8 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
-mod input;
+
 use super::Solver;
-use input::INPUT;
 
 pub struct Solver2024_05 {
     precedence_map: HashMap<i32, HashSet<i32>>,
@@ -67,7 +66,7 @@ impl From<&str> for Solver2024_05 {
 
 impl Default for Solver2024_05 {
     fn default() -> Self {
-        INPUT.into()
+        include_str!("input.txt").into()
     }
 }
 

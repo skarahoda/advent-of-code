@@ -1,5 +1,3 @@
-mod input;
-use input::INPUT;
 use std::collections::VecDeque;
 
 #[derive(PartialEq, Debug)]
@@ -157,7 +155,7 @@ fn solve_second_part(maze: &Maze) -> usize {
 }
 
 pub fn solve() -> (usize, usize) {
-    let maze = get_maze(INPUT);
+    let maze = get_maze(include_str!("input.txt"));
     (solve_first_part(&maze), solve_second_part(&maze))
 }
 

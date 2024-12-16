@@ -1,6 +1,4 @@
 use super::Solver;
-mod input;
-use input::INPUT;
 
 fn is_safe_list(list: &[i32]) -> bool {
     let is_descending = list[0] < list[1];
@@ -56,7 +54,7 @@ pub struct Solver2024_02 {
 
 impl Default for Solver2024_02 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

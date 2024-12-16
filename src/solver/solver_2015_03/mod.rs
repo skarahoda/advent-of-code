@@ -1,5 +1,3 @@
-mod input;
-use input::INPUT;
 use std::collections::HashSet;
 
 #[derive(Eq, Hash, PartialEq, Copy, Clone)]
@@ -87,8 +85,8 @@ fn solve_second_part(directions: &str) -> usize {
 
 pub fn solve() -> (usize, usize) {
     (
-        solve_first_part(INPUT),
-        solve_second_part(INPUT),
+        solve_first_part(include_str!("input.txt")),
+        solve_second_part(include_str!("input.txt")),
     )
 }
 

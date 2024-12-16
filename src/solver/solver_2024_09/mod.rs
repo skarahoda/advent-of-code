@@ -1,7 +1,5 @@
-mod input;
-
 use super::Solver;
-use input::INPUT;
+
 use std::collections::HashMap;
 
 #[derive(PartialEq, Eq, Copy, Clone)]
@@ -75,7 +73,7 @@ impl From<&str> for Solver2024_09 {
 }
 impl Default for Solver2024_09 {
     fn default() -> Self {
-        INPUT.into()
+        include_str!("input.txt").into()
     }
 }
 

@@ -1,9 +1,6 @@
 use super::Solver;
 use std::collections::HashMap;
 
-mod input;
-use input::INPUT;
-
 #[derive(Clone)]
 pub struct Solver2024_11 {
     rocks: HashMap<usize, usize>,
@@ -11,7 +8,7 @@ pub struct Solver2024_11 {
 
 impl<'a> Default for Solver2024_11 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

@@ -1,7 +1,5 @@
 use super::Solver;
 use std::collections::HashMap;
-mod input;
-use input::INPUT;
 
 pub struct Solver2024_01 {
     left_list: Vec<i32>,
@@ -10,7 +8,7 @@ pub struct Solver2024_01 {
 
 impl Default for Solver2024_01 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

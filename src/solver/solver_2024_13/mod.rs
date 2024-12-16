@@ -1,7 +1,5 @@
 use super::Solver;
 use regex::Regex;
-mod input;
-use input::INPUT;
 
 #[derive(Debug)]
 struct ClawMachine {
@@ -54,7 +52,7 @@ pub struct Solver2024_13 {
 
 impl Default for Solver2024_13 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

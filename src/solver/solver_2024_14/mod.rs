@@ -2,9 +2,6 @@ use super::Solver;
 use regex::Regex;
 use std::collections::HashMap;
 
-mod input;
-use input::INPUT;
-
 mod christmas_tree;
 use christmas_tree::CHRISTMAS_TREE;
 
@@ -30,7 +27,7 @@ pub struct Solver2024_14 {
 
 impl Default for Solver2024_14 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

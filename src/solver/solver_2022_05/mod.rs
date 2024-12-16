@@ -1,9 +1,7 @@
-mod input;
-use input::INPUT;
 use regex::{Captures, Regex};
 
 fn get_setup() -> (Vec<Vec<char>>, Vec<(usize, usize, usize)>) {
-    let parts: Vec<&str> = INPUT.split("\n\n").collect();
+    let parts: Vec<&str> = include_str!("input.txt").split("\n\n").collect();
     (get_stacks(parts[0]), get_procedures(parts[1]))
 }
 

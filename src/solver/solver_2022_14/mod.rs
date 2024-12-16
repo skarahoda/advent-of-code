@@ -1,7 +1,5 @@
 use super::Solver;
 use std::cmp::{max, min};
-mod input;
-use input::INPUT;
 
 #[derive(Copy, Clone, PartialEq)]
 enum Material {
@@ -22,7 +20,7 @@ pub struct Solver2022_14 {
 
 impl Default for Solver2022_14 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

@@ -1,7 +1,5 @@
-mod input;
-
 use crate::solver::Solver;
-use input::INPUT;
+
 use regex::Regex;
 
 fn parse_inputs(input: &str) -> Vec<(u64, Vec<u64>)> {
@@ -64,7 +62,7 @@ impl From<&str> for Solver2024_07 {
 
 impl Default for Solver2024_07 {
     fn default() -> Self {
-        INPUT.into()
+        include_str!("input.txt").into()
     }
 }
 

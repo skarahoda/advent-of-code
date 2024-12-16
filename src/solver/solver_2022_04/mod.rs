@@ -1,6 +1,3 @@
-mod input;
-use input::INPUT;
-
 fn does_contain(bounds: &(i32, i32), other: &(i32, i32)) -> bool {
     bounds.0 <= other.0 && bounds.1 >= other.1
 }
@@ -11,7 +8,7 @@ fn does_overlap(a: &(i32, i32), b: &(i32, i32)) -> bool {
 }
 
 fn get_assignments() -> Vec<((i32, i32), (i32, i32))> {
-    INPUT
+    include_str!("input.txt")
         .split("\n")
         .map(|row| {
             let assignments: Vec<(i32, i32)> = row

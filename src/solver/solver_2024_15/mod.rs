@@ -1,7 +1,5 @@
 use super::Solver;
 use std::collections::VecDeque;
-mod input;
-use input::INPUT;
 
 #[derive(PartialEq, Eq, Clone)]
 enum Cell {
@@ -168,7 +166,7 @@ pub struct Solver2024_15 {
 
 impl Default for Solver2024_15 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

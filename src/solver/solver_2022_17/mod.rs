@@ -1,6 +1,5 @@
 use super::Solver;
-mod input;
-use input::INPUT;
+
 use std::collections::{HashMap, HashSet};
 
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
@@ -299,14 +298,14 @@ pub struct Solver2022_17 {
 
 impl Default for Solver2022_17 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 
 impl<'a> From<&'a str> for Solver2022_17 {
     fn from(input: &'a str) -> Self {
         Self {
-            moves: get_moves(input)
+            moves: get_moves(input),
         }
     }
 }

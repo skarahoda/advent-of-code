@@ -1,5 +1,3 @@
-mod input;
-use input::INPUT;
 use regex::Regex;
 
 #[derive(Clone)]
@@ -11,7 +9,7 @@ enum Operation {
 fn get_operations() -> Vec<Operation> {
     let re = Regex::new(r"addx (-?\d+)").unwrap();
 
-    INPUT
+    include_str!("input.txt")
         .split("\n")
         .map(|operation| match operation {
             "noop" => Operation::NoOp,

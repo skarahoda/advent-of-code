@@ -1,6 +1,3 @@
-mod input;
-use input::INPUT;
-
 enum Result {
     Win,
     Draw,
@@ -104,7 +101,10 @@ fn solve_second_part(input: &str) -> i32 {
 }
 
 pub fn solve() -> (i32, i32) {
-    (solve_first_part(INPUT), solve_second_part(INPUT))
+    (
+        solve_first_part(include_str!("input.txt")),
+        solve_second_part(include_str!("input.txt")),
+    )
 }
 
 #[cfg(test)]

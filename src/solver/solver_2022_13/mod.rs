@@ -1,6 +1,5 @@
 use super::Solver;
-mod input;
-use input::INPUT;
+
 use pest::iterators::Pair;
 use pest::Parser;
 use std::cmp::Ordering;
@@ -53,7 +52,7 @@ pub struct Solver2022_13 {
 
 impl Default for Solver2022_13 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

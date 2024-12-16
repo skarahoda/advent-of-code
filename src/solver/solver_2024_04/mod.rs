@@ -1,6 +1,4 @@
 use super::Solver;
-mod input;
-use input::INPUT;
 
 pub struct Solver2024_04 {
     matrix: Vec<Vec<char>>,
@@ -19,7 +17,7 @@ impl From<&str> for Solver2024_04 {
 
 impl Default for Solver2024_04 {
     fn default() -> Self {
-        INPUT.into()
+        include_str!("input.txt").into()
     }
 }
 

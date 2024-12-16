@@ -1,6 +1,5 @@
 use super::Solver;
-mod input;
-use input::INPUT;
+
 use regex::Regex;
 
 #[derive(PartialEq, Debug)]
@@ -135,7 +134,7 @@ pub struct Solver2022_22 {
 
 impl Default for Solver2022_22 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

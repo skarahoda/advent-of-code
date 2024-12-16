@@ -1,7 +1,6 @@
 use super::Solver;
 use std::borrow::Cow;
-mod input;
-use input::INPUT;
+
 use regex::Regex;
 
 pub struct Solver2024_03<'a> {
@@ -11,7 +10,7 @@ pub struct Solver2024_03<'a> {
 impl Default for Solver2024_03<'static> {
     fn default() -> Self {
         Self {
-            input: Cow::Borrowed(INPUT),
+            input: Cow::Borrowed(include_str!("input.txt")),
         }
     }
 }

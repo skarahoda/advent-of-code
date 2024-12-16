@@ -2,9 +2,6 @@ use super::Solver;
 use std::cmp::{max, min};
 use std::collections::HashSet;
 
-mod input;
-use input::INPUT;
-
 #[derive(Hash, Eq, PartialEq, Copy, Clone)]
 struct Coordinate(usize, usize, usize);
 
@@ -22,7 +19,7 @@ pub struct Solver2022_18 {
 
 impl Default for Solver2022_18 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

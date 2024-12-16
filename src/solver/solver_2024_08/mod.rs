@@ -1,7 +1,5 @@
-use std::collections::{HashMap, HashSet};
-mod input;
 use super::Solver;
-use input::INPUT;
+use std::collections::{HashMap, HashSet};
 
 pub struct Solver2024_08 {
     map: Vec<Vec<char>>,
@@ -16,7 +14,7 @@ impl From<&str> for Solver2024_08 {
 }
 impl Default for Solver2024_08 {
     fn default() -> Self {
-        INPUT.into()
+        include_str!("input.txt").into()
     }
 }
 

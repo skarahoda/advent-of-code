@@ -1,6 +1,3 @@
-mod input;
-use input::INPUT;
-
 struct RectangularPrism {
     width: i32,
     length: i32,
@@ -43,7 +40,7 @@ impl RectangularPrism {
 }
 
 fn get_rectangular_prisms() -> Vec<RectangularPrism> {
-    INPUT
+    include_str!("input.txt")
         .split("\n")
         .map(|row| {
             let edges: Vec<i32> = row.split("x").map(|edge| edge.parse().unwrap()).collect();

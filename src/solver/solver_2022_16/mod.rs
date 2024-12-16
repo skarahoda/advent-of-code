@@ -1,6 +1,5 @@
 use super::Solver;
-mod input;
-use input::INPUT;
+
 use regex::Regex;
 use std::cmp::{max, min};
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -41,7 +40,7 @@ pub struct Solver2022_16 {
 
 impl Default for Solver2022_16 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

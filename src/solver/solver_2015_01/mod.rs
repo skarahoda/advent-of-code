@@ -1,6 +1,3 @@
-mod input;
-
-use input::INPUT;
 fn solve_first_part(input: &str) -> i32 {
     input
         .chars()
@@ -28,7 +25,10 @@ fn solve_second_part(input: &str) -> usize {
 }
 
 pub fn solve() -> (i32, usize) {
-    (solve_first_part(INPUT), solve_second_part(INPUT))
+    (
+        solve_first_part(include_str!("input.txt")),
+        solve_second_part(include_str!("input.txt")),
+    )
 }
 
 #[cfg(test)]

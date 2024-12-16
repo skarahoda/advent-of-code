@@ -1,6 +1,4 @@
 use super::Solver;
-mod input;
-use input::INPUT;
 
 pub struct Solver2015_08 {
     strings: Vec<String>,
@@ -8,7 +6,7 @@ pub struct Solver2015_08 {
 
 impl Default for Solver2015_08 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 
@@ -22,20 +20,20 @@ impl From<&str> for Solver2015_08 {
 
 impl Solver<usize, usize> for Solver2015_08 {
     fn solve_first_part(&self) -> usize {
-        self.strings.iter().fold(0, |acc, s| {
-            acc + s.len() - count_memory_chars(s)
-        })
+        self.strings
+            .iter()
+            .fold(0, |acc, s| acc + s.len() - count_memory_chars(s))
     }
 
     fn solve_second_part(&self) -> usize {
-        self.strings.iter().fold(0, |acc, s| {
-            acc + count_encoded_chars(s) - s.len()
-        })
+        self.strings
+            .iter()
+            .fold(0, |acc, s| acc + count_encoded_chars(s) - s.len())
     }
 }
 
 fn count_memory_chars(s: &str) -> usize {
-    let mut chars = s[1..s.len()-1].chars();
+    let mut chars = s[1..s.len() - 1].chars();
     let mut count = 0;
     while let Some(c) = chars.next() {
         count += 1;

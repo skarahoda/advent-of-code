@@ -1,6 +1,4 @@
-mod input;
 use super::Solver;
-use input::INPUT;
 
 pub struct Solver2022_20 {
     numbers: Vec<isize>,
@@ -8,7 +6,7 @@ pub struct Solver2022_20 {
 
 impl Default for Solver2022_20 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

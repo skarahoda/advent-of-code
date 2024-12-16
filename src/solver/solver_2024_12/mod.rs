@@ -1,6 +1,4 @@
 use super::Solver;
-mod input;
-use input::INPUT;
 
 #[derive(Clone, Debug)]
 enum RegionWithPointer {
@@ -47,7 +45,7 @@ pub struct Solver2024_12 {
 
 impl Default for Solver2024_12 {
     fn default() -> Self {
-        Self::from(INPUT)
+        Self::from(include_str!("input.txt"))
     }
 }
 

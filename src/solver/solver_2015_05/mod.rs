@@ -1,5 +1,3 @@
-mod input;
-use input::INPUT;
 use regex::Regex;
 
 fn does_not_contain_forbidden_words(input: &str) -> bool {
@@ -63,7 +61,7 @@ fn solve_second_part(words: &Vec<&str>) -> usize {
 }
 
 pub fn solve() -> (usize, usize) {
-    let words = INPUT.split("\n").collect();
+    let words = include_str!("input.txt").split("\n").collect();
     (solve_first_part(&words), solve_second_part(&words))
 }
 

@@ -1,5 +1,3 @@
-mod input;
-use input::INPUT;
 use std::collections::HashSet;
 
 fn find_start_of_message_marker(input: &str, message_length: usize) -> usize {
@@ -25,7 +23,10 @@ fn solve_second_part(input: &str) -> usize {
 }
 
 pub fn solve() -> (usize, usize) {
-    (solve_first_part(INPUT), solve_second_part(INPUT))
+    (
+        solve_first_part(include_str!("input.txt")),
+        solve_second_part(include_str!("input.txt")),
+    )
 }
 
 #[cfg(test)]

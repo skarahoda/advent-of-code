@@ -1,7 +1,6 @@
 use std::collections::HashSet;
-mod input;
+
 use super::Solver;
-use input::INPUT;
 
 #[derive(Clone, Copy, Eq, PartialEq, Hash)]
 enum Direction {
@@ -102,7 +101,7 @@ impl From<&str> for Solver2024_06 {
 
 impl Default for Solver2024_06 {
     fn default() -> Self {
-        INPUT.into()
+        include_str!("input.txt").into()
     }
 }
 
