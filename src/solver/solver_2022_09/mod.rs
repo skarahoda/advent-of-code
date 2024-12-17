@@ -1,4 +1,6 @@
+use super::Solver;
 use std::cmp::Ordering;
+
 const BOARD_SIZE: usize = 1000;
 #[derive(Copy, Clone)]
 enum Direction {
@@ -112,91 +114,106 @@ impl Rope {
     }
 }
 
-fn get_steps() -> Vec<(Direction, usize)> {
-    include_str!("input.txt")
-        .split("\n")
-        .map(|step| -> (Direction, usize) {
-            let parts: Vec<&str> = step.split(" ").collect();
-            (
-                match parts[0] {
-                    "U" => Direction::Up,
-                    "D" => Direction::Down,
-                    "L" => Direction::Left,
-                    "R" => Direction::Right,
-                    other => panic!("Illegal argument: {}", other),
-                },
-                parts[1].parse().unwrap(),
-            )
-        })
-        .collect()
+pub struct Solver2022_09 {
+    steps: Vec<(Direction, usize)>,
 }
 
-fn solve_part(steps: &Vec<(Direction, usize)>, rope_length: usize) -> usize {
-    let mut visit_map = [[false; BOARD_SIZE]; BOARD_SIZE];
-    let mut rope = Rope::new(rope_length);
-    let tail = rope.tail();
-    visit_map[tail.0][tail.1] = true;
-    for (direction, count) in steps {
-        for _ in 0..*count {
-            rope.step(direction);
-            let tail = rope.tail();
-            visit_map[tail.1][tail.0] = true;
+impl Default for Solver2022_09 {
+    fn default() -> Self {
+        Self::from(include_str!("input.txt"))
+    }
+}
+
+impl From<&str> for Solver2022_09 {
+    fn from(input: &str) -> Self {
+        Self {
+            steps: input
+                .split("\n")
+                .map(|step| -> (Direction, usize) {
+                    let parts: Vec<&str> = step.split(" ").collect();
+                    (
+                        match parts[0] {
+                            "U" => Direction::Up,
+                            "D" => Direction::Down,
+                            "L" => Direction::Left,
+                            "R" => Direction::Right,
+                            _ => unreachable!(),
+                        },
+                        parts[1].parse().unwrap(),
+                    )
+                })
+                .collect(),
         }
     }
-    visit_map.iter().fold(0, |count, row| {
-        row.iter().fold(
-            count,
-            |count, is_visited| if *is_visited { count + 1 } else { count },
-        )
-    })
 }
 
-pub fn solve() -> (usize, usize) {
-    let steps = get_steps();
-    (solve_part(&steps, 2), solve_part(&steps, 10))
+impl Solver2022_09 {
+    fn solve_part(&self, rope_length: usize) -> usize {
+        let mut visit_map = [[false; BOARD_SIZE]; BOARD_SIZE];
+        let mut rope = Rope::new(rope_length);
+        let tail = rope.tail();
+        visit_map[tail.0][tail.1] = true;
+        for (direction, count) in &self.steps {
+            for _ in 0..*count {
+                rope.step(direction);
+                let tail = rope.tail();
+                visit_map[tail.1][tail.0] = true;
+            }
+        }
+        visit_map.iter().fold(0, |count, row| {
+            row.iter().fold(
+                count,
+                |count, is_visited| if *is_visited { count + 1 } else { count },
+            )
+        })
+    }
+}
+
+impl Solver<usize, usize> for Solver2022_09 {
+    fn solve_first_part(&self) -> usize {
+        self.solve_part(2)
+    }
+
+    fn solve_second_part(&self) -> usize {
+        self.solve_part(10)
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Direction;
+    use super::*;
 
     #[test]
     fn should_solve_first_part_example() {
-        assert_eq!(
-            super::solve_part(
-                &vec![
-                    (Direction::Right, 4),
-                    (Direction::Up, 4),
-                    (Direction::Left, 3),
-                    (Direction::Down, 1),
-                    (Direction::Right, 4),
-                    (Direction::Down, 1),
-                    (Direction::Left, 5),
-                    (Direction::Right, 2),
-                ],
-                2
-            ),
-            13
+        let solver = Solver2022_09::from(
+            "\
+R 4
+U 4
+L 3
+D 1
+R 4
+D 1
+L 5
+R 2\
+",
         );
+        assert_eq!(solver.solve_first_part(), 13);
     }
 
     #[test]
     fn should_solve_second_part_example() {
-        assert_eq!(
-            super::solve_part(
-                &vec![
-                    (Direction::Right, 5),
-                    (Direction::Up, 8),
-                    (Direction::Left, 8),
-                    (Direction::Down, 3),
-                    (Direction::Right, 17),
-                    (Direction::Down, 10),
-                    (Direction::Left, 25),
-                    (Direction::Up, 20),
-                ],
-                10
-            ),
-            36
+        let solver = Solver2022_09::from(
+            "\
+R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20\
+",
         );
+        assert_eq!(solver.solve_second_part(), 36);
     }
 }
