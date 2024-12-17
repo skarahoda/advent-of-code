@@ -98,10 +98,26 @@ impl From<&str> for Solver2024_16 {
     }
 }
 
-fn get_min_of_coordinate(
+impl From<(&Coordinate, &Coordinate)> for Direction {
+    fn from((a, b): (&Coordinate, &Coordinate)) -> Self {
+        if a.0 == b.0 && a.1 > b.1 {
+            Direction::Up
+        } else if a.0 == b.0 && a.1 < b.1 {
+            Direction::Down
+        } else if a.1 == b.1 && a.0 > b.0 {
+            Direction::Left
+        } else if a.1 == b.1 && a.0 < b.0 {
+            Direction::Right
+        } else {
+            unreachable!()
+        }
+    }
+}
+
+fn get_entries(
     coordinate: &Coordinate,
-    map: &HashMap<(Coordinate, Direction), usize>,
-) -> Option<usize> {
+    map: &HashMap<(Coordinate, Direction), (usize, Vec<Coordinate>)>,
+) -> Vec<(Direction, usize)> {
     [
         Direction::Up,
         Direction::Down,
@@ -109,9 +125,11 @@ fn get_min_of_coordinate(
         Direction::Right,
     ]
     .iter()
-    .filter_map(|direction| map.get(&(coordinate.clone(), direction.clone())))
-    .min()
-    .cloned()
+    .filter_map(|direction| {
+        map.get(&(coordinate.clone(), direction.clone()))
+            .map(|(score, _)| (direction.clone(), score.clone()))
+    })
+    .collect()
 }
 
 impl Solver2024_16 {
@@ -126,20 +144,20 @@ impl Solver2024_16 {
         wrapper().is_some()
     }
 
-    fn find_shortest_path(&self) -> Option<usize> {
+    fn create_map(&self) -> HashMap<(Coordinate, Direction), (usize, Vec<Coordinate>)> {
         let mut processed_cells: HashSet<(Coordinate, Direction)> = HashSet::new();
-        let mut map: HashMap<(Coordinate, Direction), usize> = HashMap::new();
+        let mut map: HashMap<(Coordinate, Direction), (usize, Vec<Coordinate>)> = HashMap::new();
 
-        map.insert((self.start.clone(), Direction::Up), 1000);
-        map.insert((self.start.clone(), Direction::Down), 1000);
-        map.insert((self.start.clone(), Direction::Left), 2000);
-        map.insert((self.start.clone(), Direction::Right), 0);
+        map.insert((self.start.clone(), Direction::Up), (1000, vec![]));
+        map.insert((self.start.clone(), Direction::Down), (1000, vec![]));
+        map.insert((self.start.clone(), Direction::Left), (2000, vec![]));
+        map.insert((self.start.clone(), Direction::Right), (0, vec![]));
 
         while processed_cells.len() < map.len() {
-            let ((min_cell, direction), score) = map
+            let ((min_cell, direction), (score, _)) = map
                 .iter()
                 .filter(|(key, _)| !processed_cells.contains(key))
-                .min_by_key(|(_, value)| *value)
+                .min_by_key(|(_, (value, _))| *value)
                 .unwrap();
             let min_cell = min_cell.clone();
             let direction = direction.clone();
@@ -151,24 +169,73 @@ impl Solver2024_16 {
             if self.is_valid(next_cell) {
                 let next_score = score + 1;
                 map.entry((next_cell.clone(), direction.clone()))
-                    .and_modify(|value| {
-                        *value = next_score.min(*value);
+                    .and_modify(|(value, previous_cells)| {
+                        if *value == next_score {
+                            previous_cells.push(min_cell.clone());
+                        } else if *value > next_score {
+                            *value = next_score;
+                            *previous_cells = vec![min_cell.clone()];
+                        }
                     })
-                    .or_insert(next_score);
+                    .or_insert((next_score, vec![min_cell.clone()]));
                 let next_score = next_score + 1000;
                 map.entry((next_cell.clone(), direction.rotate_clockwise()))
-                    .and_modify(|value| {
-                        *value = next_score.min(*value);
+                    .and_modify(|(value, previous_cells)| {
+                        if *value == next_score {
+                            previous_cells.push(min_cell.clone());
+                        } else if *value > next_score {
+                            *value = next_score;
+                            *previous_cells = vec![min_cell.clone()];
+                        }
                     })
-                    .or_insert(next_score);
+                    .or_insert((next_score, vec![min_cell.clone()]));
                 map.entry((next_cell.clone(), direction.rotate_counter_clockwise()))
-                    .and_modify(|value| {
-                        *value = next_score.min(*value);
+                    .and_modify(|(value, previous_cells)| {
+                        if *value == next_score {
+                            previous_cells.push(min_cell.clone());
+                        } else if *value > next_score {
+                            *value = next_score;
+                            *previous_cells = vec![min_cell.clone()];
+                        }
                     })
-                    .or_insert(next_score);
+                    .or_insert((next_score, vec![min_cell.clone()]));
             }
         }
-        get_min_of_coordinate(&self.end, &map)
+        map
+    }
+
+    fn find_shortest_path(&self) -> Option<usize> {
+        let map = self.create_map();
+        get_entries(&self.end, &map)
+            .iter()
+            .map(|(_, score)| score)
+            .min()
+            .cloned()
+    }
+
+    fn find_best_seats(&self) -> Option<usize> {
+        let map = self.create_map();
+        let mut best_seats = HashSet::new();
+        best_seats.insert(self.end.clone());
+        let entries = get_entries(&self.end, &map);
+        let min_score = entries.iter().map(|(_, score)| score).min().cloned()?;
+        let mut queue: Vec<(Coordinate, Direction)> = entries
+            .iter()
+            .filter(|(_, score)| *score == min_score)
+            .map(|(direction, _)| (self.end.clone(), direction.clone()))
+            .collect();
+
+        while let Some((cell, direction)) = queue.pop() {
+            best_seats.insert(cell.clone());
+            let (_, previous_cells) = map.get(&(cell.clone(), direction.clone()))?;
+            queue.extend(
+                previous_cells
+                    .iter()
+                    .map(|prev_cell| (prev_cell.clone(), (prev_cell, &cell).into())),
+            );
+        }
+
+        Some(best_seats.len())
     }
 }
 
@@ -178,7 +245,7 @@ impl Solver<usize, usize> for Solver2024_16 {
     }
 
     fn solve_second_part(&self) -> usize {
-        0
+        self.find_best_seats().unwrap()
     }
 }
 
@@ -213,6 +280,6 @@ mod tests {
     #[test]
     fn should_solve_second_part() {
         let solver = Solver2024_16::from(EXAMPLE);
-        assert_eq!(solver.solve_second_part(), 0);
+        assert_eq!(solver.solve_second_part(), 45);
     }
 }
