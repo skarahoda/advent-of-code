@@ -5,7 +5,7 @@ extern crate pest;
 use clap::{Parser, ValueEnum};
 use spinners::{Spinner, Spinners};
 use std::fmt::Display;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 mod solver;
 use solver::{
@@ -92,7 +92,7 @@ fn print_answers<T1: Display, T2: Display>((first_answer, second_answer): (T1, T
     println!("Answer for the first part:");
     println!("--------------------------");
     println!("{}", first_answer);
-    println!("");
+    println!();
     println!("Answer for the second part:");
     println!("---------------------------");
     println!("{}", second_answer);
@@ -102,20 +102,32 @@ fn solve<T1: Display, T2: Display>(solver: Box<dyn Solver<T1, T2>>) {
     let mut sp = Spinner::new(Spinners::Dots, "Solving the first part...".to_string());
     let start = Instant::now();
     let first_answer = solver.solve_first_part();
-    let elapsed = start.elapsed();
+    let mut count = 1;
+    while start.elapsed() < Duration::from_secs(1) {
+        solver.solve_first_part();
+        count += 1;
+    }
+    let elapsed = start.elapsed() / count;
+
     sp.stop_with_symbol("✅");
-    println!("");
+    println!();
     println!("Answer for the first part:");
     println!("--------------------------");
     println!("{first_answer}");
     println!("Time elapsed: {elapsed:?}");
-    println!("");
+
     let mut sp = Spinner::new(Spinners::Dots, "Solving the second part...".to_string());
     let start = Instant::now();
     let second_answer = solver.solve_second_part();
-    let elapsed = start.elapsed();
+    let mut count = 1;
+    while start.elapsed() < Duration::from_secs(1) {
+        solver.solve_second_part();
+        count += 1;
+    }
+    let elapsed = start.elapsed() / count;
+
     sp.stop_with_symbol("✅");
-    println!("");
+    println!();
     println!("Answer for the second part:");
     println!("---------------------------");
     println!("{second_answer}");
