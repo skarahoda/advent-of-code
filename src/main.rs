@@ -16,7 +16,7 @@ use solver::{
     Solver2022_16, Solver2022_17, Solver2022_18, Solver2022_20, Solver2022_21, Solver2022_22,
     Solver2024_01, Solver2024_02, Solver2024_03, Solver2024_04, Solver2024_05, Solver2024_06,
     Solver2024_07, Solver2024_08, Solver2024_09, Solver2024_10, Solver2024_11, Solver2024_12,
-    Solver2024_13, Solver2024_14, Solver2024_15, Solver2024_16, Solver2024_17,
+    Solver2024_13, Solver2024_14, Solver2024_15, Solver2024_16, Solver2024_17, Solver2024_18,
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -168,6 +168,7 @@ fn main() {
         (Year::Year2024, Day::Day15) => solve(Box::new(Solver2024_15::default())),
         (Year::Year2024, Day::Day16) => solve(Box::new(Solver2024_16::default())),
         (Year::Year2024, Day::Day17) => solve(Box::new(Solver2024_17::default())),
+        (Year::Year2024, Day::Day18) => solve(Box::new(Solver2024_18::default())),
         _ => panic!("Puzzle is not solved yet!"),
     }
 }
