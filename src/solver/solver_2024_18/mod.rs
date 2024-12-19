@@ -1,5 +1,5 @@
 use crate::solver::Solver;
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 type Coordinate = (usize, usize);
 
@@ -64,6 +64,85 @@ impl From<&str> for Solver2024_18 {
     }
 }
 
+#[derive(PartialEq, Clone)]
+enum WallStatus {
+    TouchesBottomLeft,
+    TouchesTopRight,
+    TouchesBothEdges,
+    DoesNotTouch,
+}
+
+fn detect_wall_touches_both_edge(
+    &(x, y): &Coordinate,
+    width: isize,
+    height: isize,
+    processed_walls: &mut HashMap<Coordinate, WallStatus>,
+) -> bool {
+    let neighbours = vec![
+        (-1, -1),
+        (0, -1),
+        (1, -1),
+        (-1, 0),
+        (1, 0),
+        (-1, 1),
+        (0, 1),
+        (1, 1),
+    ]
+    .iter()
+    .filter_map(|(dx, dy)| {
+        let (nx, ny) = (x as isize + dx, y as isize + dy);
+        if nx < 0 || nx >= width || ny < 0 || ny >= height {
+            None
+        } else if let Some(value) = processed_walls.get(&(nx as usize, ny as usize)) {
+            Some((nx as usize, ny as usize, value.clone()))
+        } else {
+            None
+        }
+    })
+    .collect::<Vec<_>>();
+    let touches_bottom_left = x == 0
+        || y == (height - 1) as usize
+        || neighbours
+            .iter()
+            .any(|(_, _, value)| *value == WallStatus::TouchesBottomLeft);
+    let touches_top_right = x == (width - 1) as usize
+        || y == 0
+        || neighbours
+            .iter()
+            .any(|(_, _, value)| *value == WallStatus::TouchesTopRight);
+
+    if touches_bottom_left && touches_top_right {
+        processed_walls.insert((x, y), WallStatus::TouchesBothEdges);
+        return true;
+    }
+    if !touches_bottom_left && !touches_top_right {
+        processed_walls.insert((x, y), WallStatus::DoesNotTouch);
+        return false;
+    }
+    if touches_bottom_left {
+        processed_walls.insert((x, y), WallStatus::TouchesBottomLeft);
+        let neighbours_in_the_middle = neighbours
+            .iter()
+            .filter(|(_, _, value)| *value == WallStatus::DoesNotTouch);
+        for &(nx, ny, _) in neighbours_in_the_middle {
+            if detect_wall_touches_both_edge(&(nx, ny), width, height, processed_walls) {
+                return true;
+            }
+        }
+        return false;
+    }
+    processed_walls.insert((x, y), WallStatus::TouchesTopRight);
+    let neighbours_in_the_middle = neighbours
+        .iter()
+        .filter(|(_, _, value)| *value == WallStatus::DoesNotTouch);
+    for &(nx, ny, _) in neighbours_in_the_middle {
+        if detect_wall_touches_both_edge(&(nx, ny), width, height, processed_walls) {
+            return true;
+        }
+    }
+    false
+}
+
 impl Solver2024_18 {
     fn get_cell(
         &self,
@@ -103,19 +182,19 @@ impl Solver2024_18 {
         }
         None
     }
-
-    fn binary_search_for_blocker(&self) -> Option<usize> {
-        let mut left = 0;
-        let mut right = self.walls.len();
-        while left < right {
-            let mid = (left + right) / 2;
-            if self.find_shortest_path(mid).is_some() {
-                left = mid + 1;
-            } else {
-                right = mid;
+    fn find_first_blocker(&self) -> Option<usize> {
+        let mut processed_walls: HashMap<Coordinate, WallStatus> = HashMap::new();
+        for (i, coordinate) in self.walls.iter().enumerate() {
+            if detect_wall_touches_both_edge(
+                coordinate,
+                self.width as isize,
+                self.height as isize,
+                &mut processed_walls,
+            ) {
+                return Some(i);
             }
         }
-        Some(left)
+        None
     }
 }
 
@@ -125,8 +204,8 @@ impl Solver<usize, String> for Solver2024_18 {
     }
 
     fn solve_second_part(&self) -> String {
-        let index = self.binary_search_for_blocker().unwrap();
-        let (x, y) = self.walls[index - 1];
+        let index = self.find_first_blocker().unwrap();
+        let (x, y) = self.walls[index];
         format!("{},{}", x, y)
     }
 }
