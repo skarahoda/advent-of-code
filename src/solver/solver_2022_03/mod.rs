@@ -1,3 +1,5 @@
+use crate::solver::Solver;
+use std::borrow::Cow;
 use std::collections::HashSet;
 
 fn find_common_character(a: &str, b: &str) -> char {
@@ -42,49 +44,67 @@ fn character_to_score(c: char) -> u32 {
     }
 }
 
-fn solve_first_part(input: &str) -> u32 {
-    input
-        .split("\n")
-        .map(|row: &str| {
-            let (first, second) = row.split_at(row.len() / 2);
-            let common = find_common_character(first, second);
-            character_to_score(common)
-        })
-        .sum::<u32>()
+pub struct Solver2022_03<'a> {
+    lines: Vec<Cow<'a, str>>,
 }
 
-fn solve_second_part(input: &str) -> u32 {
-    let rows: Vec<&str> = input.split("\n").collect();
+impl<'a> Default for Solver2022_03<'a> {
+    fn default() -> Self {
+        Self::from(include_str!("input.txt"))
+    }
+}
 
-    let mut result: u32 = 0;
+impl<'a> From<&'a str> for Solver2022_03<'a> {
+    fn from(input: &'a str) -> Self {
+        Self {
+            lines: input.lines().map(|line| Cow::Borrowed(line)).collect(),
+        }
+    }
+}
 
-    for i in 0..rows.len() / 3 {
-        let first_row = rows[3 * i];
-        let second_row = rows[3 * i + 1];
-        let third_row = rows[3 * i + 2];
-        let common = find_common_character_in_three_strings(first_row, second_row, third_row);
-        result += character_to_score(common);
+impl<'a> Solver<u32, u32> for Solver2022_03<'a> {
+    fn solve_first_part(&self) -> u32 {
+        self.lines
+            .iter()
+            .map(|line| {
+                let (first, second) = line.split_at(line.len() / 2);
+                let common = find_common_character(first, second);
+                character_to_score(common)
+            })
+            .sum::<u32>()
     }
 
-    result
-}
+    fn solve_second_part(&self) -> u32 {
+        let mut result: u32 = 0;
 
-pub fn solve() -> (u32, u32) {
-    (
-        solve_first_part(include_str!("input.txt")),
-        solve_second_part(include_str!("input.txt")),
-    )
+        for chunk in self.lines.chunks(3) {
+            let first_line = chunk[0].as_ref();
+            let second_line = chunk[1].as_ref();
+            let third_line = chunk[2].as_ref();
+            let common = find_common_character_in_three_strings(
+                first_line.as_ref(),
+                second_line.as_ref(),
+                third_line.as_ref(),
+            );
+            result += character_to_score(common);
+        }
+
+        result
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    const EXAMPLE: &str = "vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nPmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw";
+    use super::*;
+    const EXAMPLE: &str = include_str!("example.txt");
     #[test]
     fn solve_first_part() {
-        assert_eq!(super::solve_first_part(EXAMPLE), 157);
+        let solver = Solver2022_03::from(EXAMPLE);
+        assert_eq!(solver.solve_first_part(), 157);
     }
     #[test]
     fn solve_second_part() {
-        assert_eq!(super::solve_second_part(EXAMPLE), 70);
+        let solver = Solver2022_03::from(EXAMPLE);
+        assert_eq!(solver.solve_second_part(), 70);
     }
 }
