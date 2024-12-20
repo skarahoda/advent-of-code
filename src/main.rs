@@ -115,6 +115,8 @@ fn solve<T1: Display, T2: Display>(solver: Box<dyn Solver<T1, T2>>) {
     println!("--------------------------");
     println!("{first_answer}");
     println!("Time elapsed: {elapsed:?}");
+    println!();
+    println!();
 
     let mut sp = Spinner::new(Spinners::Dots, "Solving the second part...".to_string());
     let start = Instant::now();
@@ -132,6 +134,7 @@ fn solve<T1: Display, T2: Display>(solver: Box<dyn Solver<T1, T2>>) {
     println!("---------------------------");
     println!("{second_answer}");
     println!("Time elapsed: {elapsed:?}");
+    println!();
 }
 
 fn main() {
