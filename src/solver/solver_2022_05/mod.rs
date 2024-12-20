@@ -1,101 +1,99 @@
-use regex::{Captures, Regex};
+use crate::solver::Solver;
+use regex::Regex;
 
-fn get_setup() -> (Vec<Vec<char>>, Vec<(usize, usize, usize)>) {
-    let parts: Vec<&str> = include_str!("input.txt").split("\n\n").collect();
-    (get_stacks(parts[0]), get_procedures(parts[1]))
+#[derive(Clone)]
+pub struct Solver2022_05 {
+    stacks: Vec<Vec<char>>,
+    procedures: Vec<(usize, usize, usize)>,
 }
 
-fn get_stacks(stack_drawing: &str) -> Vec<Vec<char>> {
-    let mut stack_drawing: Vec<&str> = stack_drawing.split("\n").collect();
-    let number_of_stacks: usize = stack_drawing
-        .pop()
-        .unwrap()
-        .split(" ")
-        .collect::<Vec<&str>>()
-        .pop()
-        .unwrap()
-        .parse()
-        .unwrap();
-    let mut stacks: Vec<Vec<char>> = vec![Vec::new(); number_of_stacks];
-    for line in stack_drawing.iter().rev() {
-        let chars: Vec<char> = line.chars().collect();
-        for i in 0..(chars.len() + 1) / 4 {
-            let item = chars[i * 4 + 1];
-            if item != ' ' {
-                stacks[i].push(chars[i * 4 + 1]);
+impl Default for Solver2022_05 {
+    fn default() -> Self {
+        Self::from(include_str!("input.txt"))
+    }
+}
+impl From<&str> for Solver2022_05 {
+    fn from(input: &str) -> Self {
+        let parts: Vec<&str> = input.split("\n\n").collect();
+        let mut stack_drawing: Vec<&str> = parts[0].split("\n").collect();
+        let number_of_stacks: usize = stack_drawing
+            .pop()
+            .unwrap()
+            .split(" ")
+            .collect::<Vec<&str>>()
+            .pop()
+            .unwrap()
+            .parse()
+            .unwrap();
+        let mut stacks: Vec<Vec<char>> = vec![Vec::new(); number_of_stacks];
+        for line in stack_drawing.iter().rev() {
+            let chars: Vec<char> = line.chars().collect();
+            for i in 0..(chars.len() + 1) / 4 {
+                let item = chars[i * 4 + 1];
+                if item != ' ' {
+                    stacks[i].push(chars[i * 4 + 1]);
+                }
             }
         }
+        let re = Regex::new(r"move (\d+) from (\d+) to (\d+)").unwrap();
+        let procedures = re
+            .captures_iter(parts[1])
+            .map(|capture| {
+                let count: usize = (&capture[1]).parse().unwrap();
+                let from: usize = (&capture[2]).parse::<usize>().unwrap() - 1;
+                let to: usize = (&capture[3]).parse::<usize>().unwrap() - 1;
+                (count, from, to)
+            })
+            .collect();
+        Self { stacks, procedures }
     }
-    stacks
 }
 
-fn get_procedures(lines: &str) -> Vec<(usize, usize, usize)> {
-    let re = Regex::new(r"move (\d+) from (\d+) to (\d+)").unwrap();
-    re.captures_iter(lines)
-        .map(|capture: Captures| {
-            let count: usize = (&capture[1]).parse().unwrap();
-            let from: usize = (&capture[2]).parse::<usize>().unwrap() - 1;
-            let to: usize = (&capture[3]).parse::<usize>().unwrap() - 1;
-            (count, from, to)
-        })
-        .collect()
-}
-
-fn solve_first_part(mut stacks: Vec<Vec<char>>, procedures: &Vec<(usize, usize, usize)>) -> String {
-    for (count, from, to) in procedures.iter() {
-        let new_length = stacks[*from].len() - *count;
-        let mut popped_items = stacks[*from].split_off(new_length);
-        popped_items.reverse();
-        stacks[*to].extend(popped_items);
-    }
-    stacks
-        .iter_mut()
-        .map(|stack| stack.pop().unwrap())
-        .collect()
-}
-
-fn solve_second_part(
-    mut stacks: Vec<Vec<char>>,
-    procedures: &Vec<(usize, usize, usize)>,
-) -> String {
-    for (count, from, to) in procedures.iter() {
-        let new_length = stacks[*from].len() - *count;
-        let popped_items = stacks[*from].split_off(new_length);
-        stacks[*to].extend(popped_items);
+impl Solver<String, String> for Solver2022_05 {
+    fn solve_first_part(&self) -> String {
+        let mut mutated = self.clone();
+        for (count, from, to) in mutated.procedures.iter() {
+            let new_length = mutated.stacks[*from].len() - *count;
+            let mut popped_items = mutated.stacks[*from].split_off(new_length);
+            popped_items.reverse();
+            mutated.stacks[*to].extend(popped_items);
+        }
+        mutated
+            .stacks
+            .iter_mut()
+            .map(|stack| stack.pop().unwrap())
+            .collect()
     }
 
-    stacks
-        .iter_mut()
-        .map(|stack| stack.pop().unwrap())
-        .collect()
-}
+    fn solve_second_part(&self) -> String {
+        let mut mutated = self.clone();
+        for (count, from, to) in mutated.procedures.iter() {
+            let new_length = mutated.stacks[*from].len() - *count;
+            let popped_items = mutated.stacks[*from].split_off(new_length);
+            mutated.stacks[*to].extend(popped_items);
+        }
 
-pub fn solve() -> (String, String) {
-    let (stacks, procedures) = get_setup();
-    (
-        solve_first_part(stacks.clone(), &procedures),
-        solve_second_part(stacks.clone(), &procedures),
-    )
+        mutated
+            .stacks
+            .iter_mut()
+            .map(|stack| stack.pop().unwrap())
+            .collect()
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    static EXAMPLE_PROCEDURES: [(usize, usize, usize); 4] =
-        [(1, 1, 0), (3, 0, 2), (2, 1, 0), (1, 0, 1)];
+    use super::*;
+
+    static EXAMPLE: &str = include_str!("example.txt");
     #[test]
     fn solve_first_part() {
-        let stacks = vec![vec!['Z', 'N'], vec!['M', 'C', 'D'], vec!['P']];
-        assert_eq!(
-            super::solve_first_part(stacks, &Vec::from(EXAMPLE_PROCEDURES)),
-            "CMZ"
-        );
+        let solver = Solver2022_05::from(EXAMPLE);
+        assert_eq!(solver.solve_first_part(), "CMZ");
     }
     #[test]
     fn solve_second_part() {
-        let stacks = vec![vec!['Z', 'N'], vec!['M', 'C', 'D'], vec!['P']];
-        assert_eq!(
-            super::solve_second_part(stacks, &Vec::from(EXAMPLE_PROCEDURES)),
-            "MCD"
-        );
+        let solver = Solver2022_05::from(EXAMPLE);
+        assert_eq!(solver.solve_second_part(), "MCD");
     }
 }
