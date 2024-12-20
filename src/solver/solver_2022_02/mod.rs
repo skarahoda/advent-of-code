@@ -1,3 +1,5 @@
+use crate::solver::Solver;
+
 enum Result {
     Win,
     Draw,
@@ -50,71 +52,93 @@ impl Round {
     }
 }
 
-fn solve_first_part(input: &str) -> i32 {
-    input
-        .split("\n")
-        .map(|row| {
-            let choices: Vec<&str> = row.split(" ").collect();
-            let opponent = match choices[0] {
-                "A" => Choice::Rock,
-                "B" => Choice::Paper,
-                "C" => Choice::Scissors,
-                other => panic!("Illegal argument: {}", other),
-            };
-            let player = match choices[1] {
-                "X" => Choice::Rock,
-                "Y" => Choice::Paper,
-                "Z" => Choice::Scissors,
-                other => panic!("Illegal argument: {}", other),
-            };
-            Round::new(player, opponent).get_score()
-        })
-        .sum()
+pub struct Solver2022_02 {
+    rounds: Vec<(char, char)>,
 }
 
-fn solve_second_part(input: &str) -> i32 {
-    input
-        .split("\n")
-        .map(|row| {
-            let choices: Vec<&str> = row.split(" ").collect();
-            let opponent = match choices[0] {
-                "A" => Choice::Rock,
-                "B" => Choice::Paper,
-                "C" => Choice::Scissors,
-                other => panic!("Illegal argument: {}", other),
-            };
-            let player = match (opponent, choices[1]) {
-                (Choice::Rock, "Y") | (Choice::Paper, "X") | (Choice::Scissors, "Z") => {
-                    Choice::Rock
-                }
-                (Choice::Rock, "Z") | (Choice::Paper, "Y") | (Choice::Scissors, "X") => {
-                    Choice::Paper
-                }
-                (Choice::Rock, "X") | (Choice::Paper, "Z") | (Choice::Scissors, "Y") => {
-                    Choice::Scissors
-                }
-                (_, other) => panic!("Illegal argument: {}", other),
-            };
-            Round::new(player, opponent).get_score()
-        })
-        .sum()
+impl Default for Solver2022_02 {
+    fn default() -> Self {
+        Self::from(include_str!("input.txt"))
+    }
 }
 
-pub fn solve() -> (i32, i32) {
-    (
-        solve_first_part(include_str!("input.txt")),
-        solve_second_part(include_str!("input.txt")),
-    )
+impl From<&str> for Solver2022_02 {
+    fn from(input: &str) -> Self {
+        let rounds = input
+            .lines()
+            .map(|line| {
+                let choices: Vec<&str> = line.split(" ").collect();
+                (
+                    choices[1].chars().nth(0).unwrap(),
+                    choices[0].chars().nth(0).unwrap(),
+                )
+            })
+            .collect();
+        Self { rounds }
+    }
 }
 
+impl Solver<i32, i32> for Solver2022_02 {
+    fn solve_first_part(&self) -> i32 {
+        self.rounds
+            .iter()
+            .map(|(player, opponent)| {
+                let player = match player {
+                    'X' => Choice::Rock,
+                    'Y' => Choice::Paper,
+                    'Z' => Choice::Scissors,
+                    _ => unreachable!(),
+                };
+                let opponent = match opponent {
+                    'A' => Choice::Rock,
+                    'B' => Choice::Paper,
+                    'C' => Choice::Scissors,
+                    _ => unreachable!(),
+                };
+                Round::new(player, opponent).get_score()
+            })
+            .sum()
+    }
+
+    fn solve_second_part(&self) -> i32 {
+        self.rounds
+            .iter()
+            .map(|(player, opponent)| {
+                let opponent = match opponent {
+                    'A' => Choice::Rock,
+                    'B' => Choice::Paper,
+                    'C' => Choice::Scissors,
+                    other => panic!("Illegal argument: {}", other),
+                };
+                let player = match (opponent, player) {
+                    (Choice::Rock, 'Y') | (Choice::Paper, 'X') | (Choice::Scissors, 'Z') => {
+                        Choice::Rock
+                    }
+                    (Choice::Rock, 'Z') | (Choice::Paper, 'Y') | (Choice::Scissors, 'X') => {
+                        Choice::Paper
+                    }
+                    (Choice::Rock, 'X') | (Choice::Paper, 'Z') | (Choice::Scissors, 'Y') => {
+                        Choice::Scissors
+                    }
+                    _ => unreachable!(),
+                };
+                Round::new(player, opponent).get_score()
+            })
+            .sum()
+    }
+}
 #[cfg(test)]
 mod tests {
+    use super::*;
+    const EXAMPLE: &str = include_str!("example.txt");
     #[test]
     fn solve_first_part() {
-        assert_eq!(super::solve_first_part("A Y\nB X\nC Z"), 15);
+        let solver = Solver2022_02::from(EXAMPLE);
+        assert_eq!(solver.solve_first_part(), 15);
     }
     #[test]
     fn solve_second_part() {
-        assert_eq!(super::solve_second_part("A Y\nB X\nC Z"), 12);
+        let solver = Solver2022_02::from(EXAMPLE);
+        assert_eq!(solver.solve_second_part(), 12);
     }
 }
