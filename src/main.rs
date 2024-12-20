@@ -8,6 +8,7 @@ use std::fmt::Display;
 use std::time::{Duration, Instant};
 
 mod solver;
+use crate::solver::Solver2024_20;
 use solver::{
     solver_2015_01, solver_2015_02, solver_2015_03, solver_2015_04, solver_2015_05, solver_2015_06,
     solver_2015_07, Solver, Solver2015_08, Solver2022_01, Solver2022_02, Solver2022_03,
@@ -188,6 +189,7 @@ fn main() {
         (Year::Year2024, Day::Day17) => solve(Box::new(Solver2024_17::default())),
         (Year::Year2024, Day::Day18) => solve(Box::new(Solver2024_18::default())),
         (Year::Year2024, Day::Day19) => solve(Box::new(Solver2024_19::default())),
+        (Year::Year2024, Day::Day20) => solve(Box::new(Solver2024_20::default())),
         _ => panic!("Puzzle is not solved yet!"),
     }
 }
