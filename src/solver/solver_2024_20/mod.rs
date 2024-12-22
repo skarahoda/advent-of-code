@@ -31,7 +31,6 @@ impl From<Direction> for (isize, isize) {
 pub struct Solver2024_20 {
     map: Vec<Vec<bool>>,
     start: Coordinate,
-    end: Coordinate,
     cheat_threshold: usize,
 }
 
@@ -57,29 +56,9 @@ impl From<&str> for Solver2024_20 {
                         .find_map(|(x, c)| (c == 'S').then(|| (x, y)))
                 })
                 .unwrap(),
-            end: input
-                .lines()
-                .enumerate()
-                .find_map(|(y, line)| {
-                    line.chars()
-                        .enumerate()
-                        .find_map(|(x, c)| (c == 'E').then(|| (x, y)))
-                })
-                .unwrap(),
             cheat_threshold: 100,
         }
     }
-}
-
-fn get_neighbor(
-    location: Coordinate,
-    direction: Direction,
-    distances: &HashMap<Coordinate, usize>,
-) -> Option<(Coordinate, usize)> {
-    let (x, y) = location;
-    let (dx, dy) = direction.into();
-    let (x, y) = (x.checked_add_signed(dx)?, y.checked_add_signed(dy)?);
-    Some(((x, y), distances.get(&(x, y)).cloned()?))
 }
 
 impl Solver2024_20 {
@@ -112,47 +91,66 @@ impl Solver2024_20 {
         distances
     }
 
-    fn is_cell_above_cheat_threshold(
+    fn get_shortcuts(
         &self,
-        (x, y): Coordinate,
+        cell: Coordinate,
+        max_distance: usize,
         distances: &HashMap<Coordinate, usize>,
-    ) -> bool {
-        if self.map[y][x] == false {
-            return false;
-        }
-        let neighbors: Vec<(Coordinate, usize)> = Direction::all()
-            .into_iter()
-            .filter_map(|direction| get_neighbor((x, y), direction, &distances))
-            .collect();
-        if neighbors.is_empty() {
-            return false;
-        }
-        let max_neighbor = neighbors.iter().max_by_key(|(_, d)| *d).unwrap();
-        let min_neighbor = neighbors.iter().min_by_key(|(_, d)| *d).unwrap();
-        if let Some(diff) = max_neighbor.1.checked_sub(min_neighbor.1 + 2) {
-            diff >= self.cheat_threshold
-        } else {
-            false
-        }
+    ) -> usize {
+        let signed_max_distance = max_distance as isize;
+
+        let wrapper = || {
+            let &current_distance = distances.get(&cell)?;
+            Some(
+                ((-1 * signed_max_distance)..=signed_max_distance)
+                    .map(|dx| {
+                        let max_dy = signed_max_distance - dx.abs();
+                        ((-1 * max_dy)..=max_dy)
+                            .flat_map(|dy| {
+                                let new_cell = (
+                                    cell.0.checked_add_signed(dx)?,
+                                    cell.1.checked_add_signed(dy)?,
+                                );
+                                let new_distance = distances.get(&new_cell).cloned()?;
+                                let distance_saved = new_distance.checked_sub(
+                                    current_distance + dx.abs() as usize + dy.abs() as usize,
+                                )?;
+                                if distance_saved >= self.cheat_threshold {
+                                    Some(())
+                                } else {
+                                    None
+                                }
+                            })
+                            .count()
+                    })
+                    .sum::<usize>(),
+            )
+        };
+        wrapper().unwrap_or(0)
     }
 }
 
 impl Solver<usize, usize> for Solver2024_20 {
     fn solve_first_part(&self) -> usize {
-        let mut result = 0;
         let distances = self.get_distances();
-        for y in 0..self.map.len() {
-            for x in 0..self.map[0].len() {
-                if self.is_cell_above_cheat_threshold((x, y), &distances) {
-                    result += 1;
-                }
-            }
-        }
-        result
+        (0..self.map.len())
+            .map(|y| {
+                (0..self.map[0].len())
+                    .map(|x| self.get_shortcuts((x, y), 2, &distances))
+                    .sum::<usize>()
+            })
+            .sum()
     }
 
     fn solve_second_part(&self) -> usize {
-        0
+        let distances = self.get_distances();
+        (0..self.map.len())
+            .map(|y| {
+                (0..self.map[0].len())
+                    .map(|x| self.get_shortcuts((x, y), 20, &distances))
+                    .sum::<usize>()
+            })
+            .sum()
     }
 }
 
@@ -170,7 +168,8 @@ mod test {
 
     #[test]
     fn test_solve_second_part() {
-        let solver = Solver2024_20::from(EXAMPLE);
-        assert_eq!(solver.solve_second_part(), 1);
+        let mut solver = Solver2024_20::from(EXAMPLE);
+        solver.cheat_threshold = 50;
+        assert_eq!(solver.solve_second_part(), 285);
     }
 }
