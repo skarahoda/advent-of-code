@@ -1,4 +1,4 @@
-use crate::solver::Solver;
+use super::Solver;
 
 pub struct Solver2024_22 {
     secret_numbers: Vec<usize>,

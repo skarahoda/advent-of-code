@@ -1,4 +1,4 @@
-use crate::solver::Solver;
+use super::Solver;
 use std::collections::{HashMap, HashSet, VecDeque};
 
 type Coordinate = (usize, usize);

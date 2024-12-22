@@ -1,4 +1,4 @@
-use crate::solver::Solver;
+use super::Solver;
 
 fn does_contain(bounds: &(i32, i32), other: &(i32, i32)) -> bool {
     bounds.0 <= other.0 && bounds.1 >= other.1

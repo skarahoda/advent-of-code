@@ -1,4 +1,4 @@
-use crate::solver::Solver;
+use super::Solver;
 use std::borrow::Cow;
 use std::collections::HashMap;
 

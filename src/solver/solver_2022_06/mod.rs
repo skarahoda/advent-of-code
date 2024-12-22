@@ -1,4 +1,4 @@
-use crate::solver::Solver;
+use super::Solver;
 use std::borrow::Cow;
 use std::collections::HashSet;
 
@@ -48,7 +48,7 @@ impl<'a> Solver<usize, usize> for Solver2022_06<'a> {
 
 #[cfg(test)]
 mod find_start_of_message_marker {
-    use crate::solver::Solver;
+    use super::Solver;
 
     #[test]
     fn first_example() {
