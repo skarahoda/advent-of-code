@@ -102,10 +102,10 @@ impl Solver2024_20 {
         let wrapper = || {
             let &current_distance = distances.get(&cell)?;
             Some(
-                ((-1 * signed_max_distance)..=signed_max_distance)
+                (-signed_max_distance..=signed_max_distance)
                     .map(|dx| {
                         let max_dy = signed_max_distance - dx.abs();
-                        ((-1 * max_dy)..=max_dy)
+                        (-max_dy..=max_dy)
                             .flat_map(|dy| {
                                 let new_cell = (
                                     cell.0.checked_add_signed(dx)?,
@@ -113,7 +113,7 @@ impl Solver2024_20 {
                                 );
                                 let new_distance = distances.get(&new_cell).cloned()?;
                                 let distance_saved = new_distance.checked_sub(
-                                    current_distance + dx.abs() as usize + dy.abs() as usize,
+                                    current_distance + dx.unsigned_abs() + dy.unsigned_abs(),
                                 )?;
                                 if distance_saved >= self.cheat_threshold {
                                     Some(())
