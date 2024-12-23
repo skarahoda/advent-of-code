@@ -41,16 +41,26 @@ impl<'a> Solver2024_23<'a> {
         }
     }
 
-    fn get_triplets(&self) -> HashSet<(&str, &str, &str)> {
+    fn get_one_more_bigger_parties(
+        &'a self,
+        parties: &HashSet<Vec<&'a str>>,
+    ) -> HashSet<Vec<&'a str>> {
         let mut result = HashSet::new();
-        for (&first_computer, neighbors) in self.computer_map.iter() {
-            for &second_computer in neighbors {
-                for &third_computer in self.computer_map.get(second_computer).unwrap() {
-                    if neighbors.contains(third_computer) {
-                        let mut vec = vec![first_computer, second_computer, third_computer];
-                        vec.sort();
-                        result.insert((vec[0], vec[1], vec[2]));
-                    }
+        for party in parties {
+            for computer in self.computer_map.get(party.first().unwrap()).unwrap() {
+                if party.contains(computer) {
+                    continue;
+                }
+                if party.iter().all(|party_member| {
+                    self.computer_map
+                        .get(party_member)
+                        .unwrap()
+                        .contains(computer)
+                }) {
+                    let mut new_party = party.clone();
+                    new_party.push(computer);
+                    new_party.sort();
+                    result.insert(new_party);
                 }
             }
         }
@@ -58,21 +68,48 @@ impl<'a> Solver2024_23<'a> {
     }
 }
 
-impl Solver<usize, usize> for Solver2024_23<'_> {
+impl Solver<usize, String> for Solver2024_23<'_> {
     fn solve_first_part(&self) -> usize {
         let mut mutated = self.clone();
         mutated.calculate_computer_map();
-        mutated
-            .get_triplets()
+        let current_parties = mutated
+            .computer_pairs
             .iter()
-            .filter(|(first, second, third)| {
-                first.starts_with("t") || second.starts_with("t") || third.starts_with("t")
+            .map(|&(a, b)| {
+                let mut vec = vec![a, b];
+                vec.sort();
+                vec
             })
+            .collect();
+        let triplets = mutated.get_one_more_bigger_parties(&current_parties);
+
+        triplets
+            .iter()
+            .filter(|triplet| triplet.iter().any(|computer| computer.starts_with("t")))
             .count()
     }
 
-    fn solve_second_part(&self) -> usize {
-        0
+    fn solve_second_part(&self) -> String {
+        let mut mutated = self.clone();
+        mutated.calculate_computer_map();
+        let mut current_parties = mutated
+            .computer_pairs
+            .iter()
+            .map(|&(a, b)| {
+                let mut vec = vec![a, b];
+                vec.sort();
+                vec
+            })
+            .collect();
+        loop {
+            let new_parties = mutated.get_one_more_bigger_parties(&current_parties);
+            // println!("{:?}", new_parties);
+            if new_parties.is_empty() {
+                break;
+            }
+            current_parties = new_parties;
+        }
+        current_parties.iter().next().unwrap().join(",")
     }
 }
 
@@ -85,5 +122,11 @@ mod test {
     fn test_solve_first_part() {
         let solver = Solver2024_23::from(EXAMPLE);
         assert_eq!(solver.solve_first_part(), 7);
+    }
+
+    #[test]
+    fn test_solve_second_part() {
+        let solver = Solver2024_23::from(EXAMPLE);
+        assert_eq!(solver.solve_second_part(), "co,de,ka,ta");
     }
 }
