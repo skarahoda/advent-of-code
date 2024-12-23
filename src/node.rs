@@ -7,7 +7,7 @@ use super::solver::{
     Solver2024_01, Solver2024_02, Solver2024_03, Solver2024_04, Solver2024_05, Solver2024_06,
     Solver2024_07, Solver2024_08, Solver2024_09, Solver2024_10, Solver2024_11, Solver2024_12,
     Solver2024_13, Solver2024_14, Solver2024_15, Solver2024_16, Solver2024_17, Solver2024_18,
-    Solver2024_19, Solver2024_20, Solver2024_22, Solver2024_23,
+    Solver2024_19, Solver2024_20, Solver2024_21, Solver2024_22, Solver2024_23,
 };
 use napi_derive::napi;
 use std::fmt::Display;
@@ -88,6 +88,7 @@ pub fn solve(year: u32, day: u32) -> Answers {
         (2024, 18) => Answers::from(Box::new(Solver2024_18::default()) as Box<dyn Solver<_, _>>),
         (2024, 19) => Answers::from(Box::new(Solver2024_19::default()) as Box<dyn Solver<_, _>>),
         (2024, 20) => Answers::from(Box::new(Solver2024_20::default()) as Box<dyn Solver<_, _>>),
+        (2024, 21) => Answers::from(Box::new(Solver2024_21::default()) as Box<dyn Solver<_, _>>),
         (2024, 22) => Answers::from(Box::new(Solver2024_22::default()) as Box<dyn Solver<_, _>>),
         (2024, 23) => Answers::from(Box::new(Solver2024_23::default()) as Box<dyn Solver<_, _>>),
         _ => Answers {
