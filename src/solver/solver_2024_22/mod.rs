@@ -1,4 +1,5 @@
 use super::Solver;
+use std::collections::HashMap;
 
 pub struct Solver2024_22 {
     secret_numbers: Vec<usize>,
@@ -33,6 +34,41 @@ fn get_nth_secret_number(secret_number: usize, n: usize) -> usize {
     secret_number
 }
 
+fn get_prices_and_diffs(secret_number: &usize, n: usize) -> Vec<(usize, isize)> {
+    let mut secret_number = *secret_number;
+    (0..n)
+        .map(|_| {
+            let next = get_next_secret_number(secret_number);
+            let price = next % 10;
+            let diff = (price as isize) - (secret_number % 10) as isize;
+            secret_number = next;
+            (price, diff)
+        })
+        .collect()
+}
+
+fn get_price_map_for_sequences(
+    prices_and_diffs: &Vec<Vec<(usize, isize)>>,
+    sequence_length: usize,
+) -> HashMap<Vec<isize>, usize> {
+    let mut result = HashMap::new();
+    for buyer in prices_and_diffs {
+        let mut added: HashMap<Vec<isize>, usize> = HashMap::new();
+        for i in sequence_length - 1..buyer.len() {
+            let sequence: Vec<isize> = buyer[i + 1 - sequence_length..=i]
+                .iter()
+                .map(|&(_, diff)| diff)
+                .collect();
+            if added.contains_key(&sequence) {
+                continue;
+            }
+            added.insert(sequence.iter().cloned().collect(), buyer[i].0);
+            *result.entry(sequence).or_default() += buyer[i].0;
+        }
+    }
+    result
+}
+
 impl Solver<usize, usize> for Solver2024_22 {
     fn solve_first_part(&self) -> usize {
         self.secret_numbers
@@ -42,15 +78,19 @@ impl Solver<usize, usize> for Solver2024_22 {
     }
 
     fn solve_second_part(&self) -> usize {
-        0
+        let prices_and_diffs: Vec<Vec<(usize, isize)>> = self
+            .secret_numbers
+            .iter()
+            .map(|secret_number| get_prices_and_diffs(secret_number, 2000))
+            .collect();
+        let price_map = get_price_map_for_sequences(&prices_and_diffs, 4);
+        price_map.iter().map(|(_, &price)| price).max().unwrap()
     }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
-
-    static EXAMPLE: &str = include_str!("example.txt");
 
     #[test]
     fn test_get_next_secret_number() {
@@ -82,14 +122,37 @@ mod test {
     }
 
     #[test]
+    fn test_get_prices_and_diffs() {
+        assert_eq!(
+            get_prices_and_diffs(&123, 10),
+            vec![
+                (0, -3),
+                (6, 6),
+                (5, -1),
+                (4, -1),
+                (4, 0),
+                (6, 2),
+                (4, -2),
+                (4, 0),
+                (2, -2),
+            ]
+        );
+    }
+
+    #[test]
     fn test_solve_first_part() {
-        let mut solver = Solver2024_22::from(EXAMPLE);
+        let solver = Solver2024_22::from(include_str!("example.txt"));
         assert_eq!(solver.solve_first_part(), 37327623);
     }
 
     #[test]
     fn test_solve_second_part() {
-        let mut solver = Solver2024_22::from(EXAMPLE);
-        assert_eq!(solver.solve_second_part(), 0);
+        let solver = Solver2024_22::from(include_str!("example2.txt"));
+        assert_eq!(solver.solve_second_part(), 23);
+    }
+    #[test]
+    fn test_solve_second_part_example3() {
+        let solver = Solver2024_22::from(include_str!("example3.txt"));
+        assert_eq!(solver.solve_second_part(), 27);
     }
 }
