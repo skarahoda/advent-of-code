@@ -328,7 +328,7 @@ mod test {
     static EXAMPLE: &str = include_str!("example.txt");
     #[test]
     fn test_solve_first_part() {
-        let mut solver = Solver2024_21::from(EXAMPLE);
+        let solver = Solver2024_21::from(EXAMPLE);
         assert_eq!(solver.solve_first_part(), 126384);
     }
 }
