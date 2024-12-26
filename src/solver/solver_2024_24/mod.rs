@@ -3,14 +3,14 @@ use regex::Regex;
 use std::collections::HashMap;
 
 #[derive(PartialEq)]
-enum Operation {
+enum GateType {
     And,
     Or,
     Xor,
 }
 pub struct Solver2024_24<'a> {
     initial_values: HashMap<&'a str, bool>,
-    assignments: HashMap<&'a str, (&'a str, Operation, &'a str)>,
+    gates: HashMap<&'a str, (&'a str, GateType, &'a str)>,
 }
 
 impl Default for Solver2024_24<'_> {
@@ -22,7 +22,7 @@ impl Default for Solver2024_24<'_> {
 impl<'a> From<&'a str> for Solver2024_24<'a> {
     fn from(input: &'a str) -> Self {
         let re_initial_values = Regex::new("(.*): (0|1)").unwrap();
-        let re_assignments = Regex::new("(.*) (AND|OR|XOR) (.*) -> (.*)").unwrap();
+        let re_gates = Regex::new("(.*) (AND|OR|XOR) (.*) -> (.*)").unwrap();
         let mut parts = input.split("\n\n");
         let initial_values = parts
             .next()
@@ -36,20 +36,20 @@ impl<'a> From<&'a str> for Solver2024_24<'a> {
                 )
             })
             .collect();
-        let assignments = parts
+        let gates = parts
             .next()
             .unwrap()
             .lines()
             .map(|line| {
-                let captures = re_assignments.captures(line).unwrap();
+                let captures = re_gates.captures(line).unwrap();
                 (
                     captures.get(4).unwrap().as_str(),
                     (
                         captures.get(1).unwrap().as_str(),
                         match captures.get(2).unwrap().as_str() {
-                            "AND" => Operation::And,
-                            "OR" => Operation::Or,
-                            "XOR" => Operation::Xor,
+                            "AND" => GateType::And,
+                            "OR" => GateType::Or,
+                            "XOR" => GateType::Xor,
                             _ => unreachable!(),
                         },
                         captures.get(3).unwrap().as_str(),
@@ -59,7 +59,7 @@ impl<'a> From<&'a str> for Solver2024_24<'a> {
             .collect();
         Self {
             initial_values,
-            assignments,
+            gates,
         }
     }
 }
@@ -78,18 +78,18 @@ impl<'a> Solver2024_24<'a> {
         if let Some(value) = values.get(variable) {
             return *value;
         }
-        let (lhs, operation, rhs) = self.assignments.get(variable).unwrap();
-        let value = match operation {
-            Operation::And => self.get_value(values, lhs) && self.get_value(values, rhs),
-            Operation::Or => self.get_value(values, lhs) || self.get_value(values, rhs),
-            Operation::Xor => self.get_value(values, lhs) ^ self.get_value(values, rhs),
+        let (lhs, gate_type, rhs) = self.gates.get(variable).unwrap();
+        let value = match gate_type {
+            GateType::And => self.get_value(values, lhs) && self.get_value(values, rhs),
+            GateType::Or => self.get_value(values, lhs) || self.get_value(values, rhs),
+            GateType::Xor => self.get_value(values, lhs) ^ self.get_value(values, rhs),
         };
         values.insert(variable, value);
         value
     }
     fn get_values(&'a self) -> HashMap<&'a str, bool> {
         let mut result = self.initial_values.clone();
-        for variable in self.assignments.keys() {
+        for variable in self.gates.keys() {
             self.get_value(&mut result, variable);
         }
         result
@@ -108,10 +108,10 @@ impl<'a> Solver2024_24<'a> {
         result
     }
 
-    fn get_xor_input_variables(&self, operation: Operation) -> HashMap<usize, &'a str> {
+    fn get_xor_input_variables(&self) -> HashMap<usize, &'a str> {
         let mut result: HashMap<usize, &'a str> = HashMap::new();
-        for (variable, (rhs, op, lhs)) in self.assignments.iter() {
-            if operation != *op {
+        for (variable, (rhs, gate_type, lhs)) in self.gates.iter() {
+            if *gate_type != GateType::Xor {
                 continue;
             }
             let rhs_index = get_bit_index(rhs);
@@ -135,26 +135,23 @@ impl<'a> Solver2024_24<'a> {
             return xor_input_variable == "z00";
         }
 
-        let (rhs, op, lhs) = self
-            .assignments
-            .get(format!("z{:0>2}", n).as_str())
-            .unwrap();
-        *op == Operation::Xor && vec![*rhs, *lhs].contains(&xor_input_variable)
+        let (rhs, gate_type, lhs) = self.gates.get(format!("z{:0>2}", n).as_str()).unwrap();
+        *gate_type == GateType::Xor && vec![*rhs, *lhs].contains(&xor_input_variable)
     }
 
     fn detect_tangled_variables(&self) -> Vec<String> {
         let mut result = vec![];
-        let xor_input_variables = self.get_xor_input_variables(Operation::Xor);
+        let xor_input_variables = self.get_xor_input_variables();
         for (&n, &variable) in xor_input_variables.iter() {
             let output = format!("z{:0>2}", n);
             if !self.is_nth_output_correct(n, &xor_input_variables) {
-                let (rhs, op, lhs) = self.assignments.get(output.as_str()).unwrap();
-                if *op != Operation::Xor {
+                let (rhs, gate_type, lhs) = self.gates.get(output.as_str()).unwrap();
+                if *gate_type != GateType::Xor {
                     result.push(output.clone());
                 } else {
                     result.push(variable.to_string());
-                    let (_, op, _) = self.assignments.get(lhs).unwrap();
-                    if *op == Operation::Or {
+                    let (_, gate_type, _) = self.gates.get(lhs).unwrap();
+                    if *gate_type == GateType::Or {
                         result.push(rhs.to_string());
                     } else {
                         result.push(lhs.to_string());
@@ -163,13 +160,13 @@ impl<'a> Solver2024_24<'a> {
             }
         }
 
-        for (variable, (rhs, op, lhs)) in self.assignments.iter() {
+        for (variable, (rhs, gate_type, lhs)) in self.gates.iter() {
             if variable.starts_with("z") {
                 continue;
             }
             let rhs_index = get_bit_index(rhs);
             let lhs_index = get_bit_index(lhs);
-            if *op == Operation::Xor && (rhs_index.is_none() || rhs_index != lhs_index) {
+            if *gate_type == GateType::Xor && (rhs_index.is_none() || rhs_index != lhs_index) {
                 result.push(variable.to_string());
             }
         }
