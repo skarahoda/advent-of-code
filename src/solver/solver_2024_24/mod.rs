@@ -147,8 +147,15 @@ impl<'a> Solver2024_24<'a> {
             if !self.is_nth_output_correct(n, &xor_input_variables) {
                 let (rhs, gate_type, lhs) = self.gates.get(output.as_str()).unwrap();
                 if *gate_type != GateType::Xor {
+                    // if the gate is not an xor gate, then the output is incorrect
+                    // We need to swap with a wire
+                    // Swapped wire will be found in the next iteration
                     result.push(output.clone());
                 } else {
+                    // If the gate is an xor gate, then one of the wires is incorrect
+                    // Incorrect wire is found by checking the gate type
+                    // the wire with the or gate is the correct wire
+                    // Swap the other wire with xor_input_variable
                     result.push(variable.to_string());
                     let (_, gate_type, _) = self.gates.get(lhs).unwrap();
                     if *gate_type == GateType::Or {
