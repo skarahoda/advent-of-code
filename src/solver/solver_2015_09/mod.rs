@@ -44,50 +44,65 @@ impl<'a> From<&'a str> for Solver2015_09<'a> {
     }
 }
 
-impl Solver2015_09<'_> {
+impl<'a> Solver2015_09<'a> {
     fn get_distance(&self, city1: &str, city2: &str) -> Option<usize> {
         self.distances
             .get(&(city1, city2))
             .or_else(|| self.distances.get(&(city2, city1)))
             .cloned()
     }
-    fn get_shortest_distance(&self, current: &str, visited: HashSet<&str>) -> Option<usize> {
+    fn get_shortest_distance<'b>(
+        &self,
+        current: &str,
+        visited: &'b mut HashSet<&'a str>,
+    ) -> Option<usize> {
         if visited.len() == self.all_cities.len() {
             return Some(0);
         }
-        self.neighbors
-            .get(current)?
-            .iter()
-            .filter_map(|&next| {
-                if visited.contains(next) {
-                    return None;
+        let mut result = None;
+        for next in self.neighbors.get(current)? {
+            if visited.contains(next) {
+                continue;
+            }
+            visited.insert(next);
+            let distance = self
+                .get_shortest_distance(next, visited)
+                .and_then(|distance| self.get_distance(current, next).map(|d| distance + d));
+            if let Some(distance) = distance {
+                if result.is_none_or(|result| distance < result) {
+                    result = Some(distance);
                 }
-                let mut visited = visited.clone();
-                visited.insert(next);
-                Some(
-                    self.get_distance(current, next)?
-                        + self.get_shortest_distance(next, visited)?,
-                )
-            })
-            .min()
+            }
+            visited.remove(next);
+        }
+        result
     }
 
-    fn get_longest_distance(&self, current: &str, visited: HashSet<&str>) -> Option<usize> {
+    fn get_longest_distance<'b>(
+        &self,
+        current: &str,
+        visited: &'b mut HashSet<&'a str>,
+    ) -> Option<usize> {
         if visited.len() == self.all_cities.len() {
             return Some(0);
         }
-        self.neighbors
-            .get(current)?
-            .iter()
-            .filter_map(|&next| {
-                if visited.contains(next) {
-                    return None;
+        let mut result = None;
+        for next in self.neighbors.get(current)? {
+            if visited.contains(next) {
+                continue;
+            }
+            visited.insert(next);
+            let distance = self
+                .get_longest_distance(next, visited)
+                .and_then(|distance| self.get_distance(current, next).map(|d| distance + d));
+            if let Some(distance) = distance {
+                if result.is_none_or(|result| distance > result) {
+                    result = Some(distance);
                 }
-                let mut visited = visited.clone();
-                visited.insert(next);
-                Some(self.get_distance(current, next)? + self.get_longest_distance(next, visited)?)
-            })
-            .max()
+            }
+            visited.remove(next);
+        }
+        result
     }
 }
 
@@ -98,7 +113,7 @@ impl Solver<usize, usize> for Solver2015_09<'_> {
             .filter_map(|&city| {
                 let mut visited = HashSet::new();
                 visited.insert(city);
-                self.get_shortest_distance(city, visited)
+                self.get_shortest_distance(city, &mut visited)
             })
             .min()
             .unwrap()
@@ -110,7 +125,7 @@ impl Solver<usize, usize> for Solver2015_09<'_> {
             .filter_map(|&city| {
                 let mut visited = HashSet::new();
                 visited.insert(city);
-                self.get_longest_distance(city, visited)
+                self.get_longest_distance(city, &mut visited)
             })
             .max()
             .unwrap()
