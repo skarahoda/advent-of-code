@@ -7,8 +7,55 @@ use std::collections::HashMap;
 #[grammar = "solver/solver_2015_07/grammar.pest"]
 struct SantaParser;
 
+enum Expr<'a> {
+    Ident(&'a str),
+    Number(u16),
+}
+
+impl<'a> From<Pair<'a, Rule>> for Expr<'a> {
+    fn from(pair: Pair<'a, Rule>) -> Self {
+        match pair.as_rule() {
+            Rule::Ident => Self::Ident(pair.as_str()),
+            Rule::Number => Self::Number(pair.as_str().parse().unwrap()),
+            _ => unreachable!(),
+        }
+    }
+}
+
+enum Statement<'a> {
+    And(Expr<'a>, Expr<'a>),
+    Or(Expr<'a>, Expr<'a>),
+    LShift(Expr<'a>, Expr<'a>),
+    RShift(Expr<'a>, Expr<'a>),
+    Not(Expr<'a>),
+    Assign(Expr<'a>),
+}
+
+impl<'a> From<Pair<'a, Rule>> for Statement<'a> {
+    fn from(pair: Pair<'a, Rule>) -> Self {
+        let inner: Vec<Pair<Rule>> = pair.into_inner().collect();
+        if inner.len() == 1 {
+            Self::Assign(inner[0].clone().into())
+        } else if inner.len() == 2 {
+            Self::Not(inner[1].clone().into())
+        } else if inner.len() == 3 {
+            let lhs = inner[0].clone().into();
+            let rhs = inner[2].clone().into();
+            match inner[1].as_rule() {
+                Rule::And => Self::And(lhs, rhs),
+                Rule::Or => Self::Or(lhs, rhs),
+                Rule::LShift => Self::LShift(lhs, rhs),
+                Rule::RShift => Self::RShift(lhs, rhs),
+                _ => unreachable!(),
+            }
+        } else {
+            unreachable!()
+        }
+    }
+}
+
 pub struct Solver2015_07<'a> {
-    rule_map: HashMap<&'a str, Vec<Pair<'a, Rule>>>,
+    statements: HashMap<&'a str, Statement<'a>>,
     variable: &'a str,
 }
 
@@ -21,25 +68,24 @@ impl<'a> From<&'a str> for Solver2015_07<'a> {
     fn from(input: &'a str) -> Self {
         let pairs = SantaParser::parse(Rule::Program, input).unwrap();
         let program = pairs.peek().unwrap();
-        let mut rule_map = HashMap::<&str, Vec<Pair<Rule>>>::new();
+        let mut statements = HashMap::<&str, Statement<'a>>::new();
         for statement in program.into_inner() {
             let rules: Vec<Pair<Rule>> = statement.into_inner().collect();
             let rhs = rules[1].as_str();
-            rule_map.insert(rhs, rules[0].clone().into_inner().collect());
+            statements.insert(rhs, rules[0].clone().into());
         }
         Self {
-            rule_map,
+            statements,
             variable: "a",
         }
     }
 }
 
 impl<'a> Solver2015_07<'a> {
-    fn evaluate_expr(&'a self, pair: &'a Pair<Rule>, value_map: &mut HashMap<&'a str, u16>) -> u16 {
-        match pair.as_rule() {
-            Rule::Ident => self.evaluate_ident(pair.as_str(), value_map),
-            Rule::Number => pair.as_str().parse().unwrap(),
-            _ => unreachable!(),
+    fn evaluate_expr(&'a self, expr: &'a Expr, value_map: &mut HashMap<&'a str, u16>) -> u16 {
+        match expr {
+            Expr::Ident(variable) => self.evaluate_ident(variable, value_map),
+            Expr::Number(number) => *number,
         }
     }
 
@@ -51,33 +97,21 @@ impl<'a> Solver2015_07<'a> {
         if let Some(&result) = value_map.get(variable) {
             return result;
         }
-        let pairs = self.rule_map.get(variable).unwrap();
-        let result = if pairs.len() == 1 {
-            self.evaluate_expr(&pairs[0], value_map)
-        } else if pairs.len() == 2 {
-            !self.evaluate_expr(&pairs[1], value_map)
-        } else if pairs.len() == 3 {
-            match pairs[1].as_rule() {
-                Rule::And => {
-                    self.evaluate_expr(&pairs[0], value_map)
-                        & self.evaluate_expr(&pairs[2], value_map)
-                }
-                Rule::Or => {
-                    self.evaluate_expr(&pairs[0], value_map)
-                        | self.evaluate_expr(&pairs[2], value_map)
-                }
-                Rule::LShift => {
-                    self.evaluate_expr(&pairs[0], value_map)
-                        << self.evaluate_expr(&pairs[2], value_map)
-                }
-                Rule::RShift => {
-                    self.evaluate_expr(&pairs[0], value_map)
-                        >> self.evaluate_expr(&pairs[2], value_map)
-                }
-                _ => unreachable!(),
+        let result = match self.statements.get(variable).unwrap() {
+            Statement::Assign(exp) => self.evaluate_expr(exp, value_map),
+            Statement::And(lhs, rhs) => {
+                self.evaluate_expr(lhs, value_map) & self.evaluate_expr(rhs, value_map)
             }
-        } else {
-            unreachable!()
+            Statement::Or(lhs, rhs) => {
+                self.evaluate_expr(lhs, value_map) | self.evaluate_expr(rhs, value_map)
+            }
+            Statement::LShift(lhs, rhs) => {
+                self.evaluate_expr(lhs, value_map) << self.evaluate_expr(rhs, value_map)
+            }
+            Statement::RShift(lhs, rhs) => {
+                self.evaluate_expr(lhs, value_map) >> self.evaluate_expr(rhs, value_map)
+            }
+            Statement::Not(expr) => !self.evaluate_expr(expr, value_map),
         };
         value_map.insert(variable, result);
         result
