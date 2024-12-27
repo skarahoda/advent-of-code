@@ -9,8 +9,8 @@ use std::time::{Duration, Instant};
 
 mod solver;
 use solver::{
-    solver_2015_07, Solver, Solver2015_01, Solver2015_02, Solver2015_03, Solver2015_04,
-    Solver2015_05, Solver2015_06, Solver2015_08, Solver2022_01, Solver2022_02, Solver2022_03,
+    Solver, Solver2015_01, Solver2015_02, Solver2015_03, Solver2015_04, Solver2015_05,
+    Solver2015_06, Solver2015_07, Solver2015_08, Solver2022_01, Solver2022_02, Solver2022_03,
     Solver2022_04, Solver2022_05, Solver2022_06, Solver2022_07, Solver2022_08, Solver2022_09,
     Solver2022_10, Solver2022_11, Solver2022_12, Solver2022_13, Solver2022_14, Solver2022_15,
     Solver2022_16, Solver2022_17, Solver2022_18, Solver2022_20, Solver2022_21, Solver2022_22,
@@ -95,16 +95,6 @@ struct Cli {
     day: Day,
 }
 
-fn print_answers<T1: Display, T2: Display>((first_answer, second_answer): (T1, T2)) {
-    println!("Answer for the first part:");
-    println!("--------------------------");
-    println!("{}", first_answer);
-    println!();
-    println!("Answer for the second part:");
-    println!("---------------------------");
-    println!("{}", second_answer);
-}
-
 fn solve<T1: Display, T2: Display>(solver: Box<dyn Solver<T1, T2>>) {
     let mut sp = Spinner::new(Spinners::Dots, "Solving the first part...".to_string());
     let start = Instant::now();
@@ -153,7 +143,7 @@ fn main() {
         (Year::Year2015, Day::Day4) => solve(Box::new(Solver2015_04::default())),
         (Year::Year2015, Day::Day5) => solve(Box::new(Solver2015_05::default())),
         (Year::Year2015, Day::Day6) => solve(Box::new(Solver2015_06::default())),
-        (Year::Year2015, Day::Day7) => print_answers(solver_2015_07::solve()),
+        (Year::Year2015, Day::Day7) => solve(Box::new(Solver2015_07::default())),
         (Year::Year2015, Day::Day8) => solve(Box::new(Solver2015_08::default())),
         (Year::Year2022, Day::Day1) => solve(Box::new(Solver2022_01::default())),
         (Year::Year2022, Day::Day2) => solve(Box::new(Solver2022_02::default())),

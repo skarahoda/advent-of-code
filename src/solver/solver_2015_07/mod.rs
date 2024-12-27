@@ -1,3 +1,4 @@
+use crate::solver::Solver;
 use pest::iterators::Pair;
 use pest::Parser;
 use std::collections::HashMap;
@@ -6,16 +7,19 @@ use std::collections::HashMap;
 #[grammar = "solver/solver_2015_07/grammar.pest"]
 struct SantaParser;
 
-type RuleMap<'a> = HashMap<&'a str, Vec<Pair<'a, Rule>>>;
-
-struct Analyzer<'a> {
-    rule_map: RuleMap<'a>,
-    value_map: HashMap<&'a str, u16>,
+pub struct Solver2015_07<'a> {
+    rule_map: HashMap<&'a str, Vec<Pair<'a, Rule>>>,
+    variable: &'a str,
 }
 
-impl<'a> Analyzer<'a> {
-    pub fn new(input: &'a str) -> Self {
-        let pairs = SantaParser::parse(Rule::Program, input).unwrap_or_else(|e| panic!("{}", e));
+impl Default for Solver2015_07<'_> {
+    fn default() -> Self {
+        Self::from(include_str!("input.txt"))
+    }
+}
+impl<'a> From<&'a str> for Solver2015_07<'a> {
+    fn from(input: &'a str) -> Self {
+        let pairs = SantaParser::parse(Rule::Program, input).unwrap();
         let program = pairs.peek().unwrap();
         let mut rule_map = HashMap::<&str, Vec<Pair<Rule>>>::new();
         for statement in program.into_inner() {
@@ -25,128 +29,125 @@ impl<'a> Analyzer<'a> {
         }
         Self {
             rule_map,
-            value_map: HashMap::new(),
+            variable: "a",
         }
     }
+}
 
-    fn evaluate_expr(&'a self, pair: &'a Pair<Rule>) -> Option<u16> {
+impl<'a> Solver2015_07<'a> {
+    fn evaluate_expr(&'a self, pair: &'a Pair<Rule>, value_map: &mut HashMap<&'a str, u16>) -> u16 {
         match pair.as_rule() {
-            Rule::Ident => self.value_map.get(pair.as_str()).map(|v| *v),
-            Rule::Number => Some(pair.as_str().parse().ok()?),
-            other => panic!("syntax error: expr cannot be {:?}", other),
+            Rule::Ident => self.evaluate_ident(pair.as_str(), value_map),
+            Rule::Number => pair.as_str().parse().unwrap(),
+            _ => unreachable!(),
         }
     }
 
-    pub fn evaluate_ident(self: &'a Analyzer<'a>, variable: &'a str) -> Option<u16> {
-        match self.value_map.get(variable) {
-            Some(result) => Some(*result),
-            None => {
-                let pairs = self.rule_map.get(variable).unwrap();
-                let result = if pairs.len() == 1 {
-                    self.evaluate_expr(&pairs[0])
-                } else if pairs.len() == 2 {
-                    Some(!self.evaluate_expr(&pairs[1])?)
-                } else if pairs.len() == 3 {
-                    match pairs[1].as_rule() {
-                        Rule::And => {
-                            Some(self.evaluate_expr(&pairs[0])? & self.evaluate_expr(&pairs[2])?)
-                        }
-                        Rule::Or => {
-                            Some(self.evaluate_expr(&pairs[0])? | self.evaluate_expr(&pairs[2])?)
-                        }
-                        Rule::LShift => {
-                            Some(self.evaluate_expr(&pairs[0])? << self.evaluate_expr(&pairs[2])?)
-                        }
-                        Rule::RShift => {
-                            Some(self.evaluate_expr(&pairs[0])? >> self.evaluate_expr(&pairs[2])?)
-                        }
-                        other => panic!("syntax error: operation cannot be {:?}", other),
-                    }
-                } else {
-                    panic!(
-                        "syntax error: lhs cannot have more than three tokens. Found: {:?}",
-                        pairs
-                    )
-                };
-                result
-            }
+    pub fn evaluate_ident(
+        &'a self,
+        variable: &'a str,
+        value_map: &mut HashMap<&'a str, u16>,
+    ) -> u16 {
+        if let Some(&result) = value_map.get(variable) {
+            return result;
         }
-    }
-
-    pub fn get_value(&mut self, variable: &'a str) -> u16 {
-        loop {
-            for key in self.rule_map.keys() {
-                match self.evaluate_ident(key) {
-                    Some(value) => {
-                        self.value_map.insert(key, value);
-                    }
-                    None => {}
-                };
+        let pairs = self.rule_map.get(variable).unwrap();
+        let result = if pairs.len() == 1 {
+            self.evaluate_expr(&pairs[0], value_map)
+        } else if pairs.len() == 2 {
+            !self.evaluate_expr(&pairs[1], value_map)
+        } else if pairs.len() == 3 {
+            match pairs[1].as_rule() {
+                Rule::And => {
+                    self.evaluate_expr(&pairs[0], value_map)
+                        & self.evaluate_expr(&pairs[2], value_map)
+                }
+                Rule::Or => {
+                    self.evaluate_expr(&pairs[0], value_map)
+                        | self.evaluate_expr(&pairs[2], value_map)
+                }
+                Rule::LShift => {
+                    self.evaluate_expr(&pairs[0], value_map)
+                        << self.evaluate_expr(&pairs[2], value_map)
+                }
+                Rule::RShift => {
+                    self.evaluate_expr(&pairs[0], value_map)
+                        >> self.evaluate_expr(&pairs[2], value_map)
+                }
+                _ => unreachable!(),
             }
-            if let Some(value) = self.evaluate_ident(variable) {
-                return value;
-            }
-        }
-    }
-
-    pub fn override_value(&mut self, variable: &'a str, value: u16) {
-        self.value_map.clear();
-        self.value_map.insert(variable, value);
+        } else {
+            unreachable!()
+        };
+        value_map.insert(variable, result);
+        result
     }
 }
 
-fn solve_first_part(input: &str, variable: &str) -> u16 {
-    let mut analyzer = Analyzer::new(input);
-    analyzer.get_value(variable)
-}
-
-fn solve_second_part(input: &str) -> u16 {
-    let mut analyzer = Analyzer::new(input);
-    let previous_value = analyzer.get_value("a");
-    analyzer.override_value("b", previous_value);
-    analyzer.get_value("a")
-}
-
-pub fn solve() -> (u16, u16) {
-    (
-        solve_first_part(include_str!("input.txt"), "a"),
-        solve_second_part(include_str!("input.txt")),
-    )
+impl Solver<u16, u16> for Solver2015_07<'_> {
+    fn solve_first_part(&self) -> u16 {
+        let mut value_map = HashMap::new();
+        self.evaluate_ident(self.variable, &mut value_map)
+    }
+    fn solve_second_part(&self) -> u16 {
+        let mut value_map = HashMap::new();
+        let previous_value = self.evaluate_ident("a", &mut value_map);
+        let mut value_map = HashMap::new();
+        value_map.insert("b", previous_value);
+        self.evaluate_ident("a", &mut value_map)
+    }
 }
 
 #[cfg(test)]
 mod find_start_of_message_marker {
-    static EXAMPLE: &str = "123 -> x\n456 -> y\nx AND y -> d\nx OR y -> e\nx LSHIFT 2 -> f\ny RSHIFT 2 -> g\nNOT x -> h\nNOT y -> i";
+    use super::*;
+    static EXAMPLE: &str = include_str!("example.txt");
     #[test]
     fn should_solve_x_in_example() {
-        assert_eq!(super::solve_first_part(EXAMPLE, "x"), 123);
+        let mut solver = Solver2015_07::from(EXAMPLE);
+        solver.variable = "x";
+        assert_eq!(solver.solve_first_part(), 123);
     }
     #[test]
     fn should_solve_y_in_example() {
-        assert_eq!(super::solve_first_part(EXAMPLE, "y"), 456);
+        let mut solver = Solver2015_07::from(EXAMPLE);
+        solver.variable = "y";
+        assert_eq!(solver.solve_first_part(), 456);
     }
     #[test]
     fn should_solve_h_in_example() {
-        assert_eq!(super::solve_first_part(EXAMPLE, "h"), 65412);
+        let mut solver = Solver2015_07::from(EXAMPLE);
+        solver.variable = "h";
+        assert_eq!(solver.solve_first_part(), 65412);
     }
     #[test]
     fn should_solve_i_in_example() {
-        assert_eq!(super::solve_first_part(EXAMPLE, "i"), 65079);
+        let mut solver = Solver2015_07::from(EXAMPLE);
+        solver.variable = "i";
+        assert_eq!(solver.solve_first_part(), 65079);
     }
     #[test]
     fn should_solve_d_in_example() {
-        assert_eq!(super::solve_first_part(EXAMPLE, "d"), 72);
+        let mut solver = Solver2015_07::from(EXAMPLE);
+        solver.variable = "d";
+        assert_eq!(solver.solve_first_part(), 72);
     }
     #[test]
     fn should_solve_e_in_example() {
-        assert_eq!(super::solve_first_part(EXAMPLE, "e"), 507);
+        let mut solver = Solver2015_07::from(EXAMPLE);
+        solver.variable = "e";
+        assert_eq!(solver.solve_first_part(), 507);
     }
     #[test]
     fn should_solve_f_in_example() {
-        assert_eq!(super::solve_first_part(EXAMPLE, "f"), 492);
+        let mut solver = Solver2015_07::from(EXAMPLE);
+        solver.variable = "f";
+        assert_eq!(solver.solve_first_part(), 492);
     }
     #[test]
     fn should_solve_g_in_example() {
-        assert_eq!(super::solve_first_part(EXAMPLE, "g"), 114);
+        let mut solver = Solver2015_07::from(EXAMPLE);
+        solver.variable = "g";
+        assert_eq!(solver.solve_first_part(), 114);
     }
 }
