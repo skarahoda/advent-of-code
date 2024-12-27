@@ -1,39 +1,57 @@
+use super::Solver;
 use md5;
 
-fn solve_first_part(input: &str) -> u32 {
-    let mut number: u32 = 0;
-    loop {
-        let hash = md5::compute(format!("{}{}", input, number));
-        if format!("{:x}", hash).starts_with("00000") {
-            return number;
-        }
-        number += 1;
+pub struct Solver2015_04<'a> {
+    input: &'a str,
+}
+
+impl Default for Solver2015_04<'_> {
+    fn default() -> Self {
+        Self::from("bgvyzdsv")
     }
 }
 
-fn solve_second_part(input: &str) -> u32 {
-    let mut number: u32 = 0;
-    loop {
-        let hash = md5::compute(format!("{}{}", input, number));
-        if format!("{:x}", hash).starts_with("000000") {
-            return number;
-        }
-        number += 1;
+impl<'a> From<&'a str> for Solver2015_04<'a> {
+    fn from(input: &'a str) -> Self {
+        Self { input }
     }
 }
 
-pub fn solve() -> (u32, u32) {
-    (solve_first_part("bgvyzdsv"), solve_second_part("bgvyzdsv"))
+impl Solver<u32, u32> for Solver2015_04<'_> {
+    fn solve_first_part(&self) -> u32 {
+        let mut number: u32 = 0;
+        loop {
+            let hash = md5::compute(format!("{}{}", self.input, number));
+            if format!("{:x}", hash).starts_with("00000") {
+                return number;
+            }
+            number += 1;
+        }
+    }
+
+    fn solve_second_part(&self) -> u32 {
+        let mut number: u32 = 0;
+        loop {
+            let hash = md5::compute(format!("{}{}", self.input, number));
+            if format!("{:x}", hash).starts_with("000000") {
+                return number;
+            }
+            number += 1;
+        }
+    }
 }
 
 #[cfg(test)]
 mod first_part {
+    use super::*;
     #[test]
     fn solve_first_example() {
-        assert_eq!(super::solve_first_part("abcdef"), 609043);
+        let solver = Solver2015_04::from("abcdef");
+        assert_eq!(solver.solve_first_part(), 609043);
     }
     #[test]
     fn solve_second_example() {
-        assert_eq!(super::solve_first_part("pqrstuv"), 1048970);
+        let solver = Solver2015_04::from("pqrstuv");
+        assert_eq!(solver.solve_first_part(), 1048970);
     }
 }
