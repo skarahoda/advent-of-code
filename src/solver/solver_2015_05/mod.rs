@@ -1,3 +1,4 @@
+use super::Solver;
 use regex::Regex;
 
 fn does_not_contain_forbidden_words(input: &str) -> bool {
@@ -47,22 +48,39 @@ fn does_contain_repeating_two_letters(input: &str) -> bool {
     false
 }
 
-fn solve_first_part(words: &Vec<&str>) -> usize {
-    words.iter().filter(|word| is_nice_string(word)).count()
-}
-fn solve_second_part(words: &Vec<&str>) -> usize {
-    words
-        .iter()
-        .filter(|word| {
-            does_contain_same_characters_with_one_space(word)
-                && does_contain_repeating_two_letters(word)
-        })
-        .count()
+pub struct Solver2015_05<'a> {
+    words: Vec<&'a str>,
 }
 
-pub fn solve() -> (usize, usize) {
-    let words = include_str!("input.txt").split("\n").collect();
-    (solve_first_part(&words), solve_second_part(&words))
+impl Default for Solver2015_05<'_> {
+    fn default() -> Self {
+        Self::from(include_str!("input.txt"))
+    }
+}
+impl<'a> From<&'a str> for Solver2015_05<'a> {
+    fn from(input: &'a str) -> Self {
+        Self {
+            words: input.lines().collect(),
+        }
+    }
+}
+
+impl Solver<usize, usize> for Solver2015_05<'_> {
+    fn solve_first_part(&self) -> usize {
+        self.words
+            .iter()
+            .filter(|word| is_nice_string(word))
+            .count()
+    }
+    fn solve_second_part(&self) -> usize {
+        self.words
+            .iter()
+            .filter(|word| {
+                does_contain_same_characters_with_one_space(word)
+                    && does_contain_repeating_two_letters(word)
+            })
+            .count()
+    }
 }
 
 #[cfg(test)]
