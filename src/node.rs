@@ -1,6 +1,6 @@
 use super::solver::{
-    solver_2015_06, solver_2015_07, Solver, Solver2015_01, Solver2015_02, Solver2015_03,
-    Solver2015_04, Solver2015_05, Solver2015_08, Solver2022_01, Solver2022_02, Solver2022_03,
+    solver_2015_07, Solver, Solver2015_01, Solver2015_02, Solver2015_03, Solver2015_04,
+    Solver2015_05, Solver2015_06, Solver2015_08, Solver2022_01, Solver2022_02, Solver2022_03,
     Solver2022_04, Solver2022_05, Solver2022_06, Solver2022_07, Solver2022_08, Solver2022_09,
     Solver2022_10, Solver2022_11, Solver2022_12, Solver2022_13, Solver2022_14, Solver2022_15,
     Solver2022_16, Solver2022_17, Solver2022_18, Solver2022_20, Solver2022_21, Solver2022_22,
@@ -45,7 +45,7 @@ pub fn solve(year: u32, day: u32) -> Answers {
         (2015, 3) => Answers::from(Box::new(Solver2015_03::default()) as Box<dyn Solver<_, _>>),
         (2015, 4) => Answers::from(Box::new(Solver2015_04::default()) as Box<dyn Solver<_, _>>),
         (2015, 5) => Answers::from(Box::new(Solver2015_05::default()) as Box<dyn Solver<_, _>>),
-        (2015, 6) => Answers::from(solver_2015_06::solve()),
+        (2015, 6) => Answers::from(Box::new(Solver2015_06::default()) as Box<dyn Solver<_, _>>),
         (2015, 7) => Answers::from(solver_2015_07::solve()),
         (2015, 8) => Answers::from(Box::new(Solver2015_08::default()) as Box<dyn Solver<_, _>>),
         (2022, 1) => Answers::from(Box::new(Solver2022_01::default()) as Box<dyn Solver<_, _>>),
