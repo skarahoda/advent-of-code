@@ -1,7 +1,8 @@
 mod solver;
 pub use solver::Solver;
 
-pub mod solver_2015_01;
+mod solver_2015_01;
+pub use solver_2015_01::Solver2015_01;
 pub mod solver_2015_02;
 pub mod solver_2015_03;
 pub mod solver_2015_04;
