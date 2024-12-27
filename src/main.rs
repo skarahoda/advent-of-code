@@ -9,8 +9,8 @@ use std::time::{Duration, Instant};
 
 mod solver;
 use solver::{
-    solver_2015_03, solver_2015_04, solver_2015_05, solver_2015_06, solver_2015_07, Solver,
-    Solver2015_01, Solver2015_02, Solver2015_08, Solver2022_01, Solver2022_02, Solver2022_03,
+    solver_2015_04, solver_2015_05, solver_2015_06, solver_2015_07, Solver, Solver2015_01,
+    Solver2015_02, Solver2015_03, Solver2015_08, Solver2022_01, Solver2022_02, Solver2022_03,
     Solver2022_04, Solver2022_05, Solver2022_06, Solver2022_07, Solver2022_08, Solver2022_09,
     Solver2022_10, Solver2022_11, Solver2022_12, Solver2022_13, Solver2022_14, Solver2022_15,
     Solver2022_16, Solver2022_17, Solver2022_18, Solver2022_20, Solver2022_21, Solver2022_22,
@@ -149,7 +149,7 @@ fn main() {
     match (args.year, args.day) {
         (Year::Year2015, Day::Day1) => solve(Box::new(Solver2015_01::default())),
         (Year::Year2015, Day::Day2) => solve(Box::new(Solver2015_02::default())),
-        (Year::Year2015, Day::Day3) => print_answers(solver_2015_03::solve()),
+        (Year::Year2015, Day::Day3) => solve(Box::new(Solver2015_03::default())),
         (Year::Year2015, Day::Day4) => print_answers(solver_2015_04::solve()),
         (Year::Year2015, Day::Day5) => print_answers(solver_2015_05::solve()),
         (Year::Year2015, Day::Day6) => print_answers(solver_2015_06::solve()),

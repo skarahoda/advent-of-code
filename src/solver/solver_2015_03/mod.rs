@@ -1,3 +1,4 @@
+use super::Solver;
 use std::collections::HashSet;
 
 #[derive(Eq, Hash, PartialEq, Copy, Clone)]
@@ -50,44 +51,55 @@ impl Location {
     }
 }
 
-fn solve_first_part(directions: &str) -> usize {
-    let mut locations: HashSet<Location> = HashSet::new();
-    let mut location = Location::new();
+pub struct Solver2015_03<'a> {
+    directions: &'a str,
+}
 
-    locations.insert(location);
+impl Default for Solver2015_03<'_> {
+    fn default() -> Self {
+        Self::from(include_str!("input.txt"))
+    }
+}
 
-    for direction in directions.chars() {
-        location = location.to(direction);
+impl<'a> From<&'a str> for Solver2015_03<'a> {
+    fn from(input: &'a str) -> Self {
+        Self { directions: input }
+    }
+}
+
+impl Solver<usize, usize> for Solver2015_03<'_> {
+    fn solve_first_part(&self) -> usize {
+        let mut locations: HashSet<Location> = HashSet::new();
+        let mut location = Location::new();
+
         locations.insert(location);
-    }
-    locations.len()
-}
 
-fn solve_second_part(directions: &str) -> usize {
-    let mut locations: HashSet<Location> = HashSet::new();
-
-    let mut santa_location = Location::new();
-    let mut robo_santa_location = Location::new();
-    let mut santa_turn = true;
-    locations.insert(santa_location);
-    for direction in directions.chars() {
-        if santa_turn {
-            santa_location = santa_location.to(direction);
-            locations.insert(santa_location);
-        } else {
-            robo_santa_location = robo_santa_location.to(direction);
-            locations.insert(robo_santa_location);
+        for direction in self.directions.chars() {
+            location = location.to(direction);
+            locations.insert(location);
         }
-        santa_turn = !santa_turn;
+        locations.len()
     }
-    locations.len()
-}
 
-pub fn solve() -> (usize, usize) {
-    (
-        solve_first_part(include_str!("input.txt")),
-        solve_second_part(include_str!("input.txt")),
-    )
+    fn solve_second_part(&self) -> usize {
+        let mut locations: HashSet<Location> = HashSet::new();
+
+        let mut santa_location = Location::new();
+        let mut robo_santa_location = Location::new();
+        let mut santa_turn = true;
+        locations.insert(santa_location);
+        for direction in self.directions.chars() {
+            if santa_turn {
+                santa_location = santa_location.to(direction);
+                locations.insert(santa_location);
+            } else {
+                robo_santa_location = robo_santa_location.to(direction);
+                locations.insert(robo_santa_location);
+            }
+            santa_turn = !santa_turn;
+        }
+        locations.len()
+    }
 }
 
 #[cfg(test)]
@@ -96,15 +108,18 @@ mod first_part {
 
     #[test]
     fn first_example() {
-        assert_eq!(solve_first_part(">"), 2);
+        let solver = Solver2015_03::from(">");
+        assert_eq!(solver.solve_first_part(), 2);
     }
     #[test]
     fn second_example() {
-        assert_eq!(solve_first_part("^>v<"), 4);
+        let solver = Solver2015_03::from("^>v<");
+        assert_eq!(solver.solve_first_part(), 4);
     }
     #[test]
     fn third_example() {
-        assert_eq!(solve_first_part("^v^v^v^v^v"), 2);
+        let solver = Solver2015_03::from("^v^v^v^v^v");
+        assert_eq!(solver.solve_first_part(), 2);
     }
 }
 
@@ -114,14 +129,17 @@ mod second_part {
 
     #[test]
     fn first_example() {
-        assert_eq!(solve_second_part("^v"), 3);
+        let solver = Solver2015_03::from("^v");
+        assert_eq!(solver.solve_second_part(), 3);
     }
     #[test]
     fn second_example() {
-        assert_eq!(solve_second_part("^>v<"), 3);
+        let solver = Solver2015_03::from("^>v<");
+        assert_eq!(solver.solve_second_part(), 3);
     }
     #[test]
     fn third_example() {
-        assert_eq!(solve_second_part("^v^v^v^v^v"), 11);
+        let solver = Solver2015_03::from("^v^v^v^v^v");
+        assert_eq!(solver.solve_second_part(), 11);
     }
 }
