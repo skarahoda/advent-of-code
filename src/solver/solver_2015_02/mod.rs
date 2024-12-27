@@ -1,3 +1,5 @@
+use super::Solver;
+
 struct RectangularPrism {
     width: i32,
     length: i32,
@@ -39,39 +41,47 @@ impl RectangularPrism {
     }
 }
 
-fn get_rectangular_prisms() -> Vec<RectangularPrism> {
-    include_str!("input.txt")
-        .split("\n")
-        .map(|row| {
-            let edges: Vec<i32> = row.split("x").map(|edge| edge.parse().unwrap()).collect();
-            RectangularPrism::new(edges[0], edges[1], edges[2])
-        })
-        .collect()
+pub struct Solver2015_02 {
+    rectangle_prisms: Vec<RectangularPrism>,
 }
 
-fn solve_first_part(rectangle_prisms: &Vec<RectangularPrism>) -> i32 {
-    rectangle_prisms
-        .iter()
-        .map(|rectangle_prism| {
-            rectangle_prism.get_area() + rectangle_prism.get_smallest_area_of_sides()
-        })
-        .sum()
+impl Default for Solver2015_02 {
+    fn default() -> Self {
+        Self::from(include_str!("input.txt"))
+    }
 }
-fn solve_second_part(rectangle_prisms: &Vec<RectangularPrism>) -> i32 {
-    rectangle_prisms
-        .iter()
-        .map(|rectangle_prism| {
-            rectangle_prism.get_volume() + rectangle_prism.get_smallest_perimeter_of_sides()
-        })
-        .sum()
+impl From<&str> for Solver2015_02 {
+    fn from(input: &str) -> Self {
+        Self {
+            rectangle_prisms: input
+                .split("\n")
+                .map(|row| {
+                    let edges: Vec<i32> =
+                        row.split("x").map(|edge| edge.parse().unwrap()).collect();
+                    RectangularPrism::new(edges[0], edges[1], edges[2])
+                })
+                .collect(),
+        }
+    }
 }
 
-pub fn solve() -> (i32, i32) {
-    let rectangle_prisms = get_rectangular_prisms();
-    (
-        solve_first_part(&rectangle_prisms),
-        solve_second_part(&rectangle_prisms),
-    )
+impl Solver<i32, i32> for Solver2015_02 {
+    fn solve_first_part(&self) -> i32 {
+        self.rectangle_prisms
+            .iter()
+            .map(|rectangle_prism| {
+                rectangle_prism.get_area() + rectangle_prism.get_smallest_area_of_sides()
+            })
+            .sum()
+    }
+    fn solve_second_part(&self) -> i32 {
+        self.rectangle_prisms
+            .iter()
+            .map(|rectangle_prism| {
+                rectangle_prism.get_volume() + rectangle_prism.get_smallest_perimeter_of_sides()
+            })
+            .sum()
+    }
 }
 
 #[cfg(test)]
@@ -80,11 +90,13 @@ mod first_part {
 
     #[test]
     fn first_example() {
-        assert_eq!(solve_first_part(&vec![RectangularPrism::new(2, 3, 4)]), 58);
+        let solver = Solver2015_02::from("2x3x4");
+        assert_eq!(solver.solve_first_part(), 58);
     }
     #[test]
     fn second_example() {
-        assert_eq!(solve_first_part(&vec![RectangularPrism::new(1, 1, 10)]), 43);
+        let solver = Solver2015_02::from("1x1x10");
+        assert_eq!(solver.solve_first_part(), 43);
     }
 }
 
@@ -94,13 +106,12 @@ mod second_part {
 
     #[test]
     fn first_example() {
-        assert_eq!(solve_second_part(&vec![RectangularPrism::new(2, 3, 4)]), 34);
+        let solver = Solver2015_02::from("2x3x4");
+        assert_eq!(solver.solve_second_part(), 34);
     }
     #[test]
     fn second_example() {
-        assert_eq!(
-            solve_second_part(&vec![RectangularPrism::new(1, 1, 10)]),
-            14
-        );
+        let solver = Solver2015_02::from("1x1x10");
+        assert_eq!(solver.solve_second_part(), 14);
     }
 }
