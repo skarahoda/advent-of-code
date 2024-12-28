@@ -1,53 +1,52 @@
 use super::Solver;
 
-pub struct Solver2015_12<'a> {
-    input: &'a str,
+pub struct Solver2015_12 {
+    value: serde_json::Value,
 }
 
-impl Default for Solver2015_12<'_> {
+impl Default for Solver2015_12 {
     fn default() -> Self {
         Self::from(include_str!("input.txt"))
     }
 }
 
-impl<'a> From<&'a str> for Solver2015_12<'a> {
-    fn from(input: &'a str) -> Self {
-        Self { input }
+impl From<&str> for Solver2015_12 {
+    fn from(input: &str) -> Self {
+        Self {
+            value: serde_json::from_str(input).unwrap(),
+        }
     }
 }
 
-impl Solver2015_12<'_> {}
-
-impl Solver<isize, usize> for Solver2015_12<'_> {
-    fn solve_first_part(&self) -> isize {
-        let mut result = 0isize;
-        let mut current = 0;
-        let mut is_negative = false;
-        for c in self.input.chars() {
-            if c == '-' {
-                is_negative = true;
-            } else if let Some(digit) = c.to_digit(10) {
-                current = current * 10 + digit;
+fn get_total(value: &serde_json::Value, ignore: Option<&str>) -> i64 {
+    match value {
+        serde_json::Value::Number(number) => number.as_i64().unwrap(),
+        serde_json::Value::Array(array) => array.iter().map(|value| get_total(value, ignore)).sum(),
+        serde_json::Value::Object(object) => {
+            if ignore.is_some_and(|ignore| {
+                object
+                    .values()
+                    .any(|v| v.as_str().is_some_and(|s| s == ignore))
+            }) {
+                0
             } else {
-                result += if is_negative {
-                    (current as isize) * -1
-                } else {
-                    current as isize
-                };
-                current = 0;
-                is_negative = false;
+                object
+                    .iter()
+                    .map(|(_, value)| get_total(value, ignore))
+                    .sum()
             }
         }
-        result
-            + if is_negative {
-                (current as isize) * -1
-            } else {
-                current as isize
-            }
+        _ => 0,
+    }
+}
+
+impl Solver<i64, i64> for Solver2015_12 {
+    fn solve_first_part(&self) -> i64 {
+        get_total(&self.value, None)
     }
 
-    fn solve_second_part(&self) -> usize {
-        0
+    fn solve_second_part(&self) -> i64 {
+        get_total(&self.value, Some("red"))
     }
 }
 
@@ -60,12 +59,12 @@ mod tests {
     #[test]
     fn should_solve_first_part_example() {
         let solver = Solver2015_12::from(EXAMPLE);
-        assert_eq!(solver.solve_first_part(), 605);
+        assert_eq!(solver.solve_first_part(), 6);
     }
 
     #[test]
     fn should_solve_second_part_example() {
         let solver = Solver2015_12::from(EXAMPLE);
-        assert_eq!(solver.solve_second_part(), 982);
+        assert_eq!(solver.solve_second_part(), 4);
     }
 }
