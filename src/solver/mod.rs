@@ -21,6 +21,8 @@ mod solver_2015_09;
 pub use solver_2015_09::Solver2015_09;
 mod solver_2015_10;
 pub use solver_2015_10::Solver2015_10;
+mod solver_2015_12;
+pub use solver_2015_12::Solver2015_12;
 mod solver_2022_01;
 pub use solver_2022_01::Solver2022_01;
 mod solver_2022_02;
